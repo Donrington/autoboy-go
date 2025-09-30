@@ -1,0 +1,128 @@
+# Node.js / React Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# React Build Output
+dist/
+dist-ssr/
+build/
+*.local
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor Directories and Files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+
+# Go Backend
+autoboy-backend/bin/
+autoboy-backend/*.exe
+autoboy-backend/*.dll
+autoboy-backend/*.so
+autoboy-backend/*.dylib
+autoboy-backend/*.test
+autoboy-backend/*.out
+autoboy-backend/vendor/
+
+# Go Build Cache
+*.a
+*.o
+*.so
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.cache
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage Reports
+coverage/
+*.lcov
+.nyc_output/
+
+# Testing
+.jest/
+.cypress/
+cypress/videos/
+cypress/screenshots/
+
+# Package Manager Lock Files (optional - uncomment if you want to ignore)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets & Certificates
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+secrets/
+credentials.json
+
+# Cloud & Deployment
+.vercel/
+.netlify/
+.firebase/
+
+# IDEs
+*.iml
+.idea/
+*.code-workspace
+.history/
+
+# Miscellaneous
+.eslintcache
+.parcel-cache/
+.vite/
+.turbo/
+.next/
+out/

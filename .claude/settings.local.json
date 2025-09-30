@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(cp:*)",
+      "Bash(grep:*)",
+      "Bash(go mod:*)",
+      "Bash(powershell:*)",
+      "Bash(go build:*)",
+      "Bash(dir scripts)",
+      "Bash(dir:*)",
+      "Bash(go run:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

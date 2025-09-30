@@ -1,0 +1,686 @@
+:root {
+            --primary-green: #22C55E;
+            --primary-green-dark: #16A34A;
+            --primary-green-light: #4ADE80;
+            --primary-green-glow: #10B981;
+            
+            /* Light Mode Colors */
+            --bg-light: #FFFFFF;
+            --bg-light-secondary: #F9FAFB;
+            --bg-light-tertiary: #F3F4F6;
+            --text-light: #1F2937;
+            --text-light-secondary: #6B7280;
+            --text-light-tertiary: #9CA3AF;
+            
+            /* Dark Mode Colors */
+            --bg-dark: #0A0A0A;
+            --bg-dark-secondary: #111111;
+            --bg-dark-tertiary: #1A1A1A;
+            --text-dark: #F3F4F6;
+            --text-dark-secondary: #9CA3AF;
+            --text-dark-tertiary: #6B7280;
+            
+            /* Overlays and Cards */
+            --overlay-light: rgba(255, 255, 255, 0.9);
+            --overlay-dark: rgba(10, 10, 10, 0.85);
+            --card-light: rgba(255, 255, 255, 0.95);
+            --card-dark: rgba(30, 30, 30, 0.95);
+            --card-hover-light: rgba(255, 255, 255, 1);
+            --card-hover-dark: rgba(40, 40, 40, 1);
+            
+            /* Borders and Shadows */
+            --border-light: rgba(0, 0, 0, 0.08);
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --shadow-light: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-dark: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 60px rgba(34, 197, 94, 0.3);
+            --shadow-glow-intense: 0 0 120px rgba(34, 197, 94, 0.5);
+            
+            /* Additional Variables for Enhanced Design */
+            --gradient-primary: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
+            --gradient-green-light: linear-gradient(135deg, var(--primary-green-light), var(--primary-green));
+            --glassmorphism-light: rgba(255, 255, 255, 0.25);
+            --gradient-green: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
+            --glassmorphism-dark: rgba(255, 255, 255, 0.05);
+            --neon-glow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+            --text-muted-light: #9CA3AF;
+            --text-muted-dark: #6B7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        body.autoboy-pd-dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .autoboy-pd-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .autoboy-pd-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            color: var(--text-light-secondary);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-breadcrumb {
+            color: var(--text-dark-secondary);
+        }
+
+        .autoboy-pd-breadcrumb a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .autoboy-pd-breadcrumb a:hover {
+            color: var(--primary-green);
+        }
+
+        .autoboy-pd-main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .autoboy-pd-product-section {
+            background: var(--card-light);
+            border-radius: 24px;
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-product-section {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .autoboy-pd-product-header {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .autoboy-pd-product-image-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-product-image-container {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+        }
+
+        .autoboy-pd-product-image {
+            width: 10rem;
+            height: auto;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .autoboy-pd-product-image:hover {
+            transform: scale(1.05);
+        }
+
+        .autoboy-pd-floating-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.1;
+            animation: autoboy-pd-pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes autoboy-pd-pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .autoboy-pd-product-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .autoboy-pd-product-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .autoboy-pd-product-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+            text-shadow: var(--shadow-glow);
+        }
+
+        .autoboy-pd-rating-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .autoboy-pd-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .autoboy-pd-star {
+            color: #fbbf24;
+            font-size: 1.2rem;
+        }
+
+        .autoboy-pd-storage-options {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .autoboy-pd-storage-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-storage-btn {
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .autoboy-pd-storage-btn:hover {
+            border-color: var(--primary-green);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .autoboy-pd-storage-btn.autoboy-pd-active {
+            background: var(--gradient-primary);
+            border-color: var(--primary-green);
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .autoboy-pd-storage-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .autoboy-pd-storage-btn:hover::before {
+            left: 100%;
+        }
+
+        .autoboy-pd-color-info {
+            color: var(--text-light-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-color-info {
+            color: var(--text-dark-secondary);
+        }
+
+        .autoboy-pd-add-to-cart {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .autoboy-pd-add-to-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow-intense);
+        }
+
+        .autoboy-pd-add-to-cart:active {
+            transform: translateY(0);
+        }
+
+        .autoboy-pd-add-to-cart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            transition: width 0.3s ease;
+        }
+
+        .autoboy-pd-add-to-cart:hover::before {
+            width: 100%;
+        }
+
+        .autoboy-pd-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .autoboy-pd-delivery-card,
+        .autoboy-pd-seller-card {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-light);
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-delivery-card,
+        body.autoboy-pd-dark-mode .autoboy-pd-seller-card {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .autoboy-pd-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-card-title {
+            color: var(--text-dark);
+        }
+
+        .autoboy-pd-location-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            background: var(--bg-light);
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-location-select {
+            border-color: var(--border-dark);
+            background: var(--bg-dark-secondary);
+            color: var(--text-dark);
+        }
+
+        .autoboy-pd-seller-info {
+            text-align: center;
+        }
+
+        .autoboy-pd-seller-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .autoboy-pd-seller-score {
+            color: var(--primary-green);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .autoboy-pd-followers {
+            color: var(--text-light-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-followers {
+            color: var(--text-dark-secondary);
+        }
+
+        .autoboy-pd-follow-btn,
+        .autoboy-pd-chat-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--primary-green);
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.75rem;
+        }
+
+        .autoboy-pd-follow-btn {
+            background: transparent;
+            color: var(--primary-green);
+        }
+
+        .autoboy-pd-follow-btn:hover {
+            background: var(--primary-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .autoboy-pd-chat-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .autoboy-pd-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .autoboy-pd-performance-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .autoboy-pd-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .autoboy-pd-indicator-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .autoboy-pd-tabs-section {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-tabs-section {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .autoboy-pd-tabs-nav {
+            display: flex;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-tabs-nav {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .autoboy-pd-tab-btn {
+            flex: 1;
+            padding: 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-light-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-tab-btn {
+            color: var(--text-dark-secondary);
+        }
+
+        .autoboy-pd-tab-btn.autoboy-pd-active {
+            color: var(--primary-green);
+        }
+
+        .autoboy-pd-tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .autoboy-pd-tab-btn.autoboy-pd-active::after {
+            width: 100%;
+        }
+
+        .autoboy-pd-tab-content {
+            padding: 2rem;
+        }
+
+        .autoboy-pd-features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .autoboy-pd-feature-category h4 {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-feature-category h4 {
+            color: var(--text-dark);
+        }
+
+        .autoboy-pd-feature-list {
+            list-style: none;
+        }
+
+        .autoboy-pd-feature-list li {
+            padding: 0.5rem 0;
+            color: var(--text-light-secondary);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-feature-list li {
+            color: var(--text-dark-secondary);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .autoboy-pd-feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .autoboy-pd-reviews-section {
+            margin-top: 2rem;
+        }
+
+        .autoboy-pd-review-summary {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .autoboy-pd-rating-overview {
+            text-align: center;
+        }
+
+        .autoboy-pd-rating-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .autoboy-pd-rating-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .autoboy-pd-rating-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .autoboy-pd-bar-container {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-light-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        body.autoboy-pd-dark-mode .autoboy-pd-bar-container {
+            background: var(--bg-dark-tertiary);
+        }
+
+        .autoboy-pd-bar-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .autoboy-pd-theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glow);
+            z-index: 1000;
+        }
+
+        .autoboy-pd-theme-toggle:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: var(--shadow-glow-intense);
+        }
+
+        .autoboy-pd-floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .autoboy-pd-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        @media (max-width: 1024px) {
+            .autoboy-pd-main-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .autoboy-pd-product-header {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .autoboy-pd-features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .autoboy-pd-container {
+                padding: 1rem;
+            }
+            
+            .autoboy-pd-storage-options {
+                justify-content: center;
+            }
+            
+            .autoboy-pd-rating-number {
+                font-size: 2rem;
+            }
+        }
