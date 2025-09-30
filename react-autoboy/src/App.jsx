@@ -20,6 +20,7 @@ import ProductDetails from './components/ProductDetails';
 import BecomeSeller from './components/BecomeSeller';
 import SellerSignup from './components/SellerSignup';
 import SellerDashboard from './components/SellerDashboard';
+import PremiumSellerDashboard from './components/PremiumSellerDashboard';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -87,7 +88,7 @@ function App() {
 
           {/* Dashboard route without navbar/footer */}
           <Route path="/seller-dashboard" element={<SellerDashboard />} />
-          
+          <Route path="/premium-seller-dashboard" element={<PremiumSellerDashboard />} />
           {/* Routes with navbar and footer */}
           <Route path="/*" element={
             <>
@@ -113,6 +114,7 @@ function App() {
                   <Route path="/seller-signin" element={<div>Seller Sign In - Coming Soon</div>} />
                   <Route path="/category/:id" element={<div>Category Page - Coming Soon</div>} />
                   <Route path="/profile" element={<div>Profile Page - Coming Soon</div>} />
+                  
                   
                   {/* 404 Page */}
                   <Route path="*" element={<div>Page Not Found</div>} />

@@ -1578,6 +1578,302 @@
 }
 
 /* ========================================
+   Buyer-Specific Styles
+   ======================================== */
+
+/* Wishlist Grid */
+.autoboy-buyer-wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.autoboy-buyer-wishlist-card {
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-buyer-wishlist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-card:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-buyer-wishlist-image {
+    width: 100%;
+    height: 200px;
+    background: var(--bg-light-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-image {
+    background: var(--bg-dark-tertiary);
+}
+
+.autoboy-buyer-wishlist-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.autoboy-buyer-wishlist-info {
+    padding: 1.5rem;
+}
+
+.autoboy-buyer-wishlist-info h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-info h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-wishlist-seller,
+.autoboy-buyer-wishlist-condition {
+    margin: 0.25rem 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-seller,
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-condition {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-buyer-wishlist-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin: 1rem 0;
+}
+
+.autoboy-buyer-wishlist-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.autoboy-buyer-wishlist-actions button:first-child {
+    flex: 1;
+}
+
+.autoboy-buyer-wishlist-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Saved Searches */
+.autoboy-buyer-search-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-item {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-buyer-search-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-item:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-buyer-search-info h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-info h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-search-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-info p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-buyer-search-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* Activity Items */
+.autoboy-buyer-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-buyer-activity-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-buyer-activity-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.autoboy-buyer-activity-info p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info p {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-activity-info span {
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info span {
+    color: var(--text-dark-secondary);
+}
+
+/* Large Activity Items */
+.autoboy-buyer-activity-item-large {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-item-large {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-buyer-activity-item-large:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-item-large:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-buyer-activity-icon-large {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.autoboy-buyer-activity-info-large h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info-large h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-activity-info-large p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info-large p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-buyer-activity-info-large span {
+    font-size: 0.875rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info-large span {
+    color: var(--text-dark-tertiary);
+}
+
+/* Responsive Buyer Styles */
+@media (max-width: 768px) {
+    .autoboy-buyer-wishlist-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-buyer-search-item,
+    .autoboy-buyer-activity-item-large {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .autoboy-buyer-search-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .autoboy-buyer-search-actions button {
+        width: 100%;
+    }
+}
+
+/* ========================================
    High Contrast Mode Support
    ======================================== */
 

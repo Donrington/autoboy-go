@@ -5,7 +5,8 @@ import {
   faBars, faMoon, faSun, faPlus, faTruck, faChartPie, faMobileAlt,
   faCheckCircle, faNairaSign, faEdit, faEye, faTrash, faFilter,
   faSearch, faUpload, faSave, faUser, faEnvelope, faPhone, faMapMarkerAlt,
-  faTimes, faCheck, faClipboardList, faWallet
+  faTimes, faCheck, faClipboardList, faWallet, faComments, faFileAlt,
+  faCrown, faHeadset, faPaperPlane, faStar, faAward, faBolt, faShieldAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import {
@@ -24,7 +25,7 @@ import { format, startOfWeek, endOfWeek, subDays } from 'date-fns';
 import CustomCursor from './CustomCursor';
 import lightLogo from '../assets/autoboy_logo2.png';
 import darkLogo from '../assets/autoboy_logo3.png';
-import './SellerDashboard.css';
+import './PremiumSellerDashboard.css';
 
 // Register Chart.js components
 ChartJS.register(
@@ -39,7 +40,7 @@ ChartJS.register(
   BarElement
 );
 
-const SellerDashboard = () => {
+const PremiumSellerDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('autoboyDarkMode');
@@ -68,6 +69,11 @@ const SellerDashboard = () => {
     swapAvailable: false,
     tags: ''
   });
+
+  // Premium state
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [messageText, setMessageText] = useState('');
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Sample data for demo
   const [products] = useState([
@@ -99,6 +105,64 @@ const SellerDashboard = () => {
       image: '/api/placeholder/80/80'
     }
   ]);
+
+  // Messages data
+  const [messages] = useState([
+    {
+      id: 1,
+      customerName: 'John Doe',
+      avatar: 'JD',
+      lastMessage: 'Is the iPhone still available?',
+      time: '2 mins ago',
+      unread: 3,
+      online: true
+    },
+    {
+      id: 2,
+      customerName: 'Jane Smith',
+      avatar: 'JS',
+      lastMessage: 'Can we negotiate the price?',
+      time: '1 hour ago',
+      unread: 1,
+      online: false
+    },
+    {
+      id: 3,
+      customerName: 'Mike Johnson',
+      avatar: 'MJ',
+      lastMessage: 'When can I pick up the item?',
+      time: '3 hours ago',
+      unread: 0,
+      online: true
+    }
+  ]);
+
+  // Reports data
+  const [reportsData] = useState({
+    totalRevenue: 5500000,
+    totalOrders: 152,
+    averageOrderValue: 850000,
+    conversionRate: 3.2,
+    topProducts: [
+      { name: 'iPhone 15 Pro Max', sales: 15, revenue: 18000000 },
+      { name: 'Samsung Galaxy S24', sales: 12, revenue: 11400000 },
+      { name: 'Google Pixel 8', sales: 8, revenue: 6000000 }
+    ]
+  });
+
+  // Badge/Achievement data
+  const [badgeData] = useState({
+    currentBadge: 'Diamond Seller',
+    badgeLevel: 5,
+    nextBadge: 'Legend',
+    progress: 75,
+    achievements: [
+      { icon: faStar, title: '100 Sales', unlocked: true },
+      { icon: faAward, title: 'Top Rated', unlocked: true },
+      { icon: faBolt, title: 'Fast Shipper', unlocked: true },
+      { icon: faShieldAlt, title: 'Trusted Seller', unlocked: false }
+    ]
+  });
 
   const [orders] = useState([
     {
@@ -1000,6 +1064,322 @@ const SellerDashboard = () => {
     </div>
   );
 
+  const renderMessagesContent = () => {
+    const handleMessageClick = (msg) => {
+      setSelectedMessage(msg);
+      setIsChatOpen(true);
+    };
+
+    const handleBackToList = () => {
+      setIsChatOpen(false);
+    };
+
+    return (
+      <div className="autoboy-dash-content-wrapper">
+        <div className={`autoboy-premium-messages-container ${isChatOpen ? 'chat-open' : ''}`}>
+          {/* Messages List */}
+          <div className="autoboy-premium-messages-list">
+            <div className="autoboy-premium-messages-header">
+              <h3>Messages</h3>
+              <div className="autoboy-dash-search">
+                <FontAwesomeIcon icon={faSearch} />
+                <input type="text" placeholder="Search messages..." />
+              </div>
+            </div>
+            <div className="autoboy-premium-messages-items">
+              {messages.map(msg => (
+                <div
+                  key={msg.id}
+                  className={`autoboy-premium-message-item ${selectedMessage?.id === msg.id ? 'active' : ''}`}
+                  onClick={() => handleMessageClick(msg)}
+                >
+                  <div className="autoboy-premium-message-avatar">
+                    {msg.avatar}
+                    {msg.online && <span className="autoboy-premium-online-dot"></span>}
+                  </div>
+                  <div className="autoboy-premium-message-info">
+                    <div className="autoboy-premium-message-top">
+                      <h4>{msg.customerName}</h4>
+                      <span className="autoboy-premium-message-time">{msg.time}</span>
+                    </div>
+                    <p>{msg.lastMessage}</p>
+                  </div>
+                  {msg.unread > 0 && (
+                    <div className="autoboy-premium-unread-badge">{msg.unread}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Message Chat Area */}
+          <div className="autoboy-premium-message-chat">
+            {selectedMessage ? (
+              <>
+                <div className="autoboy-premium-chat-header">
+                  <button
+                    className="autoboy-premium-back-btn"
+                    onClick={handleBackToList}
+                  >
+                    <FontAwesomeIcon icon={faBars} />
+                  </button>
+                  <div className="autoboy-premium-message-avatar">
+                    {selectedMessage.avatar}
+                    {selectedMessage.online && <span className="autoboy-premium-online-dot"></span>}
+                  </div>
+                  <div>
+                    <h4>{selectedMessage.customerName}</h4>
+                    <span className="autoboy-premium-status">{selectedMessage.online ? 'Online' : 'Offline'}</span>
+                  </div>
+                </div>
+
+              <div className="autoboy-premium-chat-messages">
+                <div className="autoboy-premium-chat-message received">
+                  <p>{selectedMessage.lastMessage}</p>
+                  <span className="autoboy-premium-chat-time">{selectedMessage.time}</span>
+                </div>
+              </div>
+
+              <div className="autoboy-premium-chat-input">
+                <input
+                  type="text"
+                  placeholder="Type a message..."
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                />
+                <button className="autoboy-dash-btn autoboy-dash-btn-primary">
+                  <FontAwesomeIcon icon={faPaperPlane} />
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="autoboy-premium-no-message">
+              <FontAwesomeIcon icon={faComments} />
+              <p>Select a message to start chatting</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+    );
+  };
+
+  const renderReportsContent = () => (
+    <div className="autoboy-dash-content-wrapper">
+      {/* Summary Cards */}
+      <div className="autoboy-premium-report-cards">
+        <div className="autoboy-premium-report-card">
+          <div className="autoboy-premium-report-icon">
+            <FontAwesomeIcon icon={faNairaSign} />
+          </div>
+          <div className="autoboy-premium-report-info">
+            <h3>Total Revenue</h3>
+            <div className="autoboy-premium-report-value">{formatCurrency(reportsData.totalRevenue)}</div>
+            <span className="autoboy-premium-report-change positive">+12.5% from last month</span>
+          </div>
+        </div>
+
+        <div className="autoboy-premium-report-card">
+          <div className="autoboy-premium-report-icon">
+            <FontAwesomeIcon icon={faShoppingCart} />
+          </div>
+          <div className="autoboy-premium-report-info">
+            <h3>Total Orders</h3>
+            <div className="autoboy-premium-report-value">{reportsData.totalOrders}</div>
+            <span className="autoboy-premium-report-change positive">+8.2% from last month</span>
+          </div>
+        </div>
+
+        <div className="autoboy-premium-report-card">
+          <div className="autoboy-premium-report-icon">
+            <FontAwesomeIcon icon={faChartLine} />
+          </div>
+          <div className="autoboy-premium-report-info">
+            <h3>Avg. Order Value</h3>
+            <div className="autoboy-premium-report-value">{formatCurrency(reportsData.averageOrderValue)}</div>
+            <span className="autoboy-premium-report-change negative">-2.1% from last month</span>
+          </div>
+        </div>
+
+        <div className="autoboy-premium-report-card">
+          <div className="autoboy-premium-report-icon">
+            <FontAwesomeIcon icon={faChartPie} />
+          </div>
+          <div className="autoboy-premium-report-info">
+            <h3>Conversion Rate</h3>
+            <div className="autoboy-premium-report-value">{reportsData.conversionRate}%</div>
+            <span className="autoboy-premium-report-change positive">+0.5% from last month</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Products Table */}
+      <div className="autoboy-dash-section" style={{ gridColumn: '1 / -1' }}>
+        <div className="autoboy-dash-section-header">
+          <h2 className="autoboy-dash-section-title">Top Selling Products</h2>
+          <button className="autoboy-dash-btn autoboy-dash-btn-primary">
+            <FontAwesomeIcon icon={faFileAlt} />
+            Download Report
+          </button>
+        </div>
+        <div className="autoboy-dash-section-content">
+          <div className="autoboy-dash-table-container">
+            <table className="autoboy-dash-table">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Sales</th>
+                  <th>Revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportsData.topProducts.map((product, index) => (
+                  <tr key={index}>
+                    <td>{product.name}</td>
+                    <td>{product.sales}</td>
+                    <td>{formatCurrency(product.revenue)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBadgeContent = () => (
+    <div className="autoboy-dash-content-wrapper">
+      {/* Current Badge */}
+      <div className="autoboy-premium-badge-showcase">
+        <div className="autoboy-premium-badge-icon">
+          <FontAwesomeIcon icon={faCrown} />
+        </div>
+        <h2>{badgeData.currentBadge}</h2>
+        <p>Level {badgeData.badgeLevel}</p>
+
+        {/* Progress to Next Badge */}
+        <div className="autoboy-premium-badge-progress">
+          <div className="autoboy-premium-progress-info">
+            <span>Progress to {badgeData.nextBadge}</span>
+            <span>{badgeData.progress}%</span>
+          </div>
+          <div className="autoboy-premium-progress-bar">
+            <div
+              className="autoboy-premium-progress-fill"
+              style={{ width: `${badgeData.progress}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Achievements */}
+      <div className="autoboy-dash-section" style={{ gridColumn: '1 / -1' }}>
+        <div className="autoboy-dash-section-header">
+          <h2 className="autoboy-dash-section-title">Achievements</h2>
+        </div>
+        <div className="autoboy-dash-section-content">
+          <div className="autoboy-premium-achievements-grid">
+            {badgeData.achievements.map((achievement, index) => (
+              <div
+                key={index}
+                className={`autoboy-premium-achievement ${achievement.unlocked ? 'unlocked' : 'locked'}`}
+              >
+                <div className="autoboy-premium-achievement-icon">
+                  <FontAwesomeIcon icon={achievement.icon} />
+                </div>
+                <h4>{achievement.title}</h4>
+                {achievement.unlocked ? (
+                  <span className="autoboy-premium-achievement-status">Unlocked</span>
+                ) : (
+                  <span className="autoboy-premium-achievement-status">Locked</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderVIPSupportContent = () => (
+    <div className="autoboy-dash-content-wrapper">
+      <div className="autoboy-premium-vip-header">
+        <div className="autoboy-premium-vip-badge">
+          <FontAwesomeIcon icon={faHeadset} />
+        </div>
+        <h2>VIP Support</h2>
+        <p>Get priority assistance from our dedicated support team</p>
+      </div>
+
+      <div className="autoboy-dash-content">
+        {/* Quick Contact */}
+        <div className="autoboy-dash-section">
+          <div className="autoboy-dash-section-header">
+            <h2 className="autoboy-dash-section-title">Quick Contact</h2>
+          </div>
+          <div className="autoboy-dash-section-content">
+            <div className="autoboy-premium-contact-options">
+              <button className="autoboy-premium-contact-btn">
+                <FontAwesomeIcon icon={faPhone} />
+                <div>
+                  <h4>Call Us</h4>
+                  <p>+234 800 123 4567</p>
+                </div>
+              </button>
+              <button className="autoboy-premium-contact-btn">
+                <FontAwesomeIcon icon={faEnvelope} />
+                <div>
+                  <h4>Email Support</h4>
+                  <p>vip@autoboy.com</p>
+                </div>
+              </button>
+              <button className="autoboy-premium-contact-btn">
+                <FontAwesomeIcon icon={faComments} />
+                <div>
+                  <h4>Live Chat</h4>
+                  <p>Available 24/7</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Ticket */}
+        <div className="autoboy-dash-section">
+          <div className="autoboy-dash-section-header">
+            <h2 className="autoboy-dash-section-title">Submit a Ticket</h2>
+          </div>
+          <div className="autoboy-dash-section-content">
+            <form className="autoboy-dash-settings-form">
+              <div className="autoboy-dash-form-group">
+                <label>Subject</label>
+                <input type="text" placeholder="Brief description of your issue" />
+              </div>
+              <div className="autoboy-dash-form-group">
+                <label>Priority</label>
+                <select>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+              <div className="autoboy-dash-form-group">
+                <label>Message</label>
+                <textarea rows="6" placeholder="Describe your issue in detail..."></textarea>
+              </div>
+              <button type="submit" className="autoboy-dash-btn autoboy-dash-btn-primary">
+                <FontAwesomeIcon icon={faPaperPlane} />
+                Submit Ticket
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const getContentForSection = () => {
     switch (activeSection) {
       case 'dashboard':
@@ -1012,6 +1392,14 @@ const SellerDashboard = () => {
         return renderEarningsContent();
       case 'analytics':
         return renderAnalyticsContent();
+      case 'messages':
+        return renderMessagesContent();
+      case 'reports':
+        return renderReportsContent();
+      case 'badge':
+        return renderBadgeContent();
+      case 'vip-support':
+        return renderVIPSupportContent();
       case 'settings':
         return renderSettingsContent();
       default:
@@ -1039,7 +1427,9 @@ const SellerDashboard = () => {
           </div>
           <div className="autoboy-dash-profile-info">
             <h3 className="autoboy-dash-seller-name">John Doe</h3>
-            <p className="autoboy-dash-seller-status">Verified Seller</p>
+            <p className="autoboy-dash-seller-status autoboy-premium-badge-text">
+              <FontAwesomeIcon icon={faCrown} /> Premium Seller
+            </p>
           </div>
         </div>
 
@@ -1050,6 +1440,10 @@ const SellerDashboard = () => {
             { id: 'orders', icon: faShoppingCart, label: 'Orders' },
             { id: 'earnings', icon: faDollarSign, label: 'Earnings' },
             { id: 'analytics', icon: faChartLine, label: 'Analytics' },
+            { id: 'messages', icon: faComments, label: 'Messages', isPremium: true },
+            { id: 'reports', icon: faFileAlt, label: 'Reports', isPremium: true },
+            { id: 'badge', icon: faCrown, label: 'Badge', isPremium: true },
+            { id: 'vip-support', icon: faHeadset, label: 'VIP Support', isPremium: true },
             { id: 'settings', icon: faCog, label: 'Settings' }
           ].map(item => (
             <li key={item.id} className="autoboy-dash-nav-item">
@@ -1108,4 +1502,4 @@ const SellerDashboard = () => {
   );
 };
 
-export default SellerDashboard;
+export default PremiumSellerDashboard;
