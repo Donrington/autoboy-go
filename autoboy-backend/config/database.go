@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -227,15 +228,15 @@ func (db *Database) CreateIndexes(ctx context.Context, coll *Collections) error 
 func (db *Database) createUserIndexes(ctx context.Context, coll *Collections) error {
 	// Users collection indexes
 	userIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"email": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"username": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"phone": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"user_type": 1}},
-		{Keys: map[string]int{"status": 1}},
-		{Keys: map[string]int{"profile.verification_status": 1}},
-		{Keys: map[string]int{"profile.premium_status": 1}},
-		{Keys: map[string]int{"created_at": -1}},
-		{Keys: map[string]int{"profile.rating": -1}},
+		{Keys: bson.D{{Key: "email", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "username", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "phone", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "user_type", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "profile.verification_status", Value: 1}}},
+		{Keys: bson.D{{Key: "profile.premium_status", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+		{Keys: bson.D{{Key: "profile.rating", Value: -1}}},
 	}
 
 	_, err := coll.Users.Indexes().CreateMany(ctx, userIndexes)
@@ -245,10 +246,10 @@ func (db *Database) createUserIndexes(ctx context.Context, coll *Collections) er
 
 	// User sessions indexes
 	sessionIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"user_id": 1}},
-		{Keys: map[string]int{"session_token": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"expires_at": 1}, Options: options.Index().SetExpireAfterSeconds(0)},
-		{Keys: map[string]int{"is_active": 1}},
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "session_token", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "expires_at", Value: 1}}, Options: options.Index().SetExpireAfterSeconds(0)},
+		{Keys: bson.D{{Key: "is_active", Value: 1}}},
 	}
 
 	_, err = coll.UserSessions.Indexes().CreateMany(ctx, sessionIndexes)
@@ -258,9 +259,9 @@ func (db *Database) createUserIndexes(ctx context.Context, coll *Collections) er
 
 	// User activities indexes
 	activityIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"user_id": 1, "timestamp": -1}},
-		{Keys: map[string]int{"action": 1}},
-		{Keys: map[string]int{"timestamp": -1}},
+		{Keys: bson.D{{Key: "user_id", Value: 1}, {Key: "timestamp", Value: -1}}},
+		{Keys: bson.D{{Key: "action", Value: 1}}},
+		{Keys: bson.D{{Key: "timestamp", Value: -1}}},
 	}
 
 	_, err = coll.UserActivities.Indexes().CreateMany(ctx, activityIndexes)
@@ -271,20 +272,20 @@ func (db *Database) createUserIndexes(ctx context.Context, coll *Collections) er
 func (db *Database) createProductIndexes(ctx context.Context, coll *Collections) error {
 	// Products collection indexes
 	productIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"seller_id": 1}},
-		{Keys: map[string]int{"category_id": 1}},
-		{Keys: map[string]int{"status": 1}},
-		{Keys: map[string]int{"price": 1}},
-		{Keys: map[string]int{"condition": 1}},
-		{Keys: map[string]int{"location.city": 1}},
-		{Keys: map[string]int{"location.state": 1}},
-		{Keys: map[string]int{"location.country": 1}},
-		{Keys: map[string]int{"swap_available": 1}},
-		{Keys: map[string]int{"is_featured": 1}},
-		{Keys: map[string]int{"created_at": -1}},
-		{Keys: map[string]int{"view_count": -1}},
-		{Keys: map[string]interface{}{"title": "text", "description": "text", "tags": "text"}},
-		{Keys: map[string]interface{}{"location.coordinates": "2dsphere"}},
+		{Keys: bson.D{{Key: "seller_id", Value: 1}}},
+		{Keys: bson.D{{Key: "category_id", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "price", Value: 1}}},
+		{Keys: bson.D{{Key: "condition", Value: 1}}},
+		{Keys: bson.D{{Key: "location.city", Value: 1}}},
+		{Keys: bson.D{{Key: "location.state", Value: 1}}},
+		{Keys: bson.D{{Key: "location.country", Value: 1}}},
+		{Keys: bson.D{{Key: "swap_available", Value: 1}}},
+		{Keys: bson.D{{Key: "is_featured", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+		{Keys: bson.D{{Key: "view_count", Value: -1}}},
+		{Keys: bson.D{{Key: "title", Value: "text"}, {Key: "description", Value: "text"}, {Key: "tags", Value: "text"}}},
+		{Keys: bson.D{{Key: "location.coordinates", Value: "2dsphere"}}},
 	}
 
 	_, err := coll.Products.Indexes().CreateMany(ctx, productIndexes)
@@ -294,10 +295,10 @@ func (db *Database) createProductIndexes(ctx context.Context, coll *Collections)
 
 	// Categories collection indexes
 	categoryIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"slug": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"parent_id": 1}},
-		{Keys: map[string]int{"is_active": 1}},
-		{Keys: map[string]int{"sort_order": 1}},
+		{Keys: bson.D{{Key: "slug", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "parent_id", Value: 1}}},
+		{Keys: bson.D{{Key: "is_active", Value: 1}}},
+		{Keys: bson.D{{Key: "sort_order", Value: 1}}},
 	}
 
 	_, err = coll.Categories.Indexes().CreateMany(ctx, categoryIndexes)
@@ -307,12 +308,12 @@ func (db *Database) createProductIndexes(ctx context.Context, coll *Collections)
 
 	// Product reviews indexes
 	reviewIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"product_id": 1}},
-		{Keys: map[string]int{"user_id": 1}},
-		{Keys: map[string]int{"order_id": 1}},
-		{Keys: map[string]int{"rating": 1}},
-		{Keys: map[string]int{"is_approved": 1}},
-		{Keys: map[string]int{"created_at": -1}},
+		{Keys: bson.D{{Key: "product_id", Value: 1}}},
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "order_id", Value: 1}}},
+		{Keys: bson.D{{Key: "rating", Value: 1}}},
+		{Keys: bson.D{{Key: "is_approved", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
 	}
 
 	_, err = coll.ProductReviews.Indexes().CreateMany(ctx, reviewIndexes)
@@ -323,13 +324,13 @@ func (db *Database) createProductIndexes(ctx context.Context, coll *Collections)
 func (db *Database) createOrderIndexes(ctx context.Context, coll *Collections) error {
 	// Orders collection indexes
 	orderIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"order_number": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"buyer_id": 1}},
-		{Keys: map[string]int{"seller_id": 1}},
-		{Keys: map[string]int{"status": 1}},
-		{Keys: map[string]int{"payment_status": 1}},
-		{Keys: map[string]int{"created_at": -1}},
-		{Keys: map[string]int{"total_amount": 1}},
+		{Keys: bson.D{{Key: "order_number", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "buyer_id", Value: 1}}},
+		{Keys: bson.D{{Key: "seller_id", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "payment_status", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+		{Keys: bson.D{{Key: "total_amount", Value: 1}}},
 	}
 
 	_, err := coll.Orders.Indexes().CreateMany(ctx, orderIndexes)
@@ -339,11 +340,11 @@ func (db *Database) createOrderIndexes(ctx context.Context, coll *Collections) e
 
 	// Swap deals indexes
 	swapIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"swap_number": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"initiator_id": 1}},
-		{Keys: map[string]int{"recipient_id": 1}},
-		{Keys: map[string]int{"status": 1}},
-		{Keys: map[string]int{"created_at": -1}},
+		{Keys: bson.D{{Key: "swap_number", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "initiator_id", Value: 1}}},
+		{Keys: bson.D{{Key: "recipient_id", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
 	}
 
 	_, err = coll.SwapDeals.Indexes().CreateMany(ctx, swapIndexes)
@@ -354,13 +355,13 @@ func (db *Database) createOrderIndexes(ctx context.Context, coll *Collections) e
 func (db *Database) createPaymentIndexes(ctx context.Context, coll *Collections) error {
 	// Payments collection indexes
 	paymentIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"payment_number": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"user_id": 1}},
-		{Keys: map[string]int{"order_id": 1}},
-		{Keys: map[string]int{"status": 1}},
-		{Keys: map[string]int{"payment_gateway": 1}},
-		{Keys: map[string]int{"gateway_payment_id": 1}},
-		{Keys: map[string]int{"created_at": -1}},
+		{Keys: bson.D{{Key: "payment_number", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "order_id", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "payment_gateway", Value: 1}}},
+		{Keys: bson.D{{Key: "gateway_payment_id", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
 	}
 
 	_, err := coll.Payments.Indexes().CreateMany(ctx, paymentIndexes)
@@ -370,10 +371,10 @@ func (db *Database) createPaymentIndexes(ctx context.Context, coll *Collections)
 
 	// Wallet transactions indexes
 	walletIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"user_id": 1, "created_at": -1}},
-		{Keys: map[string]int{"transaction_number": 1}, Options: options.Index().SetUnique(true)},
-		{Keys: map[string]int{"type": 1}},
-		{Keys: map[string]int{"status": 1}},
+		{Keys: bson.D{{Key: "user_id", Value: 1}, {Key: "created_at", Value: -1}}},
+		{Keys: bson.D{{Key: "transaction_number", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "type", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
 	}
 
 	_, err = coll.WalletTransactions.Indexes().CreateMany(ctx, walletIndexes)
@@ -384,12 +385,12 @@ func (db *Database) createPaymentIndexes(ctx context.Context, coll *Collections)
 func (db *Database) createChatIndexes(ctx context.Context, coll *Collections) error {
 	// Conversations collection indexes
 	conversationIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"participants": 1}},
-		{Keys: map[string]int{"type": 1}},
-		{Keys: map[string]int{"last_message_at": -1}},
-		{Keys: map[string]int{"product_id": 1}},
-		{Keys: map[string]int{"order_id": 1}},
-		{Keys: map[string]int{"created_at": -1}},
+		{Keys: bson.D{{Key: "participants", Value: 1}}},
+		{Keys: bson.D{{Key: "type", Value: 1}}},
+		{Keys: bson.D{{Key: "last_message_at", Value: -1}}},
+		{Keys: bson.D{{Key: "product_id", Value: 1}}},
+		{Keys: bson.D{{Key: "order_id", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
 	}
 
 	_, err := coll.Conversations.Indexes().CreateMany(ctx, conversationIndexes)
@@ -399,11 +400,11 @@ func (db *Database) createChatIndexes(ctx context.Context, coll *Collections) er
 
 	// Messages collection indexes
 	messageIndexes := []mongo.IndexModel{
-		{Keys: map[string]int{"conversation_id": 1, "created_at": -1}},
-		{Keys: map[string]int{"sender_id": 1}},
-		{Keys: map[string]int{"type": 1}},
-		{Keys: map[string]int{"status": 1}},
-		{Keys: map[string]int{"created_at": -1}},
+		{Keys: bson.D{{Key: "conversation_id", Value: 1}, {Key: "created_at", Value: -1}}},
+		{Keys: bson.D{{Key: "sender_id", Value: 1}}},
+		{Keys: bson.D{{Key: "type", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
 	}
 
 	_, err = coll.Messages.Indexes().CreateMany(ctx, messageIndexes)
