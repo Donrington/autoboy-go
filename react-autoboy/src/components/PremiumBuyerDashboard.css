@@ -1,0 +1,1061 @@
+/* ========================================
+   AutoBoy Premium Buyer Dashboard Styles
+   Extends base dashboard styles with premium buyer-specific components
+   ======================================== */
+
+/* Premium Badge Display */
+.autoboy-premium-buyer-header {
+    margin-bottom: 2rem;
+}
+
+.autoboy-premium-buyer-badge-display {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: var(--gradient-primary);
+    border-radius: 20px;
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-premium-buyer-badge-display > svg {
+    font-size: 3rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.autoboy-premium-buyer-badge-display h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+}
+
+.autoboy-premium-buyer-badge-display p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Premium Avatar */
+.autoboy-premium-avatar {
+    background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5) !important;
+}
+
+.autoboy-premium-status {
+    color: #FFD700 !important;
+}
+
+/* Premium Listing Items */
+.autoboy-premium-listing-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-item {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-listing-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-item:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-premium-listing-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: var(--bg-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-item img {
+    background: var(--bg-dark-tertiary);
+}
+
+.autoboy-premium-listing-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.autoboy-premium-listing-info h4 {
+    margin: 0.5rem 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-info h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-listing-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-info p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-premium-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.autoboy-premium-listing-price {
+    text-align: right;
+}
+
+.autoboy-premium-original-price {
+    display: block;
+    text-decoration: line-through;
+    color: var(--text-light-tertiary);
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-original-price {
+    color: var(--text-dark-tertiary);
+}
+
+.autoboy-premium-listing-price strong {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 0.25rem;
+}
+
+.autoboy-premium-time-left {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Premium Listings Grid */
+.autoboy-premium-listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.autoboy-premium-listing-card {
+    position: relative;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-premium-badge-corner {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.autoboy-premium-listing-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: var(--bg-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-card img {
+    background: var(--bg-dark-tertiary);
+}
+
+.autoboy-premium-listing-details {
+    padding: 1.5rem;
+}
+
+.autoboy-premium-listing-details h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-details h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-listing-details p {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-listing-details p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-premium-price-section {
+    margin-bottom: 1.5rem;
+}
+
+.autoboy-premium-price-section strong {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin: 0.25rem 0;
+}
+
+.autoboy-premium-discount {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--primary-green);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.autoboy-premium-listing-card .autoboy-dash-btn {
+    width: 100%;
+}
+
+/* Quick Actions */
+.autoboy-premium-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.autoboy-premium-action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 1rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-action-card {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-premium-action-card:hover {
+    transform: translateY(-5px);
+    background: var(--primary-green);
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-premium-action-card svg {
+    font-size: 1.75rem;
+}
+
+.autoboy-premium-action-card span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Messages Container */
+.autoboy-premium-messages-container {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 2rem;
+    min-height: 600px;
+}
+
+.autoboy-premium-messages-list {
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-messages-list {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-messages-list .autoboy-dash-section-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-messages-list .autoboy-dash-section-header {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-premium-message-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-message-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-premium-message-item:hover {
+    background: var(--glassmorphism-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-message-item:hover {
+    background: var(--glassmorphism-dark);
+}
+
+.autoboy-premium-message-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.autoboy-premium-message-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.autoboy-premium-message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.autoboy-premium-message-header h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-message-header h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-message-header span {
+    font-size: 0.75rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-message-header span {
+    color: var(--text-dark-tertiary);
+}
+
+.autoboy-premium-message-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-message-info p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-premium-unread-badge {
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-green);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Chat Area */
+.autoboy-premium-chat-area {
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-area {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-header {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-premium-back-btn {
+    display: none;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-back-btn {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-premium-chat-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.autoboy-premium-chat-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-header h3 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-chat-messages {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.autoboy-premium-chat-message {
+    max-width: 70%;
+    margin-bottom: 1rem;
+}
+
+.autoboy-premium-chat-message p {
+    margin: 0 0 0.25rem 0;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.autoboy-premium-chat-message span {
+    font-size: 0.75rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-message span {
+    color: var(--text-dark-tertiary);
+}
+
+.autoboy-premium-chat-message-received p {
+    background: var(--glassmorphism-light);
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-message-received p {
+    background: var(--glassmorphism-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-premium-chat-input {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-input {
+    border-top-color: var(--border-dark);
+}
+
+.autoboy-premium-chat-input input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-input input {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-premium-chat-placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-chat-placeholder {
+    color: var(--text-dark-tertiary);
+}
+
+.autoboy-premium-chat-placeholder svg {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.autoboy-premium-chat-placeholder p {
+    font-size: 1rem;
+}
+
+/* Exclusive Deals */
+.autoboy-premium-deal-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-deal-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-deal-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-premium-deal-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-premium-deal-info {
+    flex: 1;
+}
+
+.autoboy-premium-deal-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-deal-info h3 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-deal-info p {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-deal-info p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-premium-deal-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.autoboy-premium-deal-discount {
+    padding: 0.375rem 0.875rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.autoboy-premium-deal-meta span:last-child {
+    font-size: 0.875rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-deal-meta span:last-child {
+    color: var(--text-dark-tertiary);
+}
+
+/* Reports Grid */
+.autoboy-premium-reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.autoboy-premium-report-card {
+    padding: 2rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-report-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-premium-report-card h3 {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-report-card h3 {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-premium-report-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 0.5rem;
+    font-family: 'Syne', sans-serif;
+}
+
+.autoboy-premium-savings {
+    color: #FFD700;
+}
+
+.autoboy-premium-report-card p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-report-card p {
+    color: var(--text-dark-tertiary);
+}
+
+/* Price Alerts */
+.autoboy-premium-alert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-alert-item {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-alert-item h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-alert-item h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-alert-item p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-alert-item p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-premium-alert-status {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.autoboy-premium-alert-status span {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Badge Overview */
+.autoboy-premium-badge-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.autoboy-premium-badge-main {
+    padding: 3rem;
+    background: var(--gradient-primary);
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-premium-badge-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+
+.autoboy-premium-badge-main h2 {
+    margin: 0 0 1.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+}
+
+.autoboy-premium-badge-progress-bar {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.autoboy-premium-badge-progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.autoboy-premium-badge-progress p {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.autoboy-premium-perks-list {
+    padding: 2rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-perks-list {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-perks-list h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-perks-list h3 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-perk-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-perk-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-premium-perk-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-premium-perk-item svg {
+    color: var(--primary-green);
+    font-size: 1.25rem;
+}
+
+.autoboy-premium-perk-item span {
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-perk-item span {
+    color: var(--text-dark);
+}
+
+/* Achievements */
+.autoboy-premium-achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.autoboy-premium-achievement-card {
+    padding: 2rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-achievement-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-premium-achievement-card.locked {
+    opacity: 0.5;
+}
+
+.autoboy-premium-achievement-card.earned {
+    border-color: var(--primary-green);
+}
+
+.autoboy-premium-achievement-card svg {
+    font-size: 3rem;
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+}
+
+.autoboy-premium-achievement-card h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-achievement-card h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-premium-achievement-card p {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-achievement-card p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-premium-earned-badge {
+    padding: 0.25rem 0.75rem;
+    background: var(--primary-green);
+    color: white;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.autoboy-premium-locked-badge {
+    padding: 0.25rem 0.75rem;
+    background: var(--glassmorphism-light);
+    color: var(--text-light-tertiary);
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.autoboy-dash-dark-mode .autoboy-premium-locked-badge {
+    background: var(--glassmorphism-dark);
+    color: var(--text-dark-tertiary);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .autoboy-premium-messages-container {
+        grid-template-columns: 1fr;
+        position: relative;
+    }
+
+    .autoboy-premium-messages-list {
+        display: block;
+    }
+
+    .autoboy-premium-messages-list-hidden {
+        display: none;
+    }
+
+    .autoboy-premium-chat-area {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+    }
+
+    .autoboy-premium-chat-area-open {
+        display: flex;
+    }
+
+    .autoboy-premium-back-btn {
+        display: flex;
+    }
+
+    .autoboy-premium-badge-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-premium-listings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-premium-reports-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-premium-achievements-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-premium-quick-actions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .autoboy-premium-buyer-badge-display {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .autoboy-premium-badge-main {
+        padding: 2rem 1.5rem;
+    }
+
+    .autoboy-premium-deal-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .autoboy-premium-listing-item {
+        flex-direction: column;
+    }
+
+    .autoboy-premium-listing-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .autoboy-premium-listing-price {
+        text-align: left;
+        width: 100%;
+    }
+}

@@ -257,26 +257,6 @@ type OrderDispute struct {
 	ClosedAt        *time.Time         `bson:"closed_at,omitempty" json:"closed_at,omitempty"`
 }
 
-// DisputeStatus represents the status of a dispute
-type DisputeStatus string
-
-const (
-	DisputeStatusOpen       DisputeStatus = "open"
-	DisputeStatusInProgress DisputeStatus = "in_progress"
-	DisputeStatusResolved   DisputeStatus = "resolved"
-	DisputeStatusClosed     DisputeStatus = "closed"
-	DisputeStatusEscalated  DisputeStatus = "escalated"
-)
-
-// DisputeEvidence represents evidence files in disputes
-type DisputeEvidence struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Type        string             `bson:"type" json:"type"` // image, document, screenshot
-	URL         string             `bson:"url" json:"url"`
-	Description string             `bson:"description,omitempty" json:"description,omitempty"`
-	UploadedAt  time.Time          `bson:"uploaded_at" json:"uploaded_at"`
-}
-
 // OrderTracking represents order tracking events
 type OrderTracking struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`

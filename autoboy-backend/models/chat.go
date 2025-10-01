@@ -275,16 +275,6 @@ type ChatReport struct {
 	UpdatedAt       time.Time          `bson:"updated_at" json:"updated_at"`
 }
 
-// ReportStatus represents the status of a chat report
-type ReportStatus string
-
-const (
-	ReportStatusPending   ReportStatus = "pending"
-	ReportStatusReviewing ReportStatus = "reviewing"
-	ReportStatusResolved  ReportStatus = "resolved"
-	ReportStatusDismissed ReportStatus = "dismissed"
-)
-
 // ChatMute represents muted conversations for users
 type ChatMute struct {
 	ID             primitive.ObjectID `bson:"_id,omitempty" json:"id"`

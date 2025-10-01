@@ -37,6 +37,16 @@ func main() {
 		log.Printf("Warning: Failed to create system settings: %v", err)
 	}
 
+	// Create default badges
+	if err := createDefaultBadges(ctx); err != nil {
+		log.Printf("Warning: Failed to create default badges: %v", err)
+	}
+
+	// Create notification templates
+	if err := createNotificationTemplates(ctx); err != nil {
+		log.Printf("Warning: Failed to create notification templates: %v", err)
+	}
+
 	log.Println("Database initialization completed successfully!")
 }
 
@@ -400,6 +410,236 @@ func createSystemSettings(ctx context.Context) error {
 			continue
 		}
 		log.Printf("Created setting: %s", setting["key"])
+	}
+
+	return nil
+}
+
+// createDefaultBadges creates default badge system
+func createDefaultBadges(ctx context.Context) error {
+	log.Println("Creating default badges...")
+
+	badges := []models.Badge{
+		// Buyer badges
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Early Adopter",
+			Description:     "One of the first users on AutoBoy",
+			Type:            models.BadgeTypeBuyer,
+			Level:           models.BadgeLevelBronze,
+			IconURL:         "/badges/trophy.svg",
+			Color:           "#CD7F32",
+			RequirementType: "signup_date",
+			RequiredValue:   30, // First 30 days
+			IsActive:        true,
+			IsVisible:       true,
+			Perks:           []string{"Exclusive early adopter badge", "Priority support"},
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Big Spender",
+			Description:     "Spent over ₦500,000 on the platform",
+			Type:            models.BadgeTypeBuyer,
+			Level:           models.BadgeLevelGold,
+			IconURL:         "/badges/crown.svg",
+			Color:           "#FFD700",
+			RequirementType: "total_spent",
+			RequiredValue:   500000,
+			IsActive:        true,
+			IsVisible:       true,
+			Perks:           []string{"5% discount on all purchases", "VIP customer support"},
+			DiscountPercent: 5.0,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Verified Buyer",
+			Description:     "Completed identity verification",
+			Type:            models.BadgeTypeBuyer,
+			Level:           models.BadgeLevelBronze,
+			IconURL:         "/badges/shield.svg",
+			Color:           "#4169E1",
+			RequirementType: "verification",
+			RequiredValue:   1,
+			IsActive:        true,
+			IsVisible:       true,
+			Perks:           []string{"Increased trust", "Access to premium listings"},
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+
+		// Seller badges
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Top Seller",
+			Description:     "Completed over 100 successful sales",
+			Type:            models.BadgeTypeSeller,
+			Level:           models.BadgeLevelGold,
+			IconURL:         "/badges/star.svg",
+			Color:           "#FFD700",
+			RequirementType: "total_sales",
+			RequiredValue:   100,
+			IsActive:        true,
+			IsVisible:       true,
+			Perks:           []string{"Featured seller badge", "Priority listing placement", "3% reduced commission"},
+			DiscountPercent: 3.0,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Fast Shipper",
+			Description:     "Average shipping time under 24 hours",
+			Type:            models.BadgeTypeSeller,
+			Level:           models.BadgeLevelBronze,
+			IconURL:         "/badges/rocket.svg",
+			Color:           "#FF6347",
+			RequirementType: "avg_ship_time",
+			RequiredValue:   24,
+			IsActive:        true,
+			IsVisible:       true,
+			Perks:           []string{"Fast shipper badge", "Increased buyer confidence"},
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Trusted Seller",
+			Description:     "Maintained 4.8+ rating with 50+ reviews",
+			Type:            models.BadgeTypeSeller,
+			Level:           models.BadgeLevelPlatinum,
+			IconURL:         "/badges/certificate.svg",
+			Color:           "#E5E4E2",
+			RequirementType: "rating_reviews",
+			RequiredValue:   50,
+			IsActive:        true,
+			IsVisible:       true,
+			Perks:           []string{"Trusted seller badge", "Featured in trusted sellers section", "5% reduced commission"},
+			DiscountPercent: 5.0,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+	}
+
+	// Insert badges
+	for _, badge := range badges {
+		_, err := config.Coll.Badges.InsertOne(ctx, badge)
+		if err != nil {
+			log.Printf("Failed to insert badge %s: %v", badge.Name, err)
+			continue
+		}
+		log.Printf("Created badge: %s", badge.Name)
+	}
+
+	return nil
+}
+
+// createNotificationTemplates creates default notification templates
+func createNotificationTemplates(ctx context.Context) error {
+	log.Println("Creating notification templates...")
+
+	templates := []models.NotificationTemplate{
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Order Placed",
+			Type:            models.NotificationTypeOrder,
+			TitleTemplate:   "Order Confirmation - Order #{{.order_id}}",
+			MessageTemplate: "Your order #{{.order_id}} for {{.product_name}} has been placed successfully. Total: ₦{{.total_amount}}",
+			Variables:       []string{"order_id", "product_name", "total_amount"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Order Shipped",
+			Type:            models.NotificationTypeShipping,
+			TitleTemplate:   "Your order has been shipped",
+			MessageTemplate: "Good news! Your order #{{.order_id}} is on its way. Tracking: {{.tracking_number}}",
+			Variables:       []string{"order_id", "tracking_number"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Price Drop Alert",
+			Type:            models.NotificationTypePriceDrop,
+			TitleTemplate:   "Price Drop Alert - {{.product_name}}",
+			MessageTemplate: "Great news! {{.product_name}} has dropped to ₦{{.new_price}} (was ₦{{.old_price}})",
+			Variables:       []string{"product_name", "new_price", "old_price"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Back in Stock",
+			Type:            models.NotificationTypeAlert,
+			TitleTemplate:   "{{.product_name}} is back in stock!",
+			MessageTemplate: "Good news! {{.product_name}} is back in stock. Get it before it's gone!",
+			Variables:       []string{"product_name", "product_url"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "New Message",
+			Type:            models.NotificationTypeMessage,
+			TitleTemplate:   "New message from {{.sender_name}}",
+			MessageTemplate: "You have a new message from {{.sender_name}}: {{.message_preview}}",
+			Variables:       []string{"sender_name", "message_preview"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Badge Earned",
+			Type:            models.NotificationTypeAchievement,
+			TitleTemplate:   "Congratulations! You earned a new badge",
+			MessageTemplate: "You've unlocked the {{.badge_name}} badge! {{.badge_description}}",
+			Variables:       []string{"badge_name", "badge_description"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Exclusive Deal",
+			Type:            models.NotificationTypeExclusive,
+			TitleTemplate:   "Exclusive VIP Deal - {{.deal_title}}",
+			MessageTemplate: "{{.deal_title}}: Save {{.discount_percent}}% on {{.product_category}}. Expires {{.expiry_date}}",
+			Variables:       []string{"deal_title", "discount_percent", "product_category", "expiry_date"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+		{
+			ID:              primitive.NewObjectID(),
+			Name:            "Payment Received",
+			Type:            models.NotificationTypePayment,
+			TitleTemplate:   "Payment received - ₦{{.amount}}",
+			MessageTemplate: "You've received ₦{{.amount}} for order #{{.order_id}}",
+			Variables:       []string{"amount", "order_id"},
+			IsActive:        true,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		},
+	}
+
+	// Insert templates
+	for _, template := range templates {
+		_, err := config.Coll.NotificationTemplates.InsertOne(ctx, template)
+		if err != nil {
+			log.Printf("Failed to insert notification template %s: %v", template.Name, err)
+			continue
+		}
+		log.Printf("Created notification template: %s", template.Name)
 	}
 
 	return nil

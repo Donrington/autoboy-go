@@ -71,6 +71,30 @@ type Collections struct {
 	SystemSettings   *mongo.Collection
 	APIKeys          *mongo.Collection
 	Notifications    *mongo.Collection
+	NotificationTemplates *mongo.Collection
+
+	// Badge & Gamification collections
+	Badges            *mongo.Collection
+	UserBadges        *mongo.Collection
+	RewardPoints      *mongo.Collection
+	PointsTransactions *mongo.Collection
+
+	// Alert & Deal collections
+	PriceAlerts       *mongo.Collection
+	SavedSearches     *mongo.Collection
+	Wishlists         *mongo.Collection
+	ExclusiveDeals    *mongo.Collection
+
+	// Dispute & Report collections
+	Disputes          *mongo.Collection
+	DisputeMessages   *mongo.Collection
+	DisputeEvidence   *mongo.Collection
+	DisputeResolutions *mongo.Collection
+	Reports           *mongo.Collection
+	ModerationActions *mongo.Collection
+	ContentFlags      *mongo.Collection
+	UserStrikes       *mongo.Collection
+	AppealRequests    *mongo.Collection
 }
 
 var DB *Database
@@ -184,10 +208,34 @@ func (db *Database) InitializeCollections() *Collections {
 		ChatSettings:      db.Database.Collection("chat_settings"),
 
 		// System collections
-		AdminLogs:      db.Database.Collection("admin_logs"),
-		SystemSettings: db.Database.Collection("system_settings"),
-		APIKeys:        db.Database.Collection("api_keys"),
-		Notifications:  db.Database.Collection("notifications"),
+		AdminLogs:             db.Database.Collection("admin_logs"),
+		SystemSettings:        db.Database.Collection("system_settings"),
+		APIKeys:               db.Database.Collection("api_keys"),
+		Notifications:         db.Database.Collection("notifications"),
+		NotificationTemplates: db.Database.Collection("notification_templates"),
+
+		// Badge & Gamification collections
+		Badges:             db.Database.Collection("badges"),
+		UserBadges:         db.Database.Collection("user_badges"),
+		RewardPoints:       db.Database.Collection("reward_points"),
+		PointsTransactions: db.Database.Collection("points_transactions"),
+
+		// Alert & Deal collections
+		PriceAlerts:    db.Database.Collection("price_alerts"),
+		SavedSearches:  db.Database.Collection("saved_searches"),
+		Wishlists:      db.Database.Collection("wishlists"),
+		ExclusiveDeals: db.Database.Collection("exclusive_deals"),
+
+		// Dispute & Report collections
+		Disputes:           db.Database.Collection("disputes"),
+		DisputeMessages:    db.Database.Collection("dispute_messages"),
+		DisputeEvidence:    db.Database.Collection("dispute_evidence"),
+		DisputeResolutions: db.Database.Collection("dispute_resolutions"),
+		Reports:            db.Database.Collection("reports"),
+		ModerationActions:  db.Database.Collection("moderation_actions"),
+		ContentFlags:       db.Database.Collection("content_flags"),
+		UserStrikes:        db.Database.Collection("user_strikes"),
+		AppealRequests:     db.Database.Collection("appeal_requests"),
 	}
 }
 
@@ -218,6 +266,21 @@ func (db *Database) CreateIndexes(ctx context.Context, coll *Collections) error 
 	// Chat indexes
 	if err := db.createChatIndexes(ctx, coll); err != nil {
 		return fmt.Errorf("failed to create chat indexes: %w", err)
+	}
+
+	// Notification & Badge indexes
+	if err := db.createNotificationBadgeIndexes(ctx, coll); err != nil {
+		return fmt.Errorf("failed to create notification/badge indexes: %w", err)
+	}
+
+	// Alert & Deal indexes
+	if err := db.createAlertDealIndexes(ctx, coll); err != nil {
+		return fmt.Errorf("failed to create alert/deal indexes: %w", err)
+	}
+
+	// Dispute & Report indexes
+	if err := db.createDisputeReportIndexes(ctx, coll); err != nil {
+		return fmt.Errorf("failed to create dispute/report indexes: %w", err)
 	}
 
 	log.Println("Successfully created all database indexes")
@@ -408,6 +471,197 @@ func (db *Database) createChatIndexes(ctx context.Context, coll *Collections) er
 	}
 
 	_, err = coll.Messages.Indexes().CreateMany(ctx, messageIndexes)
+	return err
+}
+
+// createNotificationBadgeIndexes creates indexes for notification and badge collections
+func (db *Database) createNotificationBadgeIndexes(ctx context.Context, coll *Collections) error {
+	// Notifications indexes
+	notificationIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}, {Key: "created_at", Value: -1}}},
+		{Keys: bson.D{{Key: "type", Value: 1}}},
+		{Keys: bson.D{{Key: "is_read", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+	}
+
+	_, err := coll.Notifications.Indexes().CreateMany(ctx, notificationIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Badges indexes
+	badgeIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "type", Value: 1}}},
+		{Keys: bson.D{{Key: "category", Value: 1}}},
+		{Keys: bson.D{{Key: "level", Value: 1}}},
+		{Keys: bson.D{{Key: "is_active", Value: 1}}},
+	}
+
+	_, err = coll.Badges.Indexes().CreateMany(ctx, badgeIndexes)
+	if err != nil {
+		return err
+	}
+
+	// User badges indexes
+	userBadgeIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "badge_id", Value: 1}}},
+		{Keys: bson.D{{Key: "earned_at", Value: -1}}},
+	}
+
+	_, err = coll.UserBadges.Indexes().CreateMany(ctx, userBadgeIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Reward points indexes
+	rewardPointsIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}}, Options: options.Index().SetUnique(true)},
+		{Keys: bson.D{{Key: "current_tier", Value: 1}}},
+	}
+
+	_, err = coll.RewardPoints.Indexes().CreateMany(ctx, rewardPointsIndexes)
+	return err
+}
+
+// createAlertDealIndexes creates indexes for alert and deal collections
+func (db *Database) createAlertDealIndexes(ctx context.Context, coll *Collections) error {
+	// Price alerts indexes
+	priceAlertIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "product_id", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "is_active", Value: 1}}},
+	}
+
+	_, err := coll.PriceAlerts.Indexes().CreateMany(ctx, priceAlertIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Saved searches indexes
+	savedSearchIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "is_active", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+	}
+
+	_, err = coll.SavedSearches.Indexes().CreateMany(ctx, savedSearchIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Wishlists indexes
+	wishlistIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "is_private", Value: 1}}},
+		{Keys: bson.D{{Key: "share_token", Value: 1}}, Options: options.Index().SetUnique(true).SetSparse(true)},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+	}
+
+	_, err = coll.Wishlists.Indexes().CreateMany(ctx, wishlistIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Exclusive deals indexes
+	exclusiveDealIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "deal_type", Value: 1}}},
+		{Keys: bson.D{{Key: "required_tier", Value: 1}}},
+		{Keys: bson.D{{Key: "is_active", Value: 1}}},
+		{Keys: bson.D{{Key: "start_date", Value: 1}}},
+		{Keys: bson.D{{Key: "end_date", Value: 1}}},
+	}
+
+	_, err = coll.ExclusiveDeals.Indexes().CreateMany(ctx, exclusiveDealIndexes)
+	return err
+}
+
+// createDisputeReportIndexes creates indexes for dispute and report collections
+func (db *Database) createDisputeReportIndexes(ctx context.Context, coll *Collections) error {
+	// Disputes indexes
+	disputeIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "order_id", Value: 1}}},
+		{Keys: bson.D{{Key: "buyer_id", Value: 1}}},
+		{Keys: bson.D{{Key: "seller_id", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "priority", Value: -1}}},
+		{Keys: bson.D{{Key: "is_escalated", Value: 1}}},
+		{Keys: bson.D{{Key: "assigned_to", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+	}
+
+	_, err := coll.Disputes.Indexes().CreateMany(ctx, disputeIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Dispute messages indexes
+	disputeMessageIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "dispute_id", Value: 1}, {Key: "created_at", Value: 1}}},
+		{Keys: bson.D{{Key: "sender_id", Value: 1}}},
+		{Keys: bson.D{{Key: "is_internal", Value: 1}}},
+	}
+
+	_, err = coll.DisputeMessages.Indexes().CreateMany(ctx, disputeMessageIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Reports indexes
+	reportIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "reporter_id", Value: 1}}},
+		{Keys: bson.D{{Key: "reported_user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "type", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+		{Keys: bson.D{{Key: "priority", Value: -1}}},
+		{Keys: bson.D{{Key: "is_escalated", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+	}
+
+	_, err = coll.Reports.Indexes().CreateMany(ctx, reportIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Moderation actions indexes
+	moderationIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "report_id", Value: 1}}},
+		{Keys: bson.D{{Key: "target_user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "actioned_by", Value: 1}}},
+		{Keys: bson.D{{Key: "action_type", Value: 1}}},
+		{Keys: bson.D{{Key: "is_appealed", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+	}
+
+	_, err = coll.ModerationActions.Indexes().CreateMany(ctx, moderationIndexes)
+	if err != nil {
+		return err
+	}
+
+	// Content flags indexes
+	contentFlagIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "content_type", Value: 1}}},
+		{Keys: bson.D{{Key: "content_id", Value: 1}}},
+		{Keys: bson.D{{Key: "owner_id", Value: 1}}},
+		{Keys: bson.D{{Key: "flag_type", Value: 1}}},
+		{Keys: bson.D{{Key: "is_automatic", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+	}
+
+	_, err = coll.ContentFlags.Indexes().CreateMany(ctx, contentFlagIndexes)
+	if err != nil {
+		return err
+	}
+
+	// User strikes indexes
+	userStrikeIndexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "is_active", Value: 1}}},
+		{Keys: bson.D{{Key: "created_at", Value: -1}}},
+	}
+
+	_, err = coll.UserStrikes.Indexes().CreateMany(ctx, userStrikeIndexes)
 	return err
 }
 
