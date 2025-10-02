@@ -1375,24 +1375,101 @@ body.dark-mode .autoboy-btn-secondary {
           
 }
    /* Extra Small Devices */
-        @media (max-width: 360px) {
-            .autoboy-section-header {
-                padding: 1.5rem 0.5rem;
-            }
+@media (max-width: 360px) {
+    /* Hero Section */
+    .autoboy-hero-title {
+        font-size: 1.75rem;
+    }
 
-            .autoboy-section-title {
-                font-size: 2rem;
-            }
+    .autoboy-hero-subtitle {
+        font-size: 0.85rem;
+    }
 
-            .autoboy-categories-grid {
-                gap: 0.75rem;
-            }
-                 .autoboy-more-btn {
-                padding: 0.75rem 1rem;
-                font-size: 0.85rem;
-                min-width: 90px;
-            }
-        }
+    .autoboy-hero-description {
+        font-size: 0.9rem;
+        padding: 0;
+    }
+
+    .autoboy-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    /* Flash Sale */
+    .flash-sale-title {
+        font-size: 1.2rem;
+    }
+
+    .time-unit {
+        padding: 0.5rem 0.4rem;
+        min-width: 50px;
+    }
+
+    .time-value {
+        font-size: 1.1rem;
+    }
+
+    /* Products Section */
+    .autoboy-section-header {
+        padding: 1rem 0;
+    }
+
+    .autoboy-section-title {
+        font-size: 1.4rem;
+    }
+
+    .autoboy-more-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        min-width: 75px;
+    }
+
+    .autoboy-categories-grid {
+        gap: 0.6rem;
+    }
+
+    .autoboy-category-card {
+        padding: 0.6rem;
+    }
+
+    .autoboy-category-image {
+        height: 60px;
+    }
+
+    .autoboy-category-name {
+        font-size: 0.8rem;
+    }
+
+    .autoboy-deal-name {
+        font-size: 1rem;
+    }
+
+    .autoboy-current-price {
+        font-size: 1.2rem;
+    }
+
+    /* Newsletter */
+    .newsletter-title {
+        font-size: 1.3rem;
+    }
+
+    .newsletter-content {
+        padding: 1.5rem 0.75rem;
+    }
+
+    /* Credibility */
+    .credibility-title {
+        font-size: 1.6rem;
+    }
+
+    .credibility-item {
+        padding: 1.25rem 0.75rem;
+    }
+
+    .credibility-item h3 {
+        font-size: 1rem;
+    }
+}
      /* Force visibility class for problematic elements */
         .force-visible {
             opacity: 1 !important;
@@ -2829,10 +2906,131 @@ body.dark-mode .assurance-column p {
     }
 
     .newsletter-title {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+
+    .newsletter-section {
+        padding: 3rem 0;
+    }
+
+    .newsletter-section .container {
+        padding: 0 1rem;
+    }
+
+    .newsletter-content {
+        padding: 1.75rem 1rem;
+        border-radius: 16px;
+    }
+
+    .newsletter-subtitle {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .newsletter-benefits {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .benefit-item {
+        font-size: 0.85rem;
+    }
+
+    .newsletter-input-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .newsletter-input {
+        font-size: 0.95rem;
+        padding: 0.85rem 1rem;
+    }
+
+    .newsletter-btn {
+        width: 100%;
+        padding: 0.9rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .newsletter-privacy {
+        font-size: 0.8rem;
+    }
+
+    /* Credibility Section Mobile */
+    .credibility-section {
+        padding: 3rem 0;
+    }
+
+    .credibility-section .container {
+        padding: 0 1rem;
     }
 
     .credibility-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+    }
+
+    .credibility-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .credibility-item {
+        padding: 1.5rem 1rem;
+    }
+
+    .credibility-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .credibility-item h3 {
+        font-size: 1.1rem;
+    }
+
+    .credibility-item p {
+        font-size: 0.9rem;
+    }
+
+    /* Assurance Section Mobile */
+    .assurance-section {
+        padding: 3rem 0;
+    }
+
+    .assurance-section .container {
+        padding: 0 1rem;
+    }
+
+    .assurance-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .assurance-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .payment-methods {
+        gap: 0.75rem;
+        justify-content: center;
+    }
+
+    .payment-methods img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .assurance-column p {
+        font-size: 0.85rem;
+    }
+
+    .shipping-option,
+    .return-item {
+        font-size: 0.9rem;
+        padding: 0.6rem;
     }
 }

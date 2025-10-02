@@ -6,11 +6,11 @@ const CategoriesSection = () => {
   useEffect(() => {
     // GSAP animations for category cards
     const cards = document.querySelectorAll('.category-card');
-    
+
     cards.forEach(card => {
       const glow = card.querySelector('.card-glow');
       const iconBg = card.querySelector('.icon-bg');
-      
+
       card.addEventListener('mouseenter', () => {
         if (glow && iconBg) {
           gsap.to(glow, {
@@ -18,14 +18,14 @@ const CategoriesSection = () => {
             scale: 1,
             duration: 0.3
           });
-          
+
           gsap.to(iconBg, {
             scale: 1.2,
             rotation: 180,
             duration: 0.8,
             ease: 'power2.out'
           });
-          
+
           gsap.to(card, {
             y: -10,
             duration: 0.3,
@@ -33,7 +33,7 @@ const CategoriesSection = () => {
           });
         }
       });
-      
+
       card.addEventListener('mouseleave', () => {
         if (glow && iconBg) {
           gsap.to(glow, {
@@ -41,14 +41,14 @@ const CategoriesSection = () => {
             scale: 0.8,
             duration: 0.3
           });
-          
+
           gsap.to(iconBg, {
             scale: 1,
             rotation: 0,
             duration: 0.8,
             ease: 'power2.out'
           });
-          
+
           gsap.to(card, {
             y: 0,
             duration: 0.3,
@@ -95,7 +95,7 @@ const CategoriesSection = () => {
   ];
 
   return (
-    <section className="categories-section">
+    <section className="categories-section" style={{ position: 'relative', zIndex: 1, opacity: 1, visibility: 'visible' }}>
       {/* Animated Green Background */}
       <div className="animated-bg-container">
         <div className="gradient-orb orb-1"></div>
@@ -105,9 +105,9 @@ const CategoriesSection = () => {
       </div>
 
       {/* Section Content */}
-      <div className="container">
+      <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         {/* Section Header */}
-        <div className="section-header" data-aos="fade-up">
+        <div className="section-header" style={{ opacity: 1, visibility: 'visible', display: 'block' }} data-aos="fade-up">
           <span className="section-label">
             <i className="fas fa-sparkles"></i>
             Discover More
@@ -122,15 +122,18 @@ const CategoriesSection = () => {
         </div>
 
         {/* Categories Grid */}
-        <div className="categories-grid">
+        <div className="categories-grid" style={{ opacity: 1, visibility: 'visible', display: 'grid' }}>
           {categories.map((category, index) => (
             <motion.div
               key={index}
               className={`category-card ${category.featured ? 'featured' : ''}`}
-              data-aos="fade-up"
-              data-aos-delay={100 + index * 100}
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               whileHover={{ scale: 1.02 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              style={{ opacity: 1, visibility: 'visible' }}
+              data-aos="fade-up"
+              data-aos-delay={100 + index * 100}
             >
               {category.featured && (
                 <div className="featured-badge">Most Popular</div>
@@ -164,7 +167,7 @@ const CategoriesSection = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="cta-section" data-aos="fade-up" data-aos-delay="400">
+        <div className="cta-section" style={{ opacity: 1, visibility: 'visible', display: 'block' }} data-aos="fade-up">
           <div className="cta-content">
             <div className="cta-left">
               <h3 className="cta-title">
@@ -201,10 +204,10 @@ const CategoriesSection = () => {
             </div>
             <div className="cta-right">
               <div className="phone-showcase">
-                <img 
-                  src="data:image/svg+xml,%3Csvg width='400' height='500' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='400' height='500' fill='transparent'/%3E%3C/svg%3E" 
-                  alt="Phone showcase" 
-                  className="phone-img" 
+                <img
+                  src="data:image/svg+xml,%3Csvg width='400' height='500' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='400' height='500' fill='transparent'/%3E%3C/svg%3E"
+                  alt="Phone showcase"
+                  className="phone-img"
                 />
                 <div className="phone-glow"></div>
               </div>

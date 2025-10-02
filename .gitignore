@@ -126,3 +126,6 @@ credentials.json
 .turbo/
 .next/
 out/
+
+# Documentation
+git-commands.md
