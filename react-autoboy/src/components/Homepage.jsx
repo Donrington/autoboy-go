@@ -3,9 +3,8 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../assets/css/homepage.css';
-
-// Import API services (for future Django integration)
-// import { productsAPI, categoriesAPI } from '../services/api';
+import { productsAPI, categoriesAPI } from '../services/api';
+import { useAPI } from '../hooks/useAPI';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -140,29 +139,19 @@ const Homepage = () => {
   ];
 
 
-  useEffect(() => {
-    // Simulate API call to Django backend
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // Replace with actual Django API calls:
-        // const productsResponse = await productsAPI.getFeatured();
-        // const categoriesResponse = await categoriesAPI.getAll();
-        
-        // Simulate loading delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        setProducts(sampleProducts);
-        setCategories(sampleCategories);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
+  // Fetch data from Go backend
+  const { data: productsData, loading: productsLoading } = useAPI(() => productsAPI.getFeatured());
+  const { data: categoriesData, loading: categoriesLoading } = useAPI(() => categoriesAPI.getAll());
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (productsData) {
+      setProducts(productsData.data || productsData || sampleProducts);
+    }
+    if (categoriesData) {
+      setCategories(categoriesData.data || categoriesData || sampleCategories);
+    }
+    setLoading(productsLoading || categoriesLoading);
+  }, [productsData, categoriesData, productsLoading, categoriesLoading]);
 
   useEffect(() => {
     // GSAP Animations for floating orbs
@@ -217,18 +206,17 @@ const Homepage = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // TODO: Implement search with Django API
-    console.log('Searching for:', searchQuery);
+    if (searchQuery.trim()) {
+      window.location.href = `/shop?search=${encodeURIComponent(searchQuery)}`;
+    }
   };
 
   const handleProductClick = (productId) => {
-    // TODO: Navigate to product detail page
-    console.log('Product clicked:', productId);
+    window.location.href = `/product/${productId}`;
   };
 
   const handleCategoryClick = (categoryId) => {
-    // TODO: Navigate to category page with Django API filter
-    console.log('Category clicked:', categoryId);
+    window.location.href = `/shop?category=${categoryId}`;
   };
 
   const formatPrice = (price) => {

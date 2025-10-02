@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { AuthProvider } from './context/AuthContext';
 
 // Import components
 import Navbar from './components/Navbar';
@@ -78,8 +79,9 @@ function App() {
   );
 
   return (
-    <Router>
-      <div className="App">
+    <AuthProvider>
+      <Router>
+        <div className="App">
         <Routes>
           {/* Authentication routes without navbar/footer */}
           <Route path="/login" element={<LoginSignup />} />
@@ -126,8 +128,9 @@ function App() {
             </>
           } />
         </Routes>
-      </div>
-    </Router>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

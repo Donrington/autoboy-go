@@ -71,6 +71,9 @@ type Collections struct {
 	SystemSettings   *mongo.Collection
 	APIKeys          *mongo.Collection
 	Notifications    *mongo.Collection
+
+	// Cart collection
+	CartItems        *mongo.Collection
 }
 
 var DB *Database
@@ -188,6 +191,9 @@ func (db *Database) InitializeCollections() *Collections {
 		SystemSettings: db.Database.Collection("system_settings"),
 		APIKeys:        db.Database.Collection("api_keys"),
 		Notifications:  db.Database.Collection("notifications"),
+
+		// Cart collection
+		CartItems:      db.Database.Collection("cart_items"),
 	}
 }
 
