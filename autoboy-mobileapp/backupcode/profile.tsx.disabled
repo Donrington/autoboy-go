@@ -1,0 +1,171 @@
+import { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { colors, commonStyles } from '../../styles/commonStyles';
+import { mockOrders, wishlistIds, products } from '../../data/products';
+import { Ionicons } from '@expo/vector-icons';
+import SettingsBottomSheet from '../../components/SettingsBottomSheet';
+import ThemeToggle from '../../components/ThemeToggle';
+
+export default function ProfileScreen() {
+  const [openSettings, setOpenSettings] = useState(false);
+  const wishlist = products.filter(p => wishlistIds.includes(p.id));
+
+  return (
+    <ScrollView style={commonStyles.container} contentContainerStyle={{ padding: 16 }}>
+      <Text style={styles.title}>Your Profile</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.section}>Account</Text>
+        <Row label="Name" value="Ariana Shopper" />
+        <Row label="Email" value="ariana@example.com" />
+        <Row label="Phone" value="+1 555-0123" />
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.section}>Orders</Text>
+        {mockOrders.map(o => (
+          <View key={o.id} style={styles.order}>
+            <View style={styles.orderRow}>
+              <Text style={styles.text}>Order #{o.id}</Text>
+              <Text style={[styles.badge, getStatusStyle(o.status || 'Processing')]}>{o.status || 'Processing'}</Text>
+            </View>
+            <Text style={styles.muted}>{o.date} • {o.tracking}</Text>
+            <Text style={[styles.text, { fontWeight: '700', marginTop: 4 }]}>₦{o.total.toFixed(2)}</Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.section}>Wishlist</Text>
+        {wishlist.length === 0 ? (
+          <Text style={styles.muted}>No wishlist items yet.</Text>
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+            {wishlist.map(w => (
+              <View key={w.id} style={styles.wishCard}>
+                <Image source={{ uri: w.image }} style={styles.wishImg} />
+                <Text style={styles.wishTitle} numberOfLines={1}>{w.title}</Text>
+                <Text style={styles.wishPrice}>₦{w.price.toFixed(2)}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        )}
+      </View>
+
+      <View style={styles.actionRow}>
+        <TouchableOpacity style={[styles.outlineBtn, { flex: 1 }]} onPress={() => setOpenSettings(true)}>
+          <Ionicons name="settings-outline" size={18} color={colors.primary} />
+          <Text style={styles.outlineText}>Settings</Text>
+        </TouchableOpacity>
+        <ThemeToggle size={20} />
+      </View>
+
+      <SettingsBottomSheet open={openSettings} onClose={() => setOpenSettings(false)} />
+    </ScrollView>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.text}>{label}</Text>
+      <Text style={styles.text}>{value}</Text>
+    </View>
+  );
+}
+
+function getStatusStyle(status: string) {
+  switch (status) {
+    case 'Delivered':
+      return { backgroundColor: colors.success, color: colors.textOnPrimary };
+    case 'Shipped':
+      return { backgroundColor: colors.primary, color: colors.textOnPrimary };
+    default:
+      return { backgroundColor: colors.backgroundAlt, color: colors.text };
+  }
+}
+
+const styles = StyleSheet.create({
+  title: {
+    color: colors.text,
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  card: {
+    backgroundColor: colors.backgroundAlt,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+    marginBottom: 12,
+  },
+  section: {
+    color: colors.text,
+    fontWeight: '700',
+    marginBottom: 8,
+    fontSize: 16,
+  },
+  text: {
+    color: colors.text,
+  },
+  muted: {
+    color: colors.muted,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 6,
+  },
+  order: {
+    marginBottom: 10,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    padding: 10,
+  },
+  orderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    overflow: 'hidden',
+    fontSize: 12,
+    fontWeight: '700',
+  } as any,
+  outlineBtn: {
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 10,
+    padding: 12,
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  outlineText: {
+    color: colors.primary,
+    fontWeight: '700',
+  },
+  wishCard: {
+    width: 140,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingBottom: 8,
+  },
+  wishImg: { width: '100%', height: 90, borderTopLeftRadius: 12, borderTopRightRadius: 12 },
+  wishTitle: { color: colors.text, fontWeight: '600', paddingHorizontal: 8, marginTop: 6 },
+  wishPrice: { color: colors.primary, fontWeight: '700', paddingHorizontal: 8 },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+});
