@@ -230,9 +230,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/categories/",
+							"raw": "{{base_url}}/categories",
 							"host": ["{{base_url}}"],
-							"path": ["categories", ""]
+							"path": ["categories"]
 						}
 					}
 				},
@@ -259,9 +259,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/products/?page=1&limit=20",
+							"raw": "{{base_url}}/products?page=1&limit=20",
 							"host": ["{{base_url}}"],
-							"path": ["products", ""],
+							"path": ["products"],
 							"query": [
 								{
 									"key": "page",
@@ -293,9 +293,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/products/?search=iphone&category=phones&min_price=100000&max_price=500000",
+							"raw": "{{base_url}}/products?search=iphone&category=phones&min_price=100000&max_price=500000",
 							"host": ["{{base_url}}"],
-							"path": ["products", ""],
+							"path": ["products"],
 							"query": [
 								{
 									"key": "search",
@@ -336,9 +336,9 @@
 							"raw": "{\n  \"title\": \"iPhone 15 Pro Max\",\n  \"description\": \"Brand new iPhone 15 Pro Max with 256GB storage. Comes with original box and accessories.\",\n  \"price\": 1200000,\n  \"currency\": \"NGN\",\n  \"condition\": \"new\",\n  \"brand\": \"Apple\",\n  \"model\": \"iPhone 15 Pro Max\",\n  \"color\": \"Natural Titanium\",\n  \"category_id\": \"category_object_id_here\",\n  \"specifications\": {\n    \"storage\": \"256GB\",\n    \"ram\": \"8GB\",\n    \"screen_size\": \"6.7 inches\",\n    \"camera\": \"48MP Main Camera\"\n  },\n  \"images\": [\n    \"https://example.com/image1.jpg\",\n    \"https://example.com/image2.jpg\"\n  ],\n  \"quantity\": 5,\n  \"location\": {\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\",\n    \"country\": \"Nigeria\",\n    \"postal_code\": \"100001\"\n  },\n  \"swap_available\": true,\n  \"tags\": [\"iphone\", \"apple\", \"smartphone\", \"new\"]\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/seller/products",
+							"raw": "{{base_url}}/seller/products/",
 							"host": ["{{base_url}}"],
-							"path": ["seller", "products"]
+							"path": ["seller", "products", ""]
 						}
 					}
 				},
@@ -400,9 +400,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/cart/",
+							"raw": "{{base_url}}/cart",
 							"host": ["{{base_url}}"],
-							"path": ["cart", ""]
+							"path": ["cart"]
 						}
 					}
 				},
@@ -514,9 +514,9 @@
 							"raw": "{\n  \"items\": [\n    {\n      \"product_id\": \"product_object_id_here\",\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\",\n    \"country\": \"Nigeria\",\n    \"postal_code\": \"100001\",\n    \"type\": \"home\"\n  },\n  \"payment_method\": \"paystack\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/orders/",
+							"raw": "{{base_url}}/orders",
 							"host": ["{{base_url}}"],
-							"path": ["orders", ""]
+							"path": ["orders"]
 						}
 					}
 				},
@@ -531,9 +531,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/user/orders/",
+							"raw": "{{base_url}}/user/orders",
 							"host": ["{{base_url}}"],
-							"path": ["user", "orders", ""]
+							"path": ["user", "orders"]
 						}
 					}
 				},
@@ -676,9 +676,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/user/addresses/",
+							"raw": "{{base_url}}/user/addresses",
 							"host": ["{{base_url}}"],
-							"path": ["user", "addresses", ""]
+							"path": ["user", "addresses"]
 						}
 					}
 				},
@@ -701,9 +701,9 @@
 							"raw": "{\n  \"type\": \"home\",\n  \"street\": \"123 Main Street, Apartment 4B\",\n  \"city\": \"Lagos\",\n  \"state\": \"Lagos\",\n  \"country\": \"Nigeria\",\n  \"postal_code\": \"100001\",\n  \"landmark\": \"Near City Mall\",\n  \"is_default\": true\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/user/addresses/",
+							"raw": "{{base_url}}/user/addresses",
 							"host": ["{{base_url}}"],
-							"path": ["user", "addresses", ""]
+							"path": ["user", "addresses"]
 						}
 					}
 				},
@@ -765,9 +765,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/user/wishlist/",
+							"raw": "{{base_url}}/user/wishlist",
 							"host": ["{{base_url}}"],
-							"path": ["user", "wishlist", ""]
+							"path": ["user", "wishlist"]
 						}
 					}
 				},
@@ -790,9 +790,9 @@
 							"raw": "{\n  \"product_id\": \"product_object_id_here\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/user/wishlist/",
+							"raw": "{{base_url}}/user/wishlist",
 							"host": ["{{base_url}}"],
-							"path": ["user", "wishlist", ""]
+							"path": ["user", "wishlist"]
 						}
 					}
 				},
@@ -838,7 +838,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/swap/", "host": ["{{base_url}}"], "path": ["swap", ""]}
+						"url": {"raw": "{{base_url}}/swap", "host": ["{{base_url}}"], "path": ["swap"]}
 					}
 				},
 				{
@@ -875,7 +875,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/conversations/", "host": ["{{base_url}}"], "path": ["conversations", ""]}
+						"url": {"raw": "{{base_url}}/conversations", "host": ["{{base_url}}"], "path": ["conversations"]}
 					}
 				},
 				{
@@ -890,7 +890,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"conversation_id\": \"conversation_id_here\",\n  \"type\": \"text\",\n  \"content\": \"Hello, is this product still available?\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/messages/", "host": ["{{base_url}}"], "path": ["messages", ""]}
+						"url": {"raw": "{{base_url}}/messages", "host": ["{{base_url}}"], "path": ["messages"]}
 					}
 				},
 				{
@@ -898,7 +898,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/conversations/conversation_id_here/messages/", "host": ["{{base_url}}"], "path": ["conversations", "conversation_id_here", "messages", ""]}
+						"url": {"raw": "{{base_url}}/conversations/conversation_id_here/messages", "host": ["{{base_url}}"], "path": ["conversations", "conversation_id_here", "messages"]}
 					}
 				},
 				{
@@ -913,7 +913,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"participant_id\": \"user_id_here\",\n  \"product_id\": \"product_id_here\",\n  \"initial_message\": \"Hi, I'm interested in this product\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/conversations/", "host": ["{{base_url}}"], "path": ["conversations", ""]}
+						"url": {"raw": "{{base_url}}/conversations", "host": ["{{base_url}}"], "path": ["conversations"]}
 					}
 				},
 				{
@@ -949,7 +949,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/disputes/", "host": ["{{base_url}}"], "path": ["user", "disputes", ""]}
+						"url": {"raw": "{{base_url}}/user/disputes", "host": ["{{base_url}}"], "path": ["user", "disputes"]}
 					}
 				},
 				{
@@ -964,7 +964,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"dispute_id\": \"dispute_id_here\",\n  \"type\": \"image\",\n  \"title\": \"Payment Receipt\",\n  \"description\": \"Screenshot of payment confirmation\",\n  \"file_url\": \"https://example.com/evidence.jpg\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/disputes/dispute_id_here/evidence/", "host": ["{{base_url}}"], "path": ["disputes", "dispute_id_here", "evidence", ""]}
+						"url": {"raw": "{{base_url}}/disputes/dispute_id_here/evidence", "host": ["{{base_url}}"], "path": ["disputes", "dispute_id_here", "evidence"]}
 					}
 				},
 				{
@@ -972,7 +972,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/disputes/", "host": ["{{base_url}}"], "path": ["disputes", ""]}
+						"url": {"raw": "{{base_url}}/disputes", "host": ["{{base_url}}"], "path": ["disputes"]}
 					}
 				},
 				{
@@ -1023,7 +1023,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/reports/", "host": ["{{base_url}}"], "path": ["reports", ""]}
+						"url": {"raw": "{{base_url}}/reports", "host": ["{{base_url}}"], "path": ["reports"]}
 					}
 				}
 			]
@@ -1036,7 +1036,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/notifications/?page=1&limit=20", "host": ["{{base_url}}"], "path": ["notifications", ""], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]}
+						"url": {"raw": "{{base_url}}/notifications?page=1&limit=20", "host": ["{{base_url}}"], "path": ["notifications"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]}
 					}
 				},
 				{
@@ -1097,7 +1097,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/badges/", "host": ["{{base_url}}"], "path": ["badges", ""]}
+						"url": {"raw": "{{base_url}}/badges", "host": ["{{base_url}}"], "path": ["badges"]}
 					}
 				}
 			]
@@ -1146,7 +1146,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/seller/products/", "host": ["{{base_url}}"], "path": ["seller", "products", ""]}
+						"url": {"raw": "{{base_url}}/seller/products", "host": ["{{base_url}}"], "path": ["seller", "products"]}
 					}
 				},
 				{
@@ -1154,7 +1154,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/seller/orders/", "host": ["{{base_url}}"], "path": ["seller", "orders", ""]}
+						"url": {"raw": "{{base_url}}/seller/orders", "host": ["{{base_url}}"], "path": ["seller", "orders"]}
 					}
 				},
 				{
