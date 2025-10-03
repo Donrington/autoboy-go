@@ -46,23 +46,31 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 	// Setup authentication
 	auth := smtp.PlainAuth("", s.smtpUsername, s.smtpPassword, s.smtpHost)
 
-	// Compose message
+	// Compose message with proper headers
 	msg := []byte(fmt.Sprintf(
 		"From: %s <%s>\r\n"+
 			"To: %s\r\n"+
 			"Subject: %s\r\n"+
 			"MIME-Version: 1.0\r\n"+
 			"Content-Type: text/html; charset=UTF-8\r\n"+
+			"Content-Transfer-Encoding: 8bit\r\n"+
 			"\r\n"+
 			"%s\r\n",
 		s.fromName, s.fromEmail, to, subject, body,
 	))
 
-	// Send email
+	// Send email with detailed error logging
+	log.Printf("Attempting to send email to %s via %s:%s", to, s.smtpHost, s.smtpPort)
 	err := smtp.SendMail(s.smtpHost+":"+s.smtpPort, auth, s.fromEmail, []string{to}, msg)
 	if err != nil {
 		log.Printf("Failed to send email to %s: %v", to, err)
-		return err
+		
+		// Log specific Gmail errors
+		if s.smtpHost == "smtp.gmail.com" {
+			log.Printf("Gmail SMTP Error - Check: 1) 2FA enabled 2) App password generated 3) Correct credentials")
+		}
+		
+		return fmt.Errorf("email send failed: %v", err)
 	}
 
 	log.Printf("Email sent successfully to %s", to)
