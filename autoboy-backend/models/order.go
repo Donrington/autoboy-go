@@ -257,8 +257,11 @@ type OrderDispute struct {
 	ClosedAt        *time.Time         `bson:"closed_at,omitempty" json:"closed_at,omitempty"`
 }
 
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> 2cb087e881c93b8497c890ce541f326e8eb2bf29
 // OrderTracking represents order tracking events
 type OrderTracking struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`

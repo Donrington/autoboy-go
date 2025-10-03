@@ -13,7 +13,12 @@
       "Bash(dir scripts)",
       "Bash(dir:*)",
       "Bash(go run:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nMerge feature-branch into main\n\nResolved conflicts in .env.example, .gitignore, and render.yaml.\nIntegrated all changes from feature branch including email service,\nWebSocket functionality, and configuration updates.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git pull:*)",
+      "Bash(git diff:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

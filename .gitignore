@@ -130,3 +130,13 @@ react-autoboy-old/
 .turbo/
 .next/
 out/
+
+# Documentation
+git-commands.md
+
+# Backend and Mobile App (complete - no further changes)
+autoboy-backend/
+autoboy-mobileapp/
+
+# Claude IDE Settings
+.claude/
