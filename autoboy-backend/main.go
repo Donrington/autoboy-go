@@ -28,6 +28,18 @@ func main() {
 
 	// Initialize logger
 	utils.InitLogger()
+	
+	// Log environment variables for debugging (without sensitive data)
+	log.Printf("=== ENVIRONMENT DEBUG ===")
+	log.Printf("GIN_MODE: %s", os.Getenv("GIN_MODE"))
+	log.Printf("PORT: %s", os.Getenv("PORT"))
+	log.Printf("FRONTEND_URL: %s", os.Getenv("FRONTEND_URL"))
+	log.Printf("SMTP_HOST: %s", os.Getenv("SMTP_HOST"))
+	log.Printf("SMTP_PORT: %s", os.Getenv("SMTP_PORT"))
+	log.Printf("SMTP_USERNAME: %s", os.Getenv("SMTP_USERNAME"))
+	log.Printf("FROM_EMAIL: %s", os.Getenv("FROM_EMAIL"))
+	log.Printf("SMTP_PASSWORD length: %d", len(os.Getenv("SMTP_PASSWORD")))
+	log.Printf("=========================")
 
 	// Initialize database
 	if err := config.InitializeDatabase(); err != nil {

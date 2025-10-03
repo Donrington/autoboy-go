@@ -38,9 +38,18 @@ type EmailTemplate struct {
 
 // SendEmail sends an email
 func (s *EmailService) SendEmail(to, subject, body string) error {
+	log.Printf("=== EMAIL SERVICE DEBUG START ===")
+	log.Printf("[EMAIL] Recipient: %s", to)
+	log.Printf("[EMAIL] Subject: %s", subject)
+	log.Printf("[EMAIL] SMTP Host: %s", s.smtpHost)
+	log.Printf("[EMAIL] SMTP Port: %s", s.smtpPort)
+	log.Printf("[EMAIL] SMTP Username: %s", s.smtpUsername)
+	log.Printf("[EMAIL] From Email: %s", s.fromEmail)
+	log.Printf("[EMAIL] Password Length: %d", len(s.smtpPassword))
+	
 	if s.smtpUsername == "" || s.smtpPassword == "" {
-		log.Printf("Email not sent to %s: SMTP credentials not configured", to)
-		return nil // Don't fail in development
+		log.Printf("[EMAIL ERROR] SMTP credentials not configured - Username: '%s', Password Length: %d", s.smtpUsername, len(s.smtpPassword))
+		return fmt.Errorf("SMTP credentials not configured")
 	}
 
 	// Setup authentication
@@ -60,27 +69,40 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 	))
 
 	// Send email with detailed error logging
-	log.Printf("Attempting to send email to %s via %s:%s", to, s.smtpHost, s.smtpPort)
+	log.Printf("[EMAIL] Attempting SMTP connection to %s:%s", s.smtpHost, s.smtpPort)
+	log.Printf("[EMAIL] Auth details - Username: %s, From: %s", s.smtpUsername, s.fromEmail)
+	
 	err := smtp.SendMail(s.smtpHost+":"+s.smtpPort, auth, s.fromEmail, []string{to}, msg)
 	if err != nil {
-		log.Printf("Failed to send email to %s: %v", to, err)
+		log.Printf("[EMAIL ERROR] SMTP SendMail failed: %v", err)
+		log.Printf("[EMAIL ERROR] Error type: %T", err)
+		log.Printf("[EMAIL ERROR] Full error details: %+v", err)
 		
 		// Log specific Gmail errors
 		if s.smtpHost == "smtp.gmail.com" {
-			log.Printf("Gmail SMTP Error - Check: 1) 2FA enabled 2) App password generated 3) Correct credentials")
+			log.Printf("[EMAIL ERROR] Gmail troubleshooting:")
+			log.Printf("[EMAIL ERROR] 1. Verify 2FA is enabled on autoboyexpress@gmail.com")
+			log.Printf("[EMAIL ERROR] 2. Verify app password is correct: %s", s.smtpPassword[:4]+"...")
+			log.Printf("[EMAIL ERROR] 3. Check Gmail security settings")
+			log.Printf("[EMAIL ERROR] 4. Verify account is not locked")
 		}
 		
+		log.Printf("=== EMAIL SERVICE DEBUG END (FAILED) ===")
 		return fmt.Errorf("email send failed: %v", err)
 	}
 
-	log.Printf("Email sent successfully to %s", to)
+	log.Printf("[EMAIL SUCCESS] ✅ Email sent successfully to %s", to)
+	log.Printf("[EMAIL SUCCESS] Subject: %s", subject)
+	log.Printf("=== EMAIL SERVICE DEBUG END (SUCCESS) ===")
 	return nil
 }
 
 // SendVerificationEmail sends email verification email
 func (s *EmailService) SendVerificationEmail(email, name, token string) error {
+	log.Printf("[EMAIL] Preparing verification email for %s (name: %s)", email, name)
 	verificationURL := fmt.Sprintf("%s/api/v1/auth/verify-email?token=%s", 
 		utils.GetEnv("FRONTEND_URL", "http://localhost:3000"), token)
+	log.Printf("[EMAIL] Verification URL: %s", verificationURL)
 
 	template := `
 <!DOCTYPE html>
