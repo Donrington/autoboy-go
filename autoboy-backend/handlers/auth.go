@@ -345,6 +345,9 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 		return
 	}
 
+	// Send welcome email
+	go h.emailService.SendWelcomeEmail(user.Email, user.Profile.FirstName)
+
 	utils.SuccessResponse(c, http.StatusOK, "Email verified successfully", nil)
 }
 
@@ -404,4 +407,114 @@ func (h *AuthHandler) VerifyPhone(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Phone verified successfully", nil)
+}
+
+// ForgotPassword handles password reset request
+func (h *AuthHandler) ForgotPassword(c *gin.Context) {
+	var req struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.BadRequestResponse(c, "Invalid request data", err.Error())
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Find user by email
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{"email": req.Email}).Decode(&user)
+	if err != nil {
+		// Don't reveal if email exists or not for security
+		utils.SuccessResponse(c, http.StatusOK, "If the email exists, a password reset link has been sent", nil)
+		return
+	}
+
+	// Generate reset token
+	resetToken := utils.GenerateRandomString(32)
+	resetExpiry := time.Now().Add(1 * time.Hour)
+
+	// Store reset token
+	_, err = config.Coll.Users.UpdateOne(ctx,
+		bson.M{"_id": user.ID},
+		bson.M{"$set": bson.M{
+			"password_reset_token": resetToken,
+			"password_reset_expires": resetExpiry,
+		}},
+	)
+
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to process request", err.Error())
+		return
+	}
+
+	// Send password reset email
+	go h.emailService.SendPasswordResetEmail(user.Email, user.Profile.FirstName, resetToken)
+
+	utils.SuccessResponse(c, http.StatusOK, "If the email exists, a password reset link has been sent", nil)
+}
+
+// ResetPassword handles password reset with token
+func (h *AuthHandler) ResetPassword(c *gin.Context) {
+	var req struct {
+		Token       string `json:"token" binding:"required"`
+		NewPassword string `json:"new_password" binding:"required,min=8"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.BadRequestResponse(c, "Invalid request data", err.Error())
+		return
+	}
+
+	// Validate password strength
+	if !utils.IsValidPassword(req.NewPassword) {
+		utils.BadRequestResponse(c, "Password must contain at least 8 characters with uppercase, lowercase, number and special character", nil)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Find user with valid reset token
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{
+		"password_reset_token": req.Token,
+		"password_reset_expires": bson.M{"$gt": time.Now()},
+	}).Decode(&user)
+
+	if err != nil {
+		utils.BadRequestResponse(c, "Invalid or expired reset token", nil)
+		return
+	}
+
+	// Hash new password
+	hashedPassword, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to process password", err.Error())
+		return
+	}
+
+	// Update password and clear reset token
+	_, err = config.Coll.Users.UpdateOne(ctx,
+		bson.M{"_id": user.ID},
+		bson.M{
+			"$set": bson.M{
+				"password": hashedPassword,
+				"updated_at": time.Now(),
+			},
+			"$unset": bson.M{
+				"password_reset_token": "",
+				"password_reset_expires": "",
+			},
+		},
+	)
+
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to reset password", err.Error())
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Password reset successfully", nil)
 }
