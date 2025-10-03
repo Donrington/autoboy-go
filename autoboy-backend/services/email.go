@@ -24,9 +24,7 @@ type EmailService struct {
 
 // flushLogs forces immediate log output
 func flushLogs() {
-	if f, ok := os.Stdout.(*os.File); ok {
-		f.Sync()
-	}
+	os.Stdout.Sync()
 }
 
 // NewEmailService creates a new email service
