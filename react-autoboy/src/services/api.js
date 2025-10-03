@@ -1,6 +1,6 @@
-// API Configuration for Django Backend Integration
+// API Configuration for Go Backend Integration
 const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:8000/api',
+  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:8080/api/v1',
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 };
@@ -107,189 +107,163 @@ const apiClient = new APIClient();
 // Products API Service
 export const productsAPI = {
   // Get all products with filters and pagination
-  getAll: (params = {}) => apiClient.get('/products/', params),
+  getAll: (params = {}) => apiClient.get('/products', params),
   
   // Get featured/trending products for homepage
-  getFeatured: () => apiClient.get('/products/featured/'),
+  getFeatured: () => apiClient.get('/products', { featured: true }),
   
   // Get product by ID
-  getById: (id) => apiClient.get(`/products/${id}/`),
+  getById: (id) => apiClient.get(`/products/${id}`),
   
   // Search products
-  search: (query, filters = {}) => apiClient.get('/products/search/', { 
-    q: query, 
+  search: (query, filters = {}) => apiClient.get('/products', { 
+    search: query, 
     ...filters 
   }),
   
   // Get products by category
-  getByCategory: (categoryId, params = {}) => apiClient.get(`/products/category/${categoryId}/`, params),
-  
-  // Get product reviews
-  getReviews: (productId) => apiClient.get(`/products/${productId}/reviews/`),
-  
-  // Add product review
-  addReview: (productId, reviewData) => apiClient.post(`/products/${productId}/reviews/`, reviewData),
+  getByCategory: (categoryId, params = {}) => apiClient.get('/products', { category_id: categoryId, ...params }),
   
   // Add to wishlist
-  addToWishlist: (productId) => apiClient.post('/wishlist/', { product_id: productId }),
+  addToWishlist: (productId) => apiClient.post('/user/wishlist', { product_id: productId }),
   
   // Remove from wishlist
-  removeFromWishlist: (productId) => apiClient.delete(`/wishlist/${productId}/`),
+  removeFromWishlist: (productId) => apiClient.delete(`/user/wishlist/${productId}`),
 };
 
 // Categories API Service
 export const categoriesAPI = {
   // Get all categories
-  getAll: () => apiClient.get('/categories/'),
+  getAll: () => apiClient.get('/categories'),
   
   // Get category by ID
-  getById: (id) => apiClient.get(`/categories/${id}/`),
+  getById: (id) => apiClient.get(`/categories/${id}`),
   
   // Get category with products
-  getWithProducts: (id, params = {}) => apiClient.get(`/categories/${id}/products/`, params),
+  getWithProducts: (id, params = {}) => apiClient.get('/products', { category_id: id, ...params }),
 };
 
 // Cart API Service
 export const cartAPI = {
   // Get cart items
-  getItems: () => apiClient.get('/cart/'),
+  getItems: () => apiClient.get('/cart'),
   
   // Add item to cart
-  addItem: (productId, quantity = 1) => apiClient.post('/cart/add/', {
+  addItem: (productId, quantity = 1) => apiClient.post('/cart/add', {
     product_id: productId,
     quantity,
   }),
   
   // Update cart item quantity
-  updateItem: (itemId, quantity) => apiClient.patch(`/cart/items/${itemId}/`, {
+  updateItem: (itemId, quantity) => apiClient.put('/cart/update', {
+    item_id: itemId,
     quantity,
   }),
   
   // Remove item from cart
-  removeItem: (itemId) => apiClient.delete(`/cart/items/${itemId}/`),
+  removeItem: (itemId) => apiClient.delete(`/cart/remove/${itemId}`),
   
   // Clear cart
-  clear: () => apiClient.delete('/cart/clear/'),
-  
-  // Get cart total
-  getTotal: () => apiClient.get('/cart/total/'),
+  clear: () => apiClient.delete('/cart/clear'),
 };
 
 // User API Service
 export const userAPI = {
   // Get user profile
-  getProfile: () => apiClient.get('/user/profile/'),
+  getProfile: () => apiClient.get('/user/profile'),
   
   // Update user profile
-  updateProfile: (data) => apiClient.patch('/user/profile/', data),
+  updateProfile: (data) => apiClient.put('/user/profile', data),
   
   // Get user orders
-  getOrders: (params = {}) => apiClient.get('/user/orders/', params),
+  getOrders: (params = {}) => apiClient.get('/user/orders', params),
   
   // Get user wishlist
-  getWishlist: () => apiClient.get('/user/wishlist/'),
+  getWishlist: () => apiClient.get('/user/wishlist'),
   
   // Get user addresses
-  getAddresses: () => apiClient.get('/user/addresses/'),
+  getAddresses: () => apiClient.get('/user/addresses'),
   
   // Add user address
-  addAddress: (addressData) => apiClient.post('/user/addresses/', addressData),
+  addAddress: (addressData) => apiClient.post('/user/addresses', addressData),
   
   // Update user address
-  updateAddress: (addressId, addressData) => apiClient.patch(`/user/addresses/${addressId}/`, addressData),
+  updateAddress: (addressId, addressData) => apiClient.put(`/user/addresses/${addressId}`, addressData),
   
   // Delete user address
-  deleteAddress: (addressId) => apiClient.delete(`/user/addresses/${addressId}/`),
+  deleteAddress: (addressId) => apiClient.delete(`/user/addresses/${addressId}`),
+  
+  // Change password
+  changePassword: (passwordData) => apiClient.post('/user/change-password', passwordData),
 };
 
 // Authentication API Service
 export const authAPI = {
   // User login
-  login: (credentials) => apiClient.post('/auth/login/', credentials),
+  login: (credentials) => apiClient.post('/auth/login', credentials),
   
   // User registration
-  register: (userData) => apiClient.post('/auth/register/', userData),
+  register: (userData) => apiClient.post('/auth/register', userData),
   
   // User logout
-  logout: () => apiClient.post('/auth/logout/'),
-  
-  // Refresh token
-  refreshToken: () => apiClient.post('/auth/refresh/'),
-  
-  // Password reset request
-  requestPasswordReset: (email) => apiClient.post('/auth/password-reset/', { email }),
-  
-  // Password reset confirm
-  confirmPasswordReset: (token, newPassword) => apiClient.post('/auth/password-reset/confirm/', {
-    token,
-    new_password: newPassword,
-  }),
+  logout: () => apiClient.post('/user/logout'),
   
   // Verify email
-  verifyEmail: (token) => apiClient.post('/auth/verify-email/', { token }),
+  verifyEmail: (token) => apiClient.get('/auth/verify-email', { token }),
+  
+  // Verify phone
+  verifyPhone: (phoneData) => apiClient.post('/user/verify-phone', phoneData),
 };
 
 // Orders API Service
 export const ordersAPI = {
   // Create order
-  create: (orderData) => apiClient.post('/orders/', orderData),
+  create: (orderData) => apiClient.post('/orders', orderData),
   
   // Get order by ID
-  getById: (orderId) => apiClient.get(`/orders/${orderId}/`),
+  getById: (orderId) => apiClient.get(`/user/orders/${orderId}`),
   
   // Get user orders
-  getUserOrders: (params = {}) => apiClient.get('/orders/user/', params),
-  
-  // Update order status (for sellers/admin)
-  updateStatus: (orderId, status) => apiClient.patch(`/orders/${orderId}/`, { status }),
+  getUserOrders: (params = {}) => apiClient.get('/user/orders', params),
   
   // Cancel order
-  cancel: (orderId) => apiClient.patch(`/orders/${orderId}/cancel/`),
+  cancel: (orderId) => apiClient.post(`/user/orders/${orderId}/cancel`),
   
   // Track order
-  track: (orderId) => apiClient.get(`/orders/${orderId}/track/`),
+  track: (orderId) => apiClient.get(`/orders/${orderId}/track`),
 };
 
 // Seller API Service
 export const sellerAPI = {
-  // Apply to become seller
-  apply: (applicationData) => apiClient.post('/seller/apply/', applicationData),
-  
-  // Get seller dashboard data
-  getDashboard: () => apiClient.get('/seller/dashboard/'),
-  
   // Get seller products
-  getProducts: (params = {}) => apiClient.get('/seller/products/', params),
+  getProducts: (params = {}) => apiClient.get('/seller/products', params),
   
   // Add seller product
-  addProduct: (productData) => apiClient.post('/seller/products/', productData),
+  addProduct: (productData) => apiClient.post('/seller/products', productData),
   
   // Update seller product
-  updateProduct: (productId, productData) => apiClient.patch(`/seller/products/${productId}/`, productData),
+  updateProduct: (productId, productData) => apiClient.put(`/seller/products/${productId}`, productData),
   
   // Delete seller product
-  deleteProduct: (productId) => apiClient.delete(`/seller/products/${productId}/`),
+  deleteProduct: (productId) => apiClient.delete(`/seller/products/${productId}`),
   
   // Get seller orders
-  getOrders: (params = {}) => apiClient.get('/seller/orders/', params),
+  getOrders: (params = {}) => apiClient.get('/seller/orders', params),
   
-  // Get seller analytics
-  getAnalytics: (params = {}) => apiClient.get('/seller/analytics/', params),
+  // Get seller order by ID
+  getOrder: (orderId) => apiClient.get(`/seller/orders/${orderId}`),
+  
+  // Update order status
+  updateOrderStatus: (orderId, status) => apiClient.put(`/seller/orders/${orderId}/status`, { status }),
 };
 
-// Payment API Service
+// Payment API Service (handled within order creation)
 export const paymentAPI = {
-  // Initialize payment
-  initialize: (paymentData) => apiClient.post('/payments/initialize/', paymentData),
+  // Initialize payment (integrated with order creation)
+  initialize: (paymentData) => apiClient.post('/orders', paymentData),
   
-  // Verify payment
-  verify: (reference) => apiClient.get(`/payments/verify/${reference}/`),
-  
-  // Get payment methods
-  getMethods: () => apiClient.get('/payments/methods/'),
-  
-  // Process refund
-  refund: (paymentId, amount) => apiClient.post(`/payments/${paymentId}/refund/`, { amount }),
+  // Verify payment status
+  verify: (orderId) => apiClient.get(`/orders/${orderId}/track`),
 };
 
 // Utility function to handle API responses with loading states

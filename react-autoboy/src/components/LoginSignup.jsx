@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import styles from './LoginSignup.module.css';
 import logo from '../assets/autoboy_logo3.png';
+import { useAuth } from '../context/AuthContext';
+import { useAsyncAPI } from '../hooks/useAPI';
 
 const LoginSignup = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -263,33 +265,44 @@ const LoginSignup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const { login } = useAuth();
+  const { execute, loading: apiLoading, error: apiError } = useAsyncAPI();
+
   // Handle login form submission
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await execute(() => login({
+        email: formData.email,
+        password: formData.password
+      }));
       alert('Login successful!');
-    }, 2000);
+      window.location.href = '/';
+    } catch (error) {
+      setErrors({ general: error.message || 'Login failed' });
+    }
   };
+
+  const { register } = useAuth();
 
   // Handle signup form submission
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await execute(() => register({
+        email: formData.email,
+        full_name: formData.fullName,
+        password: formData.password
+      }));
       alert('Account created successfully!');
-      toggleForms();
-    }, 2000);
+      window.location.href = '/';
+    } catch (error) {
+      setErrors({ general: error.message || 'Registration failed' });
+    }
   };
 
   // Toggle between login and signup forms
@@ -496,14 +509,21 @@ const LoginSignup = () => {
               </div>
             )}
 
+            {/* Error Message */}
+            {errors.general && (
+              <div style={{color: '#EF4444', fontSize: '0.875rem', textAlign: 'center', marginBottom: '1rem'}}>
+                {errors.general}
+              </div>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              className={`${styles.submitBtn} ${isLoading ? styles.loading : ''}`}
+              className={`${styles.submitBtn} ${(isLoading || apiLoading) ? styles.loading : ''}`}
               onClick={addRippleEffect}
-              disabled={isLoading}
+              disabled={isLoading || apiLoading}
             >
-              {isSignup ? 'Sign Up' : 'Login'}
+              {(isLoading || apiLoading) ? 'Please wait...' : (isSignup ? 'Sign Up' : 'Login')}
             </button>
           </form>
 
