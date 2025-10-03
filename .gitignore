@@ -119,6 +119,10 @@ credentials.json
 *.code-workspace
 .history/
 
+# React Frontend Projects (excluded from this repo)
+react-autoboy/
+react-autoboy-old/
+
 # Miscellaneous
 .eslintcache
 .parcel-cache/

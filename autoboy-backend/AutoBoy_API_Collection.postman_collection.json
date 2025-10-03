@@ -18,7 +18,12 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:8080/api/v1",
+			"value": "https://autoboy-go.onrender.com/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "ws_url",
+			"value": "wss://autoboy-go.onrender.com/api/v1/ws/connect",
 			"type": "string"
 		},
 		{
@@ -157,6 +162,44 @@
 							"raw": "{{base_url}}/user/verify-phone",
 							"host": ["{{base_url}}"],
 							"path": ["user", "verify-phone"]
+						}
+					}
+				},
+				{
+					"name": "Resend Email Verification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/resend-email-verification",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "resend-email-verification"]
+						}
+					}
+				},
+				{
+					"name": "Resend Phone OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/resend-phone-otp",
+							"host": ["{{base_url}}"],
+							"path": ["user", "resend-phone-otp"]
 						}
 					}
 				},
@@ -746,7 +789,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"recipient_id\": \"user_object_id_here\",\n  \"initiator_product_id\": \"product_object_id_here\",\n  \"recipient_product_id\": \"product_object_id_here\",\n  \"cash_difference\": 50000,\n  \"terms\": \"Both products in good condition\",\n  \"exchange_method\": \"meetup\",\n  \"meetup_location\": \"Computer Village, Lagos\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/swaps/", "host": ["{{base_url}}"], "path": ["swaps", ""]}
+						"url": {"raw": "{{base_url}}/swap/create", "host": ["{{base_url}}"], "path": ["swap", "create"]}
 					}
 				},
 				{
@@ -754,7 +797,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/swaps/", "host": ["{{base_url}}"], "path": ["user", "swaps", ""]}
+						"url": {"raw": "{{base_url}}/swap/", "host": ["{{base_url}}"], "path": ["swap", ""]}
 					}
 				},
 				{
@@ -762,7 +805,7 @@
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/swaps/swap_id_here/accept", "host": ["{{base_url}}"], "path": ["swaps", "swap_id_here", "accept"]}
+						"url": {"raw": "{{base_url}}/swap/swap_id_here/accept", "host": ["{{base_url}}"], "path": ["swap", "swap_id_here", "accept"]}
 					}
 				}
 			]
@@ -1010,11 +1053,66 @@
 					}
 				},
 				{
+					"name": "Get Seller Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/seller/dashboard", "host": ["{{base_url}}"], "path": ["seller", "dashboard"]}
+					}
+				},
+				{
 					"name": "Get Seller Analytics",
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/seller/analytics/?period=30d", "host": ["{{base_url}}"], "path": ["seller", "analytics", ""], "query": [{"key": "period", "value": "30d"}]}
+						"url": {"raw": "{{base_url}}/seller/analytics/sales", "host": ["{{base_url}}"], "path": ["seller", "analytics", "sales"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "WebSocket Chat",
+			"item": [
+				{
+					"name": "WebSocket Connection Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ws/info",
+							"host": ["{{base_url}}"],
+							"path": ["ws", "info"]
+						}
+					},
+					"response": [
+						{
+							"name": "WebSocket Connection Guide",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ws/info",
+									"host": ["{{base_url}}"],
+									"path": ["ws", "info"]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"websocket_url\": \"wss://autoboy-go.onrender.com/api/v1/ws/connect?token=YOUR_JWT_TOKEN\",\n  \"connection_guide\": {\n    \"javascript\": \"const ws = new WebSocket('wss://autoboy-go.onrender.com/api/v1/ws/connect?token=' + authToken);\",\n    \"message_types\": [\n      \"join_conversation\",\n      \"chat_message\",\n      \"typing_start\",\n      \"typing_stop\",\n      \"order_update\",\n      \"price_alert\",\n      \"dispute_update\"\n    ],\n    \"example_messages\": {\n      \"join_conversation\": {\n        \"type\": \"join_conversation\",\n        \"data\": { \"conversation_id\": \"conv_123\" }\n      },\n      \"chat_message\": {\n        \"type\": \"chat_message\",\n        \"data\": {\n          \"conversation_id\": \"conv_123\",\n          \"content\": \"Hello!\",\n          \"type\": \"text\"\n        }\n      },\n      \"typing_start\": {\n        \"type\": \"typing_start\",\n        \"data\": { \"conversation_id\": \"conv_123\" }\n      }\n    }\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Online Users",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/ws/online",
+							"host": ["{{base_url}}"],
+							"path": ["ws", "online"]
+						}
 					}
 				}
 			]

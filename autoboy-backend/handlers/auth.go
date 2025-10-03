@@ -518,3 +518,89 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 
 	utils.SuccessResponse(c, http.StatusOK, "Password reset successfully", nil)
 }
+
+// ResendEmailVerification resends email verification
+func (h *AuthHandler) ResendEmailVerification(c *gin.Context) {
+	var req struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.BadRequestResponse(c, "Invalid request data", err.Error())
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Find user
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{"email": req.Email}).Decode(&user)
+	if err != nil {
+		utils.BadRequestResponse(c, "User not found", nil)
+		return
+	}
+
+	if user.IsEmailVerified {
+		utils.BadRequestResponse(c, "Email already verified", nil)
+		return
+	}
+
+	// Generate new token
+	verificationToken := utils.GenerateRandomString(32)
+
+	// Update token
+	config.Coll.Users.UpdateOne(ctx,
+		bson.M{"_id": user.ID},
+		bson.M{"$set": bson.M{"email_verification_token": verificationToken}},
+	)
+
+	// Send email
+	go h.emailService.SendVerificationEmail(user.Email, user.Profile.FirstName, verificationToken)
+
+	utils.SuccessResponse(c, http.StatusOK, "Verification email sent", nil)
+}
+
+// ResendPhoneOTP resends phone OTP
+func (h *AuthHandler) ResendPhoneOTP(c *gin.Context) {
+	userID, _ := c.Get("user_id")
+	if userID == nil {
+		utils.UnauthorizedResponse(c, "Authentication required")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, _ := primitive.ObjectIDFromHex(userID.(string))
+
+	// Find user
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		utils.BadRequestResponse(c, "User not found", nil)
+		return
+	}
+
+	if user.IsPhoneVerified {
+		utils.BadRequestResponse(c, "Phone already verified", nil)
+		return
+	}
+
+	// Generate new OTP
+	phoneOTP := utils.GenerateOTP()
+
+	// Update OTP
+	config.Coll.Users.UpdateOne(ctx,
+		bson.M{"_id": user.ID},
+		bson.M{"$set": bson.M{
+			"phone_otp": phoneOTP,
+			"otp_expires_at": time.Now().Add(10 * time.Minute),
+		}},
+	)
+
+	// Send SMS
+	go h.smsService.SendOTP(user.Phone, phoneOTP)
+
+	utils.SuccessResponse(c, http.StatusOK, "OTP sent to your phone", nil)
+}

@@ -214,9 +214,15 @@ func isSessionValid(userID, token string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	// Convert userID string to ObjectID
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return false
+	}
+
 	var session models.UserSession
-	err := config.Coll.UserSessions.FindOne(ctx, bson.M{
-		"user_id":       userID,
+	err = config.Coll.UserSessions.FindOne(ctx, bson.M{
+		"user_id":       userObjectID,
 		"session_token": token,
 		"is_active":     true,
 		"expires_at":    bson.M{"$gt": time.Now()},
