@@ -13,7 +13,21 @@ import (
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"go.mongodb.org/mongo-driver/mongo"
 )
+
+// DB provides access to the MongoDB database
+var DB *mongo.Database
+
+// SetDB sets the database instance for utils package
+func SetDB(database *mongo.Database) {
+	DB = database
+}
+
+// GetCurrentTime returns the current time
+func GetCurrentTime() time.Time {
+	return time.Now()
+}
 
 // GetEnv gets environment variable with fallback
 func GetEnv(key, fallback string) string {

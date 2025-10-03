@@ -6,8 +6,6 @@ import (
 	"log"
 	"time"
 
-	"autoboy-backend/utils"
-
 	"github.com/redis/go-redis/v9"
 )
 
@@ -15,7 +13,7 @@ var RedisClient *redis.Client
 
 // InitializeRedis initializes Redis connection
 func InitializeRedis() error {
-	redisURL := utils.GetEnv("REDIS_URL", "redis://localhost:6379")
+	redisURL := getEnv("REDIS_URL", "redis://localhost:6379")
 	
 	opt, err := redis.ParseURL(redisURL)
 	if err != nil {

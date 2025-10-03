@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -154,9 +155,19 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 	// Generate email verification token
 	verificationToken := utils.GenerateRandomString(32)
+	log.Printf("[REGISTRATION] Generated verification token for user %s: %s", user.Email, verificationToken[:8]+"...")
 	
 	// Send verification email
-	go h.emailService.SendVerificationEmail(user.Email, user.Profile.FirstName, verificationToken)
+	log.Printf("[REGISTRATION] Starting email verification process for %s", user.Email)
+	go func() {
+		log.Printf("[REGISTRATION] Email goroutine started for %s", user.Email)
+		err := h.emailService.SendVerificationEmail(user.Email, user.Profile.FirstName, verificationToken)
+		if err != nil {
+			log.Printf("[REGISTRATION ERROR] Failed to send verification email to %s: %v", user.Email, err)
+		} else {
+			log.Printf("[REGISTRATION SUCCESS] Verification email sent to %s", user.Email)
+		}
+	}()
 
 	// Generate OTP for phone verification
 	phoneOTP := utils.GenerateOTP()
@@ -451,7 +462,16 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 	}
 
 	// Send password reset email
-	go h.emailService.SendPasswordResetEmail(user.Email, user.Profile.FirstName, resetToken)
+	log.Printf("[FORGOT PASSWORD] Starting password reset email for %s", user.Email)
+	go func() {
+		log.Printf("[FORGOT PASSWORD] Email goroutine started for %s", user.Email)
+		err := h.emailService.SendPasswordResetEmail(user.Email, user.Profile.FirstName, resetToken)
+		if err != nil {
+			log.Printf("[FORGOT PASSWORD ERROR] Failed to send reset email to %s: %v", user.Email, err)
+		} else {
+			log.Printf("[FORGOT PASSWORD SUCCESS] Reset email sent to %s", user.Email)
+		}
+	}()
 
 	utils.SuccessResponse(c, http.StatusOK, "If the email exists, a password reset link has been sent", nil)
 }
@@ -517,4 +537,99 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Password reset successfully", nil)
+}
+
+// ResendEmailVerification resends email verification
+func (h *AuthHandler) ResendEmailVerification(c *gin.Context) {
+	var req struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.BadRequestResponse(c, "Invalid request data", err.Error())
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Find user
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{"email": req.Email}).Decode(&user)
+	if err != nil {
+		utils.BadRequestResponse(c, "User not found", nil)
+		return
+	}
+
+	if user.IsEmailVerified {
+		utils.BadRequestResponse(c, "Email already verified", nil)
+		return
+	}
+
+	// Generate new token
+	verificationToken := utils.GenerateRandomString(32)
+
+	// Update token
+	config.Coll.Users.UpdateOne(ctx,
+		bson.M{"_id": user.ID},
+		bson.M{"$set": bson.M{"email_verification_token": verificationToken}},
+	)
+
+	// Send email
+	log.Printf("[RESEND EMAIL] Starting resend verification for %s", user.Email)
+	go func() {
+		log.Printf("[RESEND EMAIL] Email goroutine started for %s", user.Email)
+		err := h.emailService.SendVerificationEmail(user.Email, user.Profile.FirstName, verificationToken)
+		if err != nil {
+			log.Printf("[RESEND EMAIL ERROR] Failed to resend verification email to %s: %v", user.Email, err)
+		} else {
+			log.Printf("[RESEND EMAIL SUCCESS] Verification email resent to %s", user.Email)
+		}
+	}()
+
+	utils.SuccessResponse(c, http.StatusOK, "Verification email sent", nil)
+}
+
+// ResendPhoneOTP resends phone OTP
+func (h *AuthHandler) ResendPhoneOTP(c *gin.Context) {
+	userID, _ := c.Get("user_id")
+	if userID == nil {
+		utils.UnauthorizedResponse(c, "Authentication required")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, _ := primitive.ObjectIDFromHex(userID.(string))
+
+	// Find user
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		utils.BadRequestResponse(c, "User not found", nil)
+		return
+	}
+
+	if user.IsPhoneVerified {
+		utils.BadRequestResponse(c, "Phone already verified", nil)
+		return
+	}
+
+	// Generate new OTP
+	phoneOTP := utils.GenerateOTP()
+
+	// Update OTP
+	config.Coll.Users.UpdateOne(ctx,
+		bson.M{"_id": user.ID},
+		bson.M{"$set": bson.M{
+			"phone_otp": phoneOTP,
+			"otp_expires_at": time.Now().Add(10 * time.Minute),
+		}},
+	)
+
+	// Send SMS
+	go h.smsService.SendOTP(user.Phone, phoneOTP)
+
+	utils.SuccessResponse(c, http.StatusOK, "OTP sent to your phone", nil)
 }

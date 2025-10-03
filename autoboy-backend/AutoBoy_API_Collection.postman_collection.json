@@ -18,7 +18,12 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:8080/api/v1",
+			"value": "https://autoboy-go.onrender.com/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "ws_url",
+			"value": "wss://autoboy-go.onrender.com/api/v1/ws/connect",
 			"type": "string"
 		},
 		{
@@ -34,10 +39,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/health",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
+					"raw": "https://autoboy-go.onrender.com/health",
+					"protocol": "https",
+					"host": ["autoboy-go.onrender.com"],
 					"path": ["health"]
 				}
 			}
@@ -161,6 +165,44 @@
 					}
 				},
 				{
+					"name": "Resend Email Verification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/resend-email-verification",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "resend-email-verification"]
+						}
+					}
+				},
+				{
+					"name": "Resend Phone OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/resend-phone-otp",
+							"host": ["{{base_url}}"],
+							"path": ["user", "resend-phone-otp"]
+						}
+					}
+				},
+				{
 					"name": "Logout",
 					"request": {
 						"method": "POST",
@@ -188,9 +230,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/categories/",
+							"raw": "{{base_url}}/categories",
 							"host": ["{{base_url}}"],
-							"path": ["categories", ""]
+							"path": ["categories"]
 						}
 					}
 				},
@@ -217,9 +259,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/products/?page=1&limit=20",
+							"raw": "{{base_url}}/products?page=1&limit=20",
 							"host": ["{{base_url}}"],
-							"path": ["products", ""],
+							"path": ["products"],
 							"query": [
 								{
 									"key": "page",
@@ -246,14 +288,38 @@
 					}
 				},
 				{
-					"name": "Search Products",
+					"name": "Advanced Search",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/products/?search=iphone&category=phones&min_price=100000&max_price=500000",
+							"raw": "{{base_url}}/search?q=iphone&category=category_id_here&min_price=100000&max_price=500000&condition=new&location=lagos&sort=price&order=asc",
 							"host": ["{{base_url}}"],
-							"path": ["products", ""],
+							"path": ["search"],
+							"query": [
+								{"key": "q", "value": "iphone"},
+								{"key": "category", "value": "category_id_here"},
+								{"key": "min_price", "value": "100000"},
+								{"key": "max_price", "value": "500000"},
+								{"key": "condition", "value": "new"},
+								{"key": "location", "value": "lagos"},
+								{"key": "sort", "value": "price"},
+								{"key": "order", "value": "asc"},
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products (Legacy)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/products?search=iphone&category=phones&min_price=100000&max_price=500000",
+							"host": ["{{base_url}}"],
+							"path": ["products"],
 							"query": [
 								{
 									"key": "search",
@@ -358,9 +424,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/cart/",
+							"raw": "{{base_url}}/cart",
 							"host": ["{{base_url}}"],
-							"path": ["cart", ""]
+							"path": ["cart"]
 						}
 					}
 				},
@@ -472,9 +538,9 @@
 							"raw": "{\n  \"items\": [\n    {\n      \"product_id\": \"product_object_id_here\",\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\",\n    \"country\": \"Nigeria\",\n    \"postal_code\": \"100001\",\n    \"type\": \"home\"\n  },\n  \"payment_method\": \"paystack\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/orders/",
+							"raw": "{{base_url}}/orders",
 							"host": ["{{base_url}}"],
-							"path": ["orders", ""]
+							"path": ["orders"]
 						}
 					}
 				},
@@ -489,9 +555,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/user/orders/",
+							"raw": "{{base_url}}/user/orders",
 							"host": ["{{base_url}}"],
-							"path": ["user", "orders", ""]
+							"path": ["user", "orders"]
 						}
 					}
 				},
@@ -634,9 +700,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/user/addresses/",
+							"raw": "{{base_url}}/user/addresses",
 							"host": ["{{base_url}}"],
-							"path": ["user", "addresses", ""]
+							"path": ["user", "addresses"]
 						}
 					}
 				},
@@ -659,9 +725,51 @@
 							"raw": "{\n  \"type\": \"home\",\n  \"street\": \"123 Main Street, Apartment 4B\",\n  \"city\": \"Lagos\",\n  \"state\": \"Lagos\",\n  \"country\": \"Nigeria\",\n  \"postal_code\": \"100001\",\n  \"landmark\": \"Near City Mall\",\n  \"is_default\": true\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/user/addresses/",
+							"raw": "{{base_url}}/user/addresses",
 							"host": ["{{base_url}}"],
-							"path": ["user", "addresses", ""]
+							"path": ["user", "addresses"]
+						}
+					}
+				},
+				{
+					"name": "Update Address",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"office\",\n  \"street\": \"456 Business Avenue, Suite 10\",\n  \"city\": \"Abuja\",\n  \"state\": \"FCT\",\n  \"country\": \"Nigeria\",\n  \"postal_code\": \"900001\",\n  \"landmark\": \"Near Central Bank\",\n  \"is_default\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/addresses/address_id_here",
+							"host": ["{{base_url}}"],
+							"path": ["user", "addresses", "address_id_here"]
+						}
+					}
+				},
+				{
+					"name": "Delete Address",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/addresses/address_id_here",
+							"host": ["{{base_url}}"],
+							"path": ["user", "addresses", "address_id_here"]
 						}
 					}
 				}
@@ -681,9 +789,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/user/wishlist/",
+							"raw": "{{base_url}}/user/wishlist",
 							"host": ["{{base_url}}"],
-							"path": ["user", "wishlist", ""]
+							"path": ["user", "wishlist"]
 						}
 					}
 				},
@@ -706,9 +814,9 @@
 							"raw": "{\n  \"product_id\": \"product_object_id_here\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/user/wishlist/",
+							"raw": "{{base_url}}/user/wishlist",
 							"host": ["{{base_url}}"],
-							"path": ["user", "wishlist", ""]
+							"path": ["user", "wishlist"]
 						}
 					}
 				},
@@ -746,7 +854,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"recipient_id\": \"user_object_id_here\",\n  \"initiator_product_id\": \"product_object_id_here\",\n  \"recipient_product_id\": \"product_object_id_here\",\n  \"cash_difference\": 50000,\n  \"terms\": \"Both products in good condition\",\n  \"exchange_method\": \"meetup\",\n  \"meetup_location\": \"Computer Village, Lagos\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/swaps/", "host": ["{{base_url}}"], "path": ["swaps", ""]}
+						"url": {"raw": "{{base_url}}/swap/create", "host": ["{{base_url}}"], "path": ["swap", "create"]}
 					}
 				},
 				{
@@ -754,15 +862,31 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/swaps/", "host": ["{{base_url}}"], "path": ["user", "swaps", ""]}
+						"url": {"raw": "{{base_url}}/swap", "host": ["{{base_url}}"], "path": ["swap"]}
 					}
 				},
 				{
 					"name": "Accept Swap",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/swaps/swap_id_here/accept", "host": ["{{base_url}}"], "path": ["swaps", "swap_id_here", "accept"]}
+						"url": {"raw": "{{base_url}}/swap/swap_id_here/accept", "host": ["{{base_url}}"], "path": ["swap", "swap_id_here", "accept"]}
+					}
+				},
+				{
+					"name": "Reject Swap",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/swap/swap_id_here/reject", "host": ["{{base_url}}"], "path": ["swap", "swap_id_here", "reject"]}
+					}
+				},
+				{
+					"name": "Get Swap Details",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/swap/swap_id_here", "host": ["{{base_url}}"], "path": ["swap", "swap_id_here"]}
 					}
 				}
 			]
@@ -775,7 +899,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/chat/conversations/", "host": ["{{base_url}}"], "path": ["chat", "conversations", ""]}
+						"url": {"raw": "{{base_url}}/conversations", "host": ["{{base_url}}"], "path": ["conversations"]}
 					}
 				},
 				{
@@ -790,7 +914,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"conversation_id\": \"conversation_id_here\",\n  \"type\": \"text\",\n  \"content\": \"Hello, is this product still available?\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/chat/messages/", "host": ["{{base_url}}"], "path": ["chat", "messages", ""]}
+						"url": {"raw": "{{base_url}}/messages", "host": ["{{base_url}}"], "path": ["messages"]}
 					}
 				},
 				{
@@ -798,7 +922,30 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/chat/conversations/conversation_id_here/messages/", "host": ["{{base_url}}"], "path": ["chat", "conversations", "conversation_id_here", "messages", ""]}
+						"url": {"raw": "{{base_url}}/conversations/conversation_id_here/messages", "host": ["{{base_url}}"], "path": ["conversations", "conversation_id_here", "messages"]}
+					}
+				},
+				{
+					"name": "Create Conversation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"participant_id\": \"user_id_here\",\n  \"product_id\": \"product_id_here\",\n  \"initial_message\": \"Hi, I'm interested in this product\"\n}"
+						},
+						"url": {"raw": "{{base_url}}/conversations", "host": ["{{base_url}}"], "path": ["conversations"]}
+					}
+				},
+				{
+					"name": "Mark Message as Read",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/messages/message_id_here/read", "host": ["{{base_url}}"], "path": ["messages", "message_id_here", "read"]}
 					}
 				}
 			]
@@ -818,7 +965,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"order_id\": \"order_id_here\",\n  \"reason\": \"not_received\",\n  \"description\": \"I paid for the product but never received it. Seller is not responding to messages.\",\n  \"disputed_amount\": 150000\n}"
 						},
-						"url": {"raw": "{{base_url}}/disputes/", "host": ["{{base_url}}"], "path": ["disputes", ""]}
+						"url": {"raw": "{{base_url}}/disputes/create", "host": ["{{base_url}}"], "path": ["disputes", "create"]}
 					}
 				},
 				{
@@ -826,7 +973,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/disputes/", "host": ["{{base_url}}"], "path": ["user", "disputes", ""]}
+						"url": {"raw": "{{base_url}}/user/disputes", "host": ["{{base_url}}"], "path": ["user", "disputes"]}
 					}
 				},
 				{
@@ -841,7 +988,23 @@
 							"mode": "raw",
 							"raw": "{\n  \"dispute_id\": \"dispute_id_here\",\n  \"type\": \"image\",\n  \"title\": \"Payment Receipt\",\n  \"description\": \"Screenshot of payment confirmation\",\n  \"file_url\": \"https://example.com/evidence.jpg\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/disputes/dispute_id_here/evidence/", "host": ["{{base_url}}"], "path": ["disputes", "dispute_id_here", "evidence", ""]}
+						"url": {"raw": "{{base_url}}/disputes/dispute_id_here/evidence", "host": ["{{base_url}}"], "path": ["disputes", "dispute_id_here", "evidence"]}
+					}
+				},
+				{
+					"name": "Get All Disputes",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/disputes", "host": ["{{base_url}}"], "path": ["disputes"]}
+					}
+				},
+				{
+					"name": "Get Dispute Details",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/disputes/dispute_id_here", "host": ["{{base_url}}"], "path": ["disputes", "dispute_id_here"]}
 					}
 				}
 			]
@@ -861,7 +1024,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"type\": \"user\",\n  \"reason\": \"scam\",\n  \"description\": \"This user is trying to scam buyers with fake products\",\n  \"reported_user_id\": \"user_id_here\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/reports/", "host": ["{{base_url}}"], "path": ["reports", ""]}
+						"url": {"raw": "{{base_url}}/reports/user", "host": ["{{base_url}}"], "path": ["reports", "user"]}
 					}
 				},
 				{
@@ -876,114 +1039,28 @@
 							"mode": "raw",
 							"raw": "{\n  \"type\": \"product\",\n  \"reason\": \"counterfeit\",\n  \"description\": \"This product appears to be a counterfeit item\",\n  \"reported_product_id\": \"product_id_here\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/reports/", "host": ["{{base_url}}"], "path": ["reports", ""]}
+						"url": {"raw": "{{base_url}}/reports/product", "host": ["{{base_url}}"], "path": ["reports", "product"]}
+					}
+				},
+				{
+					"name": "Get All Reports",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/reports", "host": ["{{base_url}}"], "path": ["reports"]}
 					}
 				}
 			]
 		},
 		{
-			"name": "Notifications",
-			"item": [
-				{
-					"name": "Get Notifications",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/notifications/?page=1&limit=20", "host": ["{{base_url}}"], "path": ["notifications", ""], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]}
-					}
-				},
-				{
-					"name": "Mark Notification as Read",
-					"request": {
-						"method": "PUT",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/notifications/notification_id_here/read", "host": ["{{base_url}}"], "path": ["notifications", "notification_id_here", "read"]}
-					}
-				},
-				{
-					"name": "Mark All as Read",
-					"request": {
-						"method": "PUT",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/notifications/mark-all-read", "host": ["{{base_url}}"], "path": ["notifications", "mark-all-read"]}
-					}
-				}
-			]
-		},
-		{
-			"name": "Badges & Rewards",
-			"item": [
-				{
-					"name": "Get User Badges",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/badges/", "host": ["{{base_url}}"], "path": ["user", "badges", ""]}
-					}
-				},
-				{
-					"name": "Get Reward Points",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/rewards/", "host": ["{{base_url}}"], "path": ["user", "rewards", ""]}
-					}
-				},
-				{
-					"name": "Get Points History",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/rewards/history/", "host": ["{{base_url}}"], "path": ["user", "rewards", "history", ""]}
-					}
-				}
-			]
-		},
-		{
-			"name": "Price Alerts & Deals",
-			"item": [
-				{
-					"name": "Create Price Alert",
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"product_id\": \"product_id_here\",\n  \"target_price\": 800000,\n  \"alert_type\": \"price_drop\",\n  \"notification_method\": \"email\"\n}"
-						},
-						"url": {"raw": "{{base_url}}/alerts/price/", "host": ["{{base_url}}"], "path": ["alerts", "price", ""]}
-					}
-				},
-				{
-					"name": "Get My Alerts",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/user/alerts/", "host": ["{{base_url}}"], "path": ["user", "alerts", ""]}
-					}
-				},
-				{
-					"name": "Get Exclusive Deals",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/deals/exclusive/", "host": ["{{base_url}}"], "path": ["deals", "exclusive", ""]}
-					}
-				}
-			]
-		},
-		{
-			"name": "Seller Dashboard",
+			"name": "Seller Dashboard (Mock Data)",
 			"item": [
 				{
 					"name": "Get Seller Products",
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/seller/products/", "host": ["{{base_url}}"], "path": ["seller", "products", ""]}
+						"url": {"raw": "{{base_url}}/seller/products", "host": ["{{base_url}}"], "path": ["seller", "products"]}
 					}
 				},
 				{
@@ -991,7 +1068,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/seller/orders/", "host": ["{{base_url}}"], "path": ["seller", "orders", ""]}
+						"url": {"raw": "{{base_url}}/seller/orders", "host": ["{{base_url}}"], "path": ["seller", "orders"]}
 					}
 				},
 				{
@@ -1008,13 +1085,409 @@
 						},
 						"url": {"raw": "{{base_url}}/seller/orders/order_id_here/status", "host": ["{{base_url}}"], "path": ["seller", "orders", "order_id_here", "status"]}
 					}
+				}
+			]
+		},
+		{
+			"name": "Password Reset",
+			"item": [
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\"\n}"
+						},
+						"url": {"raw": "{{base_url}}/auth/forgot-password", "host": ["{{base_url}}"], "path": ["auth", "forgot-password"]}
+					}
 				},
 				{
-					"name": "Get Seller Analytics",
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"reset_token_here\",\n  \"new_password\": \"NewSecurePass123!\"\n}"
+						},
+						"url": {"raw": "{{base_url}}/auth/reset-password", "host": ["{{base_url}}"], "path": ["auth", "reset-password"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Seller Application",
+			"item": [
+				{
+					"name": "Apply to Become Seller",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"business_name\": \"Tech Solutions Ltd\",\n  \"business_type\": \"electronics\",\n  \"business_address\": \"123 Business Street, Lagos\",\n  \"tax_id\": \"12345678\",\n  \"bank_account\": \"1234567890\",\n  \"bank_name\": \"First Bank\",\n  \"experience_years\": 5\n}"
+						},
+						"url": {"raw": "{{base_url}}/user/apply-seller", "host": ["{{base_url}}"], "path": ["user", "apply-seller"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Get Notifications",
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/seller/analytics/?period=30d", "host": ["{{base_url}}"], "path": ["seller", "analytics", ""], "query": [{"key": "period", "value": "30d"}]}
+						"url": {
+							"raw": "{{base_url}}/notifications?page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["notifications"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/notifications/notification_id_here/read",
+							"host": ["{{base_url}}"],
+							"path": ["notifications", "notification_id_here", "read"]
+						}
+					}
+				},
+				{
+					"name": "Delete Notification",
+					"request": {
+						"method": "DELETE",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/notifications/notification_id_here",
+							"host": ["{{base_url}}"],
+							"path": ["notifications", "notification_id_here"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Wallet & Transactions",
+			"item": [
+				{
+					"name": "Get Wallet Balance",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/wallet/balance",
+							"host": ["{{base_url}}"],
+							"path": ["wallet", "balance"]
+						}
+					}
+				},
+				{
+					"name": "Get Wallet Transactions",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/wallet/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["wallet", "transactions"]
+						}
+					}
+				},
+				{
+					"name": "Request Withdrawal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 50000,\n  \"bank_account\": \"1234567890\",\n  \"bank_name\": \"First Bank\",\n  \"account_name\": \"John Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/wallet/withdraw",
+							"host": ["{{base_url}}"],
+							"path": ["wallet", "withdraw"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Badges & Rewards",
+			"item": [
+				{
+					"name": "Get User Badges",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/user/badges",
+							"host": ["{{base_url}}"],
+							"path": ["user", "badges"]
+						}
+					}
+				},
+				{
+					"name": "Get Available Badges",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/badges/available",
+							"host": ["{{base_url}}"],
+							"path": ["badges", "available"]
+						}
+					}
+				},
+				{
+					"name": "Get User Rewards",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/user/rewards",
+							"host": ["{{base_url}}"],
+							"path": ["user", "rewards"]
+						}
+					}
+				},
+				{
+					"name": "Get Rewards History",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/user/rewards/history",
+							"host": ["{{base_url}}"],
+							"path": ["user", "rewards", "history"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Price Alerts",
+			"item": [
+				{
+					"name": "Create Price Alert",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"product_id\": \"product_id_here\",\n  \"target_price\": 450000,\n  \"alert_type\": \"below\",\n  \"notify_method\": \"email\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/alerts/price",
+							"host": ["{{base_url}}"],
+							"path": ["alerts", "price"]
+						}
+					}
+				},
+				{
+					"name": "Get User Alerts",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/user/alerts",
+							"host": ["{{base_url}}"],
+							"path": ["user", "alerts"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Exclusive Deals",
+			"item": [
+				{
+					"name": "Get Exclusive Deals",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/deals/exclusive",
+							"host": ["{{base_url}}"],
+							"path": ["deals", "exclusive"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Seller Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Data",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/seller/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["seller", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "Get Sales Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/seller/analytics/sales",
+							"host": ["{{base_url}}"],
+							"path": ["seller", "analytics", "sales"]
+						}
+					}
+				},
+				{
+					"name": "Get Product Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/seller/analytics/products",
+							"host": ["{{base_url}}"],
+							"path": ["seller", "analytics", "products"]
+						}
+					}
+				},
+				{
+					"name": "Get Revenue Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/seller/analytics/revenue",
+							"host": ["{{base_url}}"],
+							"path": ["seller", "analytics", "revenue"]
+						}
+					}
+				},
+				{
+					"name": "Get Seller Profile",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/seller/profile",
+							"host": ["{{base_url}}"],
+							"path": ["seller", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Update Seller Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"business_name\": \"Updated Tech Solutions\",\n  \"business_description\": \"Premium electronics retailer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/seller/profile",
+							"host": ["{{base_url}}"],
+							"path": ["seller", "profile"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "WebSocket Chat",
+			"item": [
+				{
+					"name": "WebSocket Connection",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "wss://autoboy-go.onrender.com/api/v1/ws/connect?token={{auth_token}}",
+							"protocol": "wss",
+							"host": ["autoboy-go.onrender.com"],
+							"path": ["api", "v1", "ws", "connect"],
+							"query": [{"key": "token", "value": "{{auth_token}}"}]
+						}
+					},
+					"response": [
+						{
+							"name": "WebSocket Connection Guide",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ws/info",
+									"host": ["{{base_url}}"],
+									"path": ["ws", "info"]
+								}
+							},
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": "WebSocket connection established. Use wss://autoboy-go.onrender.com/api/v1/ws/connect with Authorization header."
+						}
+					]
+				},
+				{
+					"name": "Get Online Users",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {
+							"raw": "{{base_url}}/ws/online",
+							"host": ["{{base_url}}"],
+							"path": ["ws", "online"]
+						}
+					}
+				},
+				{
+					"name": "Broadcast Notification (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"system_announcement\",\n  \"title\": \"System Maintenance\",\n  \"message\": \"The system will be under maintenance from 2-4 AM WAT\",\n  \"priority\": \"high\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/broadcast",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "broadcast"]
+						}
 					}
 				}
 			]

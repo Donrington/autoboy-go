@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoBoy WebSocket Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { margin: 20px 0; }
+        input, textarea, button { margin: 5px; padding: 10px; }
+        #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; background: #f9f9f9; }
+        .message { margin: 5px 0; padding: 5px; border-left: 3px solid #007bff; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+    </style>
+</head>
+<body>
+    <h1>🚀 AutoBoy WebSocket Test</h1>
+    
+    <div class="container">
+        <h3>Connection</h3>
+        <input type="text" id="token" placeholder="Enter your JWT token" style="width: 400px;">
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+        <span id="status">Disconnected</span>
+    </div>
+
+    <div class="container">
+        <h3>Join Conversation</h3>
+        <input type="text" id="conversationId" placeholder="Conversation ID" value="conv_123">
+        <button onclick="joinConversation()">Join</button>
+    </div>
+
+    <div class="container">
+        <h3>Send Message</h3>
+        <input type="text" id="messageContent" placeholder="Type your message..." style="width: 300px;">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <div class="container">
+        <h3>Typing Indicator</h3>
+        <button onclick="startTyping()">Start Typing</button>
+        <button onclick="stopTyping()">Stop Typing</button>
+    </div>
+
+    <div class="container">
+        <h3>Messages</h3>
+        <div id="messages"></div>
+        <button onclick="clearMessages()">Clear</button>
+    </div>
+
+    <script>
+        let ws = null;
+        const messagesDiv = document.getElementById('messages');
+        const statusSpan = document.getElementById('status');
+
+        function connect() {
+            const token = document.getElementById('token').value;
+            if (!token) {
+                addMessage('Please enter your JWT token', 'error');
+                return;
+            }
+
+            const wsUrl = `wss://autoboy-go.onrender.com/api/v1/ws/connect?token=${token}`;
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function(event) {
+                    statusSpan.textContent = 'Connected';
+                    statusSpan.style.color = 'green';
+                    addMessage('✅ Connected to WebSocket', 'success');
+                };
+
+                ws.onmessage = function(event) {
+                    const message = JSON.parse(event.data);
+                    addMessage(`📨 Received: ${JSON.stringify(message, null, 2)}`, 'message');
+                };
+
+                ws.onclose = function(event) {
+                    statusSpan.textContent = 'Disconnected';
+                    statusSpan.style.color = 'red';
+                    addMessage(`❌ Connection closed: ${event.code} - ${event.reason}`, 'error');
+                };
+
+                ws.onerror = function(error) {
+                    addMessage(`🚨 WebSocket error: ${error}`, 'error');
+                };
+
+            } catch (error) {
+                addMessage(`🚨 Connection error: ${error.message}`, 'error');
+            }
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        function joinConversation() {
+            const conversationId = document.getElementById('conversationId').value;
+            if (!ws || !conversationId) {
+                addMessage('Connect first and enter conversation ID', 'error');
+                return;
+            }
+
+            const message = {
+                type: 'join_conversation',
+                data: { conversation_id: conversationId }
+            };
+
+            ws.send(JSON.stringify(message));
+            addMessage(`📝 Joined conversation: ${conversationId}`, 'success');
+        }
+
+        function sendMessage() {
+            const content = document.getElementById('messageContent').value;
+            const conversationId = document.getElementById('conversationId').value;
+            
+            if (!ws || !content || !conversationId) {
+                addMessage('Connect first, join conversation, and enter message', 'error');
+                return;
+            }
+
+            const message = {
+                type: 'chat_message',
+                data: {
+                    conversation_id: conversationId,
+                    content: content,
+                    type: 'text'
+                }
+            };
+
+            ws.send(JSON.stringify(message));
+            addMessage(`💬 Sent: ${content}`, 'success');
+            document.getElementById('messageContent').value = '';
+        }
+
+        function startTyping() {
+            const conversationId = document.getElementById('conversationId').value;
+            if (!ws || !conversationId) return;
+
+            const message = {
+                type: 'typing_start',
+                data: { conversation_id: conversationId }
+            };
+
+            ws.send(JSON.stringify(message));
+            addMessage('⌨️ Started typing...', 'success');
+        }
+
+        function stopTyping() {
+            const conversationId = document.getElementById('conversationId').value;
+            if (!ws || !conversationId) return;
+
+            const message = {
+                type: 'typing_stop',
+                data: { conversation_id: conversationId }
+            };
+
+            ws.send(JSON.stringify(message));
+            addMessage('⏹️ Stopped typing', 'success');
+        }
+
+        function addMessage(text, type = 'message') {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.innerHTML = `<small>${new Date().toLocaleTimeString()}</small><br>${text}`;
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function clearMessages() {
+            messagesDiv.innerHTML = '';
+        }
+
+        // Auto-focus token input
+        document.getElementById('token').focus();
+    </script>
+</body>
+</html>

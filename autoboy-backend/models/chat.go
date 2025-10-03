@@ -275,11 +275,6 @@ type ChatReport struct {
 	UpdatedAt       time.Time          `bson:"updated_at" json:"updated_at"`
 }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 2cb087e881c93b8497c890ce541f326e8eb2bf29
 // ChatMute represents muted conversations for users
 type ChatMute struct {
 	ID             primitive.ObjectID `bson:"_id,omitempty" json:"id"`

@@ -32,6 +32,18 @@ func SetupRoutes(router *gin.Engine) {
 	sellerHandler := handlers.NewSellerHandler(emailService)
 	cartHandler := handlers.NewCartHandler()
 	categoryHandler := handlers.NewCategoryHandler()
+	notificationHandler := handlers.NewNotificationHandler()
+	badgeHandler := handlers.NewBadgeHandler()
+	walletHandler := handlers.NewWalletHandler()
+	reportHandler := handlers.NewReportHandler()
+	disputeHandler := handlers.NewDisputeHandler()
+	chatHandler := handlers.NewChatHandler()
+	alertHandler := handlers.NewAlertHandler()
+	dealHandler := handlers.NewDealHandler()
+	swapHandler := handlers.NewSwapHandler()
+	analyticsHandler := handlers.NewAnalyticsHandler()
+	sellerDashboardHandler := handlers.NewSellerDashboardHandler()
+	searchHandler := handlers.NewSearchHandler()
 
 	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
@@ -57,6 +69,7 @@ func SetupRoutes(router *gin.Engine) {
 				auth.GET("/verify-email", authHandler.VerifyEmail)
 				auth.POST("/forgot-password", authHandler.ForgotPassword)
 				auth.POST("/reset-password", authHandler.ResetPassword)
+				auth.POST("/resend-email-verification", authHandler.ResendEmailVerification)
 			}
 
 			// Public product routes
@@ -73,6 +86,9 @@ func SetupRoutes(router *gin.Engine) {
 				categories.GET("/", categoryHandler.GetCategories)
 				categories.GET("/:id", categoryHandler.GetCategory)
 			}
+
+			// Search routes
+			public.GET("/search", searchHandler.SearchProducts)
 		}
 
 		// Protected routes (authentication required)
@@ -86,6 +102,7 @@ func SetupRoutes(router *gin.Engine) {
 				user.GET("/profile", userHandler.GetProfile)
 				user.PUT("/profile", userHandler.UpdateProfile)
 				user.POST("/verify-phone", authHandler.VerifyPhone)
+				user.POST("/resend-phone-otp", authHandler.ResendPhoneOTP)
 				user.POST("/change-password", userHandler.ChangePassword)
 				user.POST("/logout", authHandler.Logout)
 
@@ -139,6 +156,21 @@ func SetupRoutes(router *gin.Engine) {
 					orders.GET("/:id", orderHandler.GetSellerOrder)
 					orders.PUT("/:id/status", orderHandler.UpdateOrderStatus)
 				}
+
+				// Seller dashboard
+				seller.GET("/dashboard", sellerDashboardHandler.GetSellerDashboard)
+
+				// Seller analytics
+				sellerAnalytics := seller.Group("/analytics")
+				{
+					sellerAnalytics.GET("/sales", sellerDashboardHandler.GetSellerSalesAnalytics)
+					sellerAnalytics.GET("/products", sellerDashboardHandler.GetSellerProductAnalytics)
+					sellerAnalytics.GET("/revenue", sellerDashboardHandler.GetSellerRevenueAnalytics)
+				}
+
+				// Seller profile
+				seller.GET("/profile", sellerDashboardHandler.GetSellerProfile)
+				seller.PUT("/profile", sellerDashboardHandler.UpdateSellerProfile)
 			}
 
 			// Order routes
@@ -156,6 +188,97 @@ func SetupRoutes(router *gin.Engine) {
 				cart.PUT("/update", cartHandler.UpdateCartItem)
 				cart.DELETE("/remove/:id", cartHandler.RemoveFromCart)
 				cart.DELETE("/clear", cartHandler.ClearCart)
+			}
+
+			// Swap deals routes
+			swap := protected.Group("/swap")
+			{
+				swap.GET("/", swapHandler.GetUserSwapDeals)
+				swap.POST("/create", swapHandler.CreateSwapDeal)
+				swap.GET("/:id", swapHandler.GetSwapDeal)
+				swap.PUT("/:id/accept", swapHandler.AcceptSwapDeal)
+				swap.PUT("/:id/reject", swapHandler.RejectSwapDeal)
+			}
+
+			// Analytics routes
+			analytics := protected.Group("/analytics")
+			{
+				analytics.GET("/dashboard", analyticsHandler.GetDashboardAnalytics)
+				analytics.GET("/sales", analyticsHandler.GetSalesAnalytics)
+				analytics.GET("/products", analyticsHandler.GetProductAnalytics)
+			}
+
+			// Notifications routes
+			notifications := protected.Group("/notifications")
+			{
+				notifications.GET("/", notificationHandler.GetNotifications)
+				notifications.PUT("/:id/read", notificationHandler.MarkNotificationAsRead)
+				notifications.DELETE("/:id", notificationHandler.DeleteNotification)
+			}
+
+			// Reports routes
+			reports := protected.Group("/reports")
+			{
+				reports.POST("/product", reportHandler.ReportProduct)
+				reports.POST("/user", reportHandler.ReportUser)
+			}
+
+			// Disputes routes
+			disputes := protected.Group("/disputes")
+			{
+				disputes.GET("/", disputeHandler.GetDisputes)
+				disputes.POST("/create", disputeHandler.CreateDispute)
+				disputes.GET("/:id", disputeHandler.GetDispute)
+			}
+
+			// Wallet routes
+			wallet := protected.Group("/wallet")
+			{
+				wallet.GET("/balance", walletHandler.GetWalletBalance)
+				wallet.GET("/transactions", walletHandler.GetWalletTransactions)
+				wallet.POST("/withdraw", walletHandler.RequestWithdrawal)
+			}
+
+			// User-specific routes
+			userSpecific := protected.Group("/user")
+			{
+				userSpecific.GET("/badges", badgeHandler.GetUserBadges)
+				userSpecific.GET("/rewards", badgeHandler.GetUserRewards)
+				userSpecific.GET("/rewards/history", badgeHandler.GetRewardsHistory)
+				userSpecific.GET("/alerts", alertHandler.GetUserAlerts)
+				userSpecific.GET("/disputes", disputeHandler.GetDisputes)
+			}
+
+			// Badges routes
+			badges := protected.Group("/badges")
+			{
+				badges.GET("/", badgeHandler.GetUserBadges)
+				badges.GET("/available", badgeHandler.GetAvailableBadges)
+			}
+
+			// Alerts routes
+			alerts := protected.Group("/alerts")
+			{
+				alerts.POST("/price", alertHandler.CreatePriceAlert)
+			}
+
+			// Deals routes
+			deals := protected.Group("/deals")
+			{
+				deals.GET("/exclusive", dealHandler.GetExclusiveDeals)
+			}
+
+			// Chat routes
+			conversations := protected.Group("/conversations")
+			{
+				conversations.GET("/", chatHandler.GetConversations)
+				conversations.POST("/", chatHandler.CreateConversation)
+				conversations.GET("/:id/messages", chatHandler.GetMessages)
+			}
+
+			messages := protected.Group("/messages")
+			{
+				messages.POST("/", chatHandler.SendMessage)
 			}
 
 			// WebSocket routes
