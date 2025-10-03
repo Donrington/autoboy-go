@@ -1,20 +1,68 @@
 
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { colors, commonStyles } from '../../styles/commonStyles';
 import { mockConversations } from '../../data/products';
 import { Ionicons } from '@expo/vector-icons';
 import NotificationCenter from '../../components/NotificationCenter';
 import PremiumBadge from '../../components/PremiumBadge';
+import websocketService from '../../services/websocketService';
+import { Conversation } from '../../types';
 
 export default function ChatListScreen() {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [conversations, setConversations] = useState<Conversation[]>(
+    mockConversations.map(conv => ({
+      id: conv.id,
+      participants: [conv.id, 'current_user'],
+      type: 'direct' as const,
+      title: conv.title,
+      lastMessage: { sender: 'them' as const, text: conv.lastMessage },
+      unreadCount: 2,
+      isArchived: false,
+      isMuted: false
+    }))
+  );
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    // WebSocket connection status
+    const handleConnection = () => setIsConnected(true);
+    const handleDisconnection = () => setIsConnected(false);
+
+    // Real-time message updates
+    const handleNewMessage = (message: any) => {
+      setConversations(prev => prev.map(conv => 
+        conv.id === message.conversation_id 
+          ? { ...conv, lastMessage: message, unreadCount: conv.unreadCount + 1 }
+          : conv
+      ));
+    };
+
+    websocketService.on('connection', handleConnection);
+    websocketService.on('disconnection', handleDisconnection);
+    websocketService.on('new_message', handleNewMessage);
+
+    // Initial connection state
+    setIsConnected(websocketService.isConnected());
+
+    return () => {
+      websocketService.off('connection', handleConnection);
+      websocketService.off('disconnection', handleDisconnection);
+      websocketService.off('new_message', handleNewMessage);
+    };
+  }, []);
 
   return (
     <View style={commonStyles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Messages</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>Messages</Text>
+          <View style={[styles.connectionStatus, { backgroundColor: isConnected ? '#4ECDC4' : '#FF6B6B' }]}>
+            <Text style={styles.connectionText}>{isConnected ? 'Online' : 'Offline'}</Text>
+          </View>
+        </View>
         <TouchableOpacity 
           style={styles.notificationButton}
           onPress={() => setShowNotifications(true)}
@@ -27,7 +75,7 @@ export default function ChatListScreen() {
       </View>
       
       <FlatList
-        data={mockConversations}
+        data={conversations}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
         renderItem={({ item }) => (
@@ -43,7 +91,7 @@ export default function ChatListScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.last}>{item.lastMessage}</Text>
+              <Text style={styles.last}>{item.lastMessage?.text || 'No messages yet'}</Text>
               <Text style={styles.timestamp}>2 hours ago</Text>
             </View>
             <View style={styles.rightSection}>
@@ -74,6 +122,21 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  connectionStatus: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  connectionText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '600',
   },
   headerTitle: {
     fontSize: 20,

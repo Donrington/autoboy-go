@@ -20,6 +20,11 @@ import ProductDetails from './components/ProductDetails';
 import BecomeSeller from './components/BecomeSeller';
 import SellerSignup from './components/SellerSignup';
 import SellerDashboard from './components/SellerDashboard';
+import PremiumSellerDashboard from './components/PremiumSellerDashboard';
+import BuyerDashboard from './components/BuyerDashboard';
+import PremiumBuyerDashboard from './components/PremiumBuyerDashboard';
+import AdminDashboard from './components/AdminDashboard';
+
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -85,9 +90,12 @@ function App() {
           <Route path="/register" element={<LoginSignup />} />
           <Route path="/auth" element={<LoginSignup />} />
 
-          {/* Dashboard route without navbar/footer */}
+          {/* Dashboard routes without navbar/footer */}
           <Route path="/seller-dashboard" element={<SellerDashboard />} />
-          
+          <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
+          <Route path="/premium-seller-dashboard" element={<PremiumSellerDashboard />} />
+          <Route path="/premium-buyer-dashboard" element={<PremiumBuyerDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
           {/* Routes with navbar and footer */}
           <Route path="/*" element={
             <>
@@ -113,6 +121,7 @@ function App() {
                   <Route path="/seller-signin" element={<div>Seller Sign In - Coming Soon</div>} />
                   <Route path="/category/:id" element={<div>Category Page - Coming Soon</div>} />
                   <Route path="/profile" element={<div>Profile Page - Coming Soon</div>} />
+                  
                   
                   {/* 404 Page */}
                   <Route path="*" element={<div>Page Not Found</div>} />

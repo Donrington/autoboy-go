@@ -5,7 +5,8 @@ import {
   faBars, faMoon, faSun, faPlus, faTruck, faChartPie, faMobileAlt,
   faCheckCircle, faNairaSign, faEdit, faEye, faTrash, faFilter,
   faSearch, faUpload, faSave, faUser, faEnvelope, faPhone, faMapMarkerAlt,
-  faTimes, faCheck, faClipboardList, faWallet
+  faTimes, faCheck, faClipboardList, faWallet, faBell, faSignOutAlt,
+  faUserCircle, faShieldAlt, faQuestionCircle
 } from '@fortawesome/free-solid-svg-icons';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import {
@@ -19,6 +20,7 @@ import {
   Legend,
   ArcElement,
   BarElement,
+  Filler,
 } from 'chart.js';
 import { format, startOfWeek, endOfWeek, subDays } from 'date-fns';
 import CustomCursor from './CustomCursor';
@@ -36,7 +38,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  BarElement
+  BarElement,
+  Filler
 );
 
 const SellerDashboard = () => {
@@ -46,12 +49,38 @@ const SellerDashboard = () => {
     return saved ? JSON.parse(saved) : false;
   });
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [showAddProductForm, setShowAddProductForm] = useState(false);
+  const [productImages, setProductImages] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [stats, setStats] = useState({
     activeProducts: 24,
     pendingOrders: 5,
     totalSales: 152,
     totalEarnings: 2500000
   });
+  const [newProduct, setNewProduct] = useState({
+    title: '',
+    category: '',
+    brand: '',
+    model: '',
+    condition: 'new',
+    price: '',
+    description: '',
+    specifications: '',
+    quantity: '',
+    location: '',
+    swapAvailable: false,
+    tags: ''
+  });
+
+  // Notifications data
+  const [notifications] = useState([
+    { id: 1, title: 'New Order Received', message: 'Order #1234 for iPhone 15 Pro Max', time: '5 min ago', unread: true, type: 'order' },
+    { id: 2, title: 'Payment Received', message: '₦1,200,000 credited to your account', time: '1 hour ago', unread: true, type: 'payment' },
+    { id: 3, title: 'Product Low Stock', message: 'MacBook Pro M3 - Only 2 left', time: '3 hours ago', unread: false, type: 'alert' },
+    { id: 4, title: 'New Review', message: 'Customer rated your product 5 stars', time: '1 day ago', unread: false, type: 'review' }
+  ]);
 
   // Sample data for demo
   const [products] = useState([
@@ -199,6 +228,48 @@ const SellerDashboard = () => {
       draft: 'Draft'
     };
     return texts[status] || status;
+  };
+
+  const handleProductInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewProduct(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const imageUrls = files.map(file => URL.createObjectURL(file));
+    setProductImages(prev => [...prev, ...imageUrls].slice(0, 10)); // Max 10 images
+  };
+
+  const removeImage = (index) => {
+    setProductImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmitProduct = (e) => {
+    e.preventDefault();
+    // Here you would send data to your backend
+    console.log('New Product:', newProduct);
+    console.log('Product Images:', productImages);
+    alert('Product added successfully!');
+    setShowAddProductForm(false);
+    setNewProduct({
+      title: '',
+      category: '',
+      brand: '',
+      model: '',
+      condition: 'new',
+      price: '',
+      description: '',
+      specifications: '',
+      quantity: '',
+      location: '',
+      swapAvailable: false,
+      tags: ''
+    });
+    setProductImages([]);
   };
 
   const chartOptions = {
@@ -364,12 +435,255 @@ const SellerDashboard = () => {
     </div>
   );
 
+  const renderAddProductForm = () => (
+    <div className="autoboy-dash-modal-overlay" onClick={() => setShowAddProductForm(false)}>
+      <div className="autoboy-dash-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="autoboy-dash-modal-header">
+          <h2>Add New Product</h2>
+          <button className="autoboy-dash-modal-close" onClick={() => setShowAddProductForm(false)}>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmitProduct} className="autoboy-dash-product-form">
+          {/* Product Images */}
+          <div className="autoboy-dash-form-section">
+            <h3>Product Images (Max 10)</h3>
+            <div className="autoboy-dash-image-upload-area">
+              <input
+                type="file"
+                id="product-images"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="product-images" className="autoboy-dash-upload-label">
+                <FontAwesomeIcon icon={faUpload} />
+                <span>Click to upload images</span>
+              </label>
+            </div>
+
+            {productImages.length > 0 && (
+              <div className="autoboy-dash-image-preview-grid">
+                {productImages.map((img, index) => (
+                  <div key={index} className="autoboy-dash-image-preview">
+                    <img src={img} alt={`Product ${index + 1}`} />
+                    <button
+                      type="button"
+                      className="autoboy-dash-remove-image"
+                      onClick={() => removeImage(index)}
+                    >
+                      <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Basic Information */}
+          <div className="autoboy-dash-form-section">
+            <h3>Basic Information</h3>
+            <div className="autoboy-dash-form-row">
+              <div className="autoboy-dash-form-group">
+                <label>Product Title *</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={newProduct.title}
+                  onChange={handleProductInputChange}
+                  placeholder="e.g., iPhone 15 Pro Max 256GB"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="autoboy-dash-form-row">
+              <div className="autoboy-dash-form-group">
+                <label>Category *</label>
+                <select
+                  name="category"
+                  value={newProduct.category}
+                  onChange={handleProductInputChange}
+                  required
+                >
+                  <option value="">Select Category</option>
+                  <option value="smartphones">Smartphones</option>
+                  <option value="tablets">Tablets</option>
+                  <option value="laptops">Laptops</option>
+                  <option value="smartwatches">Smartwatches</option>
+                  <option value="accessories">Accessories</option>
+                </select>
+              </div>
+
+              <div className="autoboy-dash-form-group">
+                <label>Condition *</label>
+                <select
+                  name="condition"
+                  value={newProduct.condition}
+                  onChange={handleProductInputChange}
+                  required
+                >
+                  <option value="new">Brand New</option>
+                  <option value="uk_used">UK Used</option>
+                  <option value="nigeria_used">Nigeria Used</option>
+                  <option value="refurbished">Refurbished</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="autoboy-dash-form-row">
+              <div className="autoboy-dash-form-group">
+                <label>Brand</label>
+                <input
+                  type="text"
+                  name="brand"
+                  value={newProduct.brand}
+                  onChange={handleProductInputChange}
+                  placeholder="e.g., Apple, Samsung"
+                />
+              </div>
+
+              <div className="autoboy-dash-form-group">
+                <label>Model</label>
+                <input
+                  type="text"
+                  name="model"
+                  value={newProduct.model}
+                  onChange={handleProductInputChange}
+                  placeholder="e.g., iPhone 15 Pro Max"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing & Stock */}
+          <div className="autoboy-dash-form-section">
+            <h3>Pricing & Stock</h3>
+            <div className="autoboy-dash-form-row">
+              <div className="autoboy-dash-form-group">
+                <label>Price (₦) *</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={newProduct.price}
+                  onChange={handleProductInputChange}
+                  placeholder="0"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <div className="autoboy-dash-form-group">
+                <label>Quantity in Stock *</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={newProduct.quantity}
+                  onChange={handleProductInputChange}
+                  placeholder="0"
+                  min="1"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="autoboy-dash-form-section">
+            <h3>Product Description</h3>
+            <div className="autoboy-dash-form-group">
+              <label>Description *</label>
+              <textarea
+                name="description"
+                value={newProduct.description}
+                onChange={handleProductInputChange}
+                rows="5"
+                placeholder="Describe your product in detail..."
+                required
+              />
+            </div>
+
+            <div className="autoboy-dash-form-group">
+              <label>Specifications</label>
+              <textarea
+                name="specifications"
+                value={newProduct.specifications}
+                onChange={handleProductInputChange}
+                rows="4"
+                placeholder="Storage: 256GB, RAM: 8GB, Color: Space Black..."
+              />
+            </div>
+          </div>
+
+          {/* Location & Additional */}
+          <div className="autoboy-dash-form-section">
+            <h3>Location & Additional Info</h3>
+            <div className="autoboy-dash-form-group">
+              <label>Location *</label>
+              <input
+                type="text"
+                name="location"
+                value={newProduct.location}
+                onChange={handleProductInputChange}
+                placeholder="e.g., Lagos, Ikeja"
+                required
+              />
+            </div>
+
+            <div className="autoboy-dash-form-group">
+              <label>Tags (comma separated)</label>
+              <input
+                type="text"
+                name="tags"
+                value={newProduct.tags}
+                onChange={handleProductInputChange}
+                placeholder="e.g., smartphone, apple, ios"
+              />
+            </div>
+
+            <div className="autoboy-dash-form-group">
+              <label className="autoboy-dash-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="swapAvailable"
+                  checked={newProduct.swapAvailable}
+                  onChange={handleProductInputChange}
+                />
+                <span>Available for Swap/Exchange</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="autoboy-dash-form-actions">
+            <button
+              type="button"
+              className="autoboy-dash-btn autoboy-dash-btn-secondary"
+              onClick={() => setShowAddProductForm(false)}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="autoboy-dash-btn autoboy-dash-btn-primary">
+              <FontAwesomeIcon icon={faSave} />
+              Add Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
   const renderProductsContent = () => (
     <div className="autoboy-dash-content-wrapper">
       <div className="autoboy-dash-section" style={{ gridColumn: '1 / -1' }}>
         <div className="autoboy-dash-section-header">
           <h2 className="autoboy-dash-section-title">My Products</h2>
-          <button className="autoboy-dash-btn autoboy-dash-btn-primary">
+          <button
+            className="autoboy-dash-btn autoboy-dash-btn-primary"
+            onClick={() => setShowAddProductForm(true)}
+          >
             <FontAwesomeIcon icon={faPlus} />
             Add Product
           </button>
@@ -721,6 +1035,7 @@ const SellerDashboard = () => {
   return (
     <>
       <CustomCursor />
+      {showAddProductForm && renderAddProductForm()}
       <div className="autoboy-dash-container">
       {/* Sidebar */}
       <div className={`autoboy-dash-sidebar ${isMobileSidebarOpen ? 'autoboy-dash-sidebar-open' : ''}`}>
@@ -790,9 +1105,100 @@ const SellerDashboard = () => {
             </h1>
           </div>
           <div className="autoboy-dash-header-actions">
+            {/* Notifications */}
+            <div className="autoboy-dash-notification-wrapper">
+              <button
+                className="autoboy-dash-notification-btn"
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  setShowSettings(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faBell} />
+                {notifications.filter(n => n.unread).length > 0 && (
+                  <span className="autoboy-dash-notification-badge">
+                    {notifications.filter(n => n.unread).length}
+                  </span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="autoboy-dash-dropdown autoboy-dash-notifications-dropdown">
+                  <div className="autoboy-dash-dropdown-header">
+                    <h3>Notifications</h3>
+                    <button className="autoboy-dash-mark-read-btn">Mark all as read</button>
+                  </div>
+                  <div className="autoboy-dash-dropdown-content">
+                    {notifications.map(notif => (
+                      <div key={notif.id} className={`autoboy-dash-notification-item ${notif.unread ? 'unread' : ''}`}>
+                        <div className="autoboy-dash-notification-icon">
+                          <FontAwesomeIcon icon={
+                            notif.type === 'order' ? faShoppingCart :
+                            notif.type === 'payment' ? faDollarSign :
+                            notif.type === 'alert' ? faBell :
+                            faCheckCircle
+                          } />
+                        </div>
+                        <div className="autoboy-dash-notification-content">
+                          <h4>{notif.title}</h4>
+                          <p>{notif.message}</p>
+                          <span>{notif.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="autoboy-dash-dropdown-footer">
+                    <button>View All Notifications</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Theme Toggle */}
             <button className="autoboy-dash-theme-toggle" onClick={toggleTheme}>
               <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
             </button>
+
+            {/* Settings Dropdown */}
+            <div className="autoboy-dash-settings-wrapper">
+              <button
+                className="autoboy-dash-settings-btn"
+                onClick={() => {
+                  setShowSettings(!showSettings);
+                  setShowNotifications(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faCog} />
+              </button>
+
+              {showSettings && (
+                <div className="autoboy-dash-dropdown autoboy-dash-settings-dropdown">
+                  <div className="autoboy-dash-dropdown-content">
+                    <button className="autoboy-dash-dropdown-item" onClick={() => setActiveSection('settings')}>
+                      <FontAwesomeIcon icon={faUserCircle} />
+                      <span>My Profile</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item" onClick={() => setActiveSection('settings')}>
+                      <FontAwesomeIcon icon={faCog} />
+                      <span>Settings</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item">
+                      <FontAwesomeIcon icon={faShieldAlt} />
+                      <span>Privacy & Security</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item">
+                      <FontAwesomeIcon icon={faQuestionCircle} />
+                      <span>Help & Support</span>
+                    </button>
+                    <div className="autoboy-dash-dropdown-divider"></div>
+                    <button className="autoboy-dash-dropdown-item autoboy-dash-logout-btn" onClick={() => window.location.href = '/login'}>
+                      <FontAwesomeIcon icon={faSignOutAlt} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

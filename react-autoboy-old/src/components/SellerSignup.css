@@ -1,0 +1,522 @@
+/* Import all required CSS files */
+@import '../assets/sellersignup.css';
+@import '../assets/styles.css';
+
+/* Top level page container */
+.seller-signup-page {
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Override animation initial states for visibility */
+.seller-auth-container,
+.seller-form-card,
+.seller-auth-visual,
+.seller-auth-forms {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
+
+/* Ensure exact layout structure matches original HTML */
+.seller-auth-container {
+  min-height: 100vh !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  position: relative !important;
+  gap: 0 !important;
+  width: 100% !important;
+}
+
+/* Left visual side - ensure proper alignment */
+.seller-auth-visual {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateX(0) !important;
+  background: linear-gradient(135deg, #0F766E 0%, #22C55E 100%) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2rem !important;
+}
+
+/* Right forms side - ensure proper alignment */
+.seller-auth-forms {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateX(0) !important;
+  background: var(--bg-light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2rem !important;
+  position: relative !important;
+}
+
+/* Form card - ensure proper sizing */
+.seller-form-card {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  background: white !important;
+  border-radius: 24px !important;
+  padding: 3rem !important;
+  width: 100% !important;
+  max-width: 500px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+  position: relative !important;
+  min-height: 600px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Fix progress bar to match original */
+.seller-progress-bar {
+  position: relative !important;
+  height: 4px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 2px !important;
+  margin-bottom: 2rem !important;
+  overflow: hidden !important;
+}
+
+.seller-progress-fill {
+  height: 100% !important;
+  background: var(--gradient-primary) !important;
+  border-radius: 2px !important;
+  transition: width 0.3s ease !important;
+}
+
+/* Remove duplicate progress bar - using original CSS styles */
+
+/* Form Navigation */
+.seller-form-navigation {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: space-between;
+}
+
+.seller-form-button-secondary {
+  background: transparent !important;
+  color: var(--text-light-secondary) !important;
+  border: 2px solid var(--border-light) !important;
+}
+
+.seller-form-button-secondary:hover {
+  background: var(--bg-light-secondary) !important;
+  border-color: var(--primary-green) !important;
+  color: var(--primary-green) !important;
+}
+
+/* Password Input with Toggle */
+.seller-password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.seller-password-toggle {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  color: var(--text-light-secondary);
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s ease;
+}
+
+.seller-password-toggle:hover {
+  color: var(--primary-green);
+}
+
+/* Password Hint */
+.seller-password-hint {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-light-secondary);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary-green);
+}
+
+.seller-password-hint p {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.seller-password-hint ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-light-secondary);
+}
+
+.seller-password-hint li {
+  margin-bottom: 0.25rem;
+}
+
+/* Phone Input */
+.seller-phone-input {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.seller-phone-input:focus-within {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.seller-country-code {
+  background: var(--bg-light-tertiary);
+  padding: 1rem;
+  color: var(--text-light);
+  font-weight: 600;
+  border-right: 2px solid var(--border-light);
+}
+
+.seller-phone-input .seller-form-input {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.seller-phone-input .seller-form-input:focus {
+  box-shadow: none;
+}
+
+/* Radio Options */
+.seller-radio-options {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.seller-radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.seller-radio-option:hover {
+  border-color: var(--primary-green);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.seller-radio-option input[type="radio"] {
+  accent-color: var(--primary-green);
+}
+
+.seller-radio-option input[type="radio"]:checked + span {
+  color: var(--primary-green);
+  font-weight: 600;
+}
+
+/* Checkbox Options */
+.seller-checkbox-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 1rem;
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.seller-checkbox-option:hover {
+  border-color: var(--primary-green);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.seller-checkbox-option input[type="checkbox"] {
+  accent-color: var(--primary-green);
+  margin-top: 0.125rem;
+}
+
+/* Resend Button */
+.seller-resend-button {
+  background: none;
+  border: none;
+  color: var(--primary-green);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+.seller-resend-button:hover {
+  text-decoration: underline;
+}
+
+.seller-resend-button:disabled {
+  color: var(--text-light-tertiary);
+  cursor: not-allowed;
+}
+
+/* Verification Input */
+.seller-verification-input {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5rem;
+}
+
+/* Dark Mode Support */
+.seller-signup-page.dark-mode {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+/* Dark mode for auth forms background */
+.seller-signup-page.dark-mode .seller-auth-forms {
+  background: var(--bg-dark) !important;
+}
+
+/* Dark mode for form card */
+.seller-signup-page.dark-mode .seller-form-card {
+  background: var(--bg-dark-secondary) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+.seller-signup-page.dark-mode .seller-auth-card {
+  background-color: var(--bg-dark-secondary);
+  border-color: var(--border-dark);
+}
+
+.seller-signup-page.dark-mode .seller-form-title {
+  color: var(--text-dark);
+}
+
+.seller-signup-page.dark-mode .seller-form-label {
+  color: var(--text-dark);
+}
+
+.seller-signup-page.dark-mode .seller-form-input,
+.seller-signup-page.dark-mode .seller-form-select {
+  background-color: var(--bg-dark-tertiary);
+  color: var(--text-dark);
+  border-color: var(--border-dark);
+}
+
+.seller-signup-page.dark-mode .seller-form-input::placeholder {
+  color: var(--text-dark-tertiary);
+}
+
+.seller-signup-page.dark-mode .seller-progress-circle {
+  background: var(--bg-dark-tertiary);
+  color: var(--text-dark-secondary);
+  border-color: var(--border-dark);
+}
+
+.seller-signup-page.dark-mode .seller-progress-line {
+  background: var(--border-dark);
+}
+
+.seller-signup-page.dark-mode .seller-password-hint {
+  background: var(--bg-dark-tertiary);
+}
+
+.seller-signup-page.dark-mode .seller-password-hint p {
+  color: var(--text-dark);
+}
+
+.seller-signup-page.dark-mode .seller-password-hint ul {
+  color: var(--text-dark-secondary);
+}
+
+.seller-signup-page.dark-mode .seller-country-code {
+  background: var(--bg-dark-tertiary);
+  color: var(--text-dark);
+  border-color: var(--border-dark);
+}
+
+.seller-signup-page.dark-mode .seller-phone-input {
+  border-color: var(--border-dark);
+}
+
+.seller-signup-page.dark-mode .seller-radio-option,
+.seller-signup-page.dark-mode .seller-checkbox-option {
+  border-color: var(--border-dark);
+  color: var(--text-dark);
+}
+
+.seller-signup-page.dark-mode .seller-radio-option:hover,
+.seller-signup-page.dark-mode .seller-checkbox-option:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.seller-signup-page.dark-mode .seller-form-button-secondary {
+  color: var(--text-dark-secondary) !important;
+  border-color: var(--border-dark) !important;
+}
+
+.seller-signup-page.dark-mode .seller-form-button-secondary:hover {
+  background: var(--bg-dark-tertiary) !important;
+}
+
+.seller-signup-page.dark-mode .seller-resend-button {
+  color: var(--primary-green);
+}
+
+.seller-signup-page.dark-mode .seller-password-toggle {
+  color: var(--text-dark-secondary);
+}
+
+.seller-signup-page.dark-mode .seller-form-footer a {
+  color: var(--primary-green);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 50%;
+  right: 30px;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  z-index: 1000;
+  border: none;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: var(--shadow-glow);
+}
+
+.theme-toggle svg {
+  color: white;
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(20deg);
+}
+
+/* Back to Top Button */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  z-index: 999;
+}
+
+.back-to-top:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow);
+}
+
+.back-to-top svg {
+  color: white;
+  font-size: 16px;
+}
+
+.progress-ring {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+}
+
+.progress-ring__circle {
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 2;
+  fill: transparent;
+  r: 26;
+  cx: 28;
+  cy: 28;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .seller-auth-container {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto 1fr !important;
+  }
+
+  .seller-auth-visual {
+    min-height: 200px !important;
+    padding: 1rem !important;
+  }
+
+  .seller-auth-forms {
+    padding: 1rem !important;
+  }
+
+  .seller-form-card {
+    padding: 2rem !important;
+    margin: 0 !important;
+  }
+
+  .seller-progress-bar {
+    padding: 0 1rem;
+  }
+
+  .seller-progress-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .seller-progress-line {
+    width: 40px;
+    margin: 0 5px;
+  }
+
+  .seller-radio-options {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .seller-form-navigation {
+    flex-direction: column-reverse;
+    gap: 1rem;
+  }
+
+  .theme-toggle,
+  .back-to-top {
+    right: 20px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .theme-toggle svg,
+  .back-to-top svg {
+    font-size: 16px;
+  }
+}

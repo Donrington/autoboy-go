@@ -1028,12 +1028,333 @@
 }
 
 /* ========================================
+   Add Product Modal & Form Styles
+   ======================================== */
+
+.autoboy-dash-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.autoboy-dash-modal {
+    background: var(--card-light);
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-dark);
+    animation: slideUp 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal {
+    background: var(--card-dark);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.autoboy-dash-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    z-index: 10;
+    border-radius: 20px 20px 0 0;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal-header {
+    border-bottom-color: var(--border-dark);
+    background: var(--card-dark);
+}
+
+.autoboy-dash-modal-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal-header h2 {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-modal-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal-close {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-modal-close:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.05);
+}
+
+.autoboy-dash-product-form {
+    padding: 2rem;
+}
+
+.autoboy-dash-form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-section {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-dash-form-section:last-of-type {
+    border-bottom: none;
+}
+
+.autoboy-dash-form-section h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-section h3 {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.autoboy-dash-form-row:last-child {
+    margin-bottom: 0;
+}
+
+.autoboy-dash-form-group select {
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    background: var(--bg-light);
+    color: var(--text-light);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-group select {
+    background: var(--bg-dark-secondary);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-form-group select:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.autoboy-dash-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.autoboy-dash-checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-green);
+    cursor: pointer;
+}
+
+.autoboy-dash-checkbox-label span {
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-checkbox-label span {
+    color: var(--text-dark);
+}
+
+/* Image Upload Styles */
+.autoboy-dash-image-upload-area {
+    margin-bottom: 1.5rem;
+}
+
+.autoboy-dash-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem 2rem;
+    border: 2px dashed var(--border-light);
+    border-radius: 15px;
+    background: var(--glassmorphism-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-upload-label {
+    border-color: var(--border-dark);
+    background: var(--glassmorphism-dark);
+}
+
+.autoboy-dash-upload-label:hover {
+    border-color: var(--primary-green);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.autoboy-dash-upload-label svg {
+    font-size: 2.5rem;
+    color: var(--primary-green);
+}
+
+.autoboy-dash-upload-label span {
+    font-size: 0.95rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-upload-label span {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.autoboy-dash-image-preview {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--border-light);
+    background: var(--bg-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-image-preview {
+    border-color: var(--border-dark);
+    background: var(--bg-dark-secondary);
+}
+
+.autoboy-dash-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.autoboy-dash-remove-image {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-remove-image:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+.autoboy-dash-form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-actions {
+    border-top-color: var(--border-dark);
+}
+
+.autoboy-dash-btn-secondary {
+    background: var(--glassmorphism-light);
+    color: var(--text-light);
+    border: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-btn-secondary {
+    background: var(--glassmorphism-dark);
+    color: var(--text-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-dash-btn-secondary:hover {
+    background: var(--bg-light-secondary);
+    transform: translateY(-2px);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-btn-secondary:hover {
+    background: var(--bg-dark-tertiary);
+}
+
+/* ========================================
    Responsive Design
    ======================================== */
 
 @media (min-width: 1024px) {
     .autoboy-dash-sidebar {
-        position: relative;
+        position: fixed;
         transform: translateX(0);
     }
 
@@ -1125,6 +1446,42 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+
+    /* Modal Responsive */
+    .autoboy-dash-modal {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .autoboy-dash-modal-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .autoboy-dash-modal-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .autoboy-dash-product-form {
+        padding: 1rem;
+    }
+
+    .autoboy-dash-form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .autoboy-dash-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .autoboy-dash-form-actions button {
+        width: 100%;
+    }
+
+    .autoboy-dash-image-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     }
 }
 
@@ -1228,5 +1585,400 @@
     :root {
         --border-light: rgba(0, 0, 0, 0.2);
         --border-dark: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* ========================================
+   Enhanced Glassmorphism Effects
+   ======================================== */
+
+.autoboy-dash-container {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-container {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+.autoboy-dash-sidebar {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-sidebar {
+    background: rgba(20, 20, 20, 0.7);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.autoboy-dash-header {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-header {
+    background: rgba(20, 20, 20, 0.7);
+}
+
+.autoboy-dash-section {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-section {
+    background: rgba(30, 30, 30, 0.6);
+}
+
+.autoboy-dash-stat-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(15px) saturate(150%);
+    -webkit-backdrop-filter: blur(15px) saturate(150%);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-stat-card {
+    background: rgba(30, 30, 30, 0.8);
+}
+
+/* ========================================
+   Notification Bell & Dropdown
+   ======================================== */
+
+.autoboy-dash-notification-wrapper,
+.autoboy-dash-settings-wrapper {
+    position: relative;
+}
+
+.autoboy-dash-notification-btn,
+.autoboy-dash-settings-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.125rem;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-notification-btn,
+.autoboy-dash-dark-mode .autoboy-dash-settings-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-notification-btn:hover,
+.autoboy-dash-settings-btn:hover {
+    background: var(--primary-green);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.autoboy-dash-notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ef4444;
+    color: white;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 2px solid var(--bg-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-notification-badge {
+    border-color: var(--bg-dark);
+}
+
+/* Dropdown Styles */
+.autoboy-dash-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 380px;
+    max-height: 500px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    z-index: 2000;
+    animation: dropdownSlideIn 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-dropdown {
+    background: rgba(20, 20, 20, 0.95);
+    border-color: var(--border-dark);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes dropdownSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.autoboy-dash-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-dropdown-header {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-dash-dropdown-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-dropdown-header h3 {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-mark-read-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--primary-green);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-mark-read-btn:hover {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.autoboy-dash-dropdown-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.autoboy-dash-dropdown-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.autoboy-dash-dropdown-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.autoboy-dash-dropdown-content::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+}
+
+.autoboy-dash-dropdown-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-dropdown-footer {
+    border-top-color: var(--border-dark);
+}
+
+.autoboy-dash-dropdown-footer button {
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    color: var(--primary-green);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dropdown-footer button:hover {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+/* Notification Items */
+.autoboy-dash-notification-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-notification-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-dash-notification-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-dash-notification-item.unread {
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.autoboy-dash-notification-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--primary-green);
+}
+
+.autoboy-dash-notification-item:hover {
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.autoboy-dash-notification-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    color: white;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.autoboy-dash-notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.autoboy-dash-notification-content h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-notification-content h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-notification-content p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+    line-height: 1.4;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-notification-content p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-notification-content span {
+    font-size: 0.75rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-notification-content span {
+    color: var(--text-dark-tertiary);
+}
+
+/* Settings Dropdown */
+.autoboy-dash-settings-dropdown {
+    width: 260px;
+}
+
+.autoboy-dash-dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-dropdown-item {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-dropdown-item:hover {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--primary-green);
+}
+
+.autoboy-dash-dropdown-item svg {
+    width: 20px;
+    font-size: 1.125rem;
+}
+
+.autoboy-dash-dropdown-divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 0.5rem 0;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-dropdown-divider {
+    background: var(--border-dark);
+}
+
+.autoboy-dash-logout-btn {
+    color: #ef4444 !important;
+}
+
+.autoboy-dash-logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Responsive Dropdown */
+@media (max-width: 768px) {
+    .autoboy-dash-dropdown {
+        width: 320px;
+    }
+
+    .autoboy-dash-notifications-dropdown {
+        position: fixed;
+        top: 60px;
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+    }
+
+    .autoboy-dash-settings-dropdown {
+        width: 240px;
     }
 }

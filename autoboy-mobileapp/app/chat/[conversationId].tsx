@@ -1,18 +1,24 @@
 import { useLocalSearchParams, router } from 'expo-router';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { colors, commonStyles } from '../../styles/commonStyles';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { mockMessages } from '../../data/products';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../../contexts/ThemeContext';
 import * as Haptics from 'expo-haptics';
+import websocketService from '../../services/websocketService';
+import { Message } from '../../types';
 
 export default function ChatScreen() {
   const { conversationId } = useLocalSearchParams<{ conversationId: string }>();
   const { theme, isDark } = useTheme();
   const [messages, setMessages] = useState(mockMessages[conversationId as string] || []);
   const [input, setInput] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Mock contact info
   const contact = {
@@ -20,6 +26,90 @@ export default function ChatScreen() {
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
     isOnline: true,
     lastSeen: 'Active now'
+  };
+
+  useEffect(() => {
+    // Join conversation room
+    websocketService.joinConversation(conversationId as string);
+
+    // WebSocket event handlers
+    const handleConnection = () => setIsConnected(true);
+    const handleDisconnection = () => setIsConnected(false);
+    
+    const handleNewMessage = (message: Message) => {
+      if (message.conversation_id === conversationId) {
+        setMessages(prev => [...prev, message]);
+        setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+      }
+    };
+
+    const handleTyping = (data: { conversation_id: string; user_id: string; is_typing: boolean }) => {
+      if (data.conversation_id === conversationId && data.user_id !== 'current_user_id') {
+        setIsTyping(data.is_typing);
+      }
+    };
+
+    websocketService.on('connection', handleConnection);
+    websocketService.on('disconnection', handleDisconnection);
+    websocketService.on('new_message', handleNewMessage);
+    websocketService.on('typing', handleTyping);
+
+    setIsConnected(websocketService.isConnected());
+
+    return () => {
+      websocketService.leaveConversation(conversationId as string);
+      websocketService.off('connection', handleConnection);
+      websocketService.off('disconnection', handleDisconnection);
+      websocketService.off('new_message', handleNewMessage);
+      websocketService.off('typing', handleTyping);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [conversationId]);
+
+  const handleTypingIndicator = (text: string) => {
+    setInput(text);
+    
+    // Send typing indicator
+    websocketService.sendTyping(conversationId as string, true);
+    
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Stop typing after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      websocketService.sendTyping(conversationId as string, false);
+    }, 2000);
+  };
+
+  const sendMessage = () => {
+    if (!input.trim()) return;
+    
+    const message = {
+      id: Date.now().toString(),
+      conversation_id: conversationId as string,
+      sender: 'me' as const,
+      text: input.trim(),
+      timestamp: new Date().toISOString()
+    };
+    
+    // Add to local state immediately
+    setMessages(prev => [...prev, message]);
+    
+    // Send via WebSocket
+    websocketService.sendMessage(message);
+    
+    // Stop typing indicator
+    websocketService.sendTyping(conversationId as string, false);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    setInput('');
+    setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
   const goBack = () => {
@@ -40,8 +130,10 @@ export default function ChatScreen() {
           <View style={styles.contactDetails}>
             <Text style={[styles.contactName, { color: theme.text }]}>{contact.name}</Text>
             <View style={styles.statusRow}>
-              {contact.isOnline && <View style={styles.onlineIndicator} />}
-              <Text style={[styles.lastSeen, { color: theme.textMuted }]}>{contact.lastSeen}</Text>
+              <View style={[styles.onlineIndicator, { backgroundColor: isConnected ? '#22C55E' : '#EF4444' }]} />
+              <Text style={[styles.lastSeen, { color: theme.textMuted }]}>
+                {isTyping ? 'Typing...' : isConnected ? 'Online' : 'Offline'}
+              </Text>
             </View>
           </View>
         </View>
@@ -53,9 +145,11 @@ export default function ChatScreen() {
 
       <KeyboardAvoidingView behavior={Platform.select({ ios: 'padding', android: undefined })} style={styles.chatContainer}>
       <FlatList
+        ref={flatListRef}
         data={messages}
         keyExtractor={(item, idx) => `${item.sender}-${idx}`}
         contentContainerStyle={{ padding: 16 }}
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         renderItem={({ item }) => (
           <View style={[styles.bubble, item.sender === 'me' ? styles.me : styles.them]}>
             <Text style={[styles.text, item.sender === 'me' ? styles.textOnPrimary : styles.textOnSurface]}>
@@ -69,17 +163,15 @@ export default function ChatScreen() {
           placeholder="Type a message"
           placeholderTextColor={colors.muted}
           value={input}
-          onChangeText={setInput}
+          onChangeText={handleTypingIndicator}
           style={styles.input}
+          onSubmitEditing={sendMessage}
+          returnKeyType="send"
         />
         <TouchableOpacity
-          style={styles.sendBtn}
-          onPress={() => {
-            if (!input.trim()) return console.log('Empty message');
-            const next = [...messages, { sender: 'me' as const, text: input.trim() }];
-            setMessages(next);
-            setInput('');
-          }}
+          style={[styles.sendBtn, { opacity: input.trim() && isConnected ? 1 : 0.5 }]}
+          onPress={sendMessage}
+          disabled={!input.trim() || !isConnected}
         >
           <Ionicons name="send" size={20} color={colors.textOnPrimary} />
         </TouchableOpacity>
