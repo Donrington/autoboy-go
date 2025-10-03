@@ -1,8 +1,11 @@
 package services
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"net/smtp"
 
 	"autoboy-backend/utils"
@@ -22,7 +25,7 @@ type EmailService struct {
 func NewEmailService() *EmailService {
 	return &EmailService{
 		smtpHost:     utils.GetEnv("SMTP_HOST", "smtp.gmail.com"),
-		smtpPort:     utils.GetEnv("SMTP_PORT", "587"),
+		smtpPort:     utils.GetEnv("SMTP_PORT", "465"),
 		smtpUsername: utils.GetEnv("SMTP_USERNAME", ""),
 		smtpPassword: utils.GetEnv("SMTP_PASSWORD", ""),
 		fromEmail:    utils.GetEnv("FROM_EMAIL", "autoboyexpress@gmail.com"),
@@ -38,6 +41,14 @@ type EmailTemplate struct {
 
 // SendEmail sends an email
 func (s *EmailService) SendEmail(to, subject, body string) error {
+	// Try SendGrid first if API key is available
+	sendGridKey := utils.GetEnv("SENDGRID_API_KEY", "")
+	if sendGridKey != "" {
+		log.Printf("[EMAIL] Attempting SendGrid API")
+		return s.sendWithSendGrid(to, subject, body, sendGridKey)
+	}
+	
+	// Fallback to Gmail SMTP
 	log.Printf("=== EMAIL SERVICE DEBUG START ===")
 	log.Printf("[EMAIL] Recipient: %s", to)
 	log.Printf("[EMAIL] Subject: %s", subject)
@@ -88,6 +99,14 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 		}
 		
 		log.Printf("=== EMAIL SERVICE DEBUG END (FAILED) ===")
+		
+		// Try Resend as fallback
+		resendKey := utils.GetEnv("RESEND_API_KEY", "")
+		if resendKey != "" {
+			log.Printf("[EMAIL] Gmail failed, trying Resend as fallback...")
+			return s.sendWithResend(to, subject, body, resendKey)
+		}
+		
 		return fmt.Errorf("email send failed: %v", err)
 	}
 
@@ -416,4 +435,54 @@ func (s *EmailService) SendSellerApplicationEmail(email, name string) error {
 
 	body := fmt.Sprintf(template, name)
 	return s.SendEmail(email, "Seller Application Received - AutoBoy", body)
+}
+
+// sendWithResend sends email using Resend API
+func (s *EmailService) sendWithResend(to, subject, body, apiKey string) error {
+	log.Printf("[RESEND] Attempting to send email via Resend API")
+	log.Printf("[RESEND] Recipient: %s", to)
+	log.Printf("[RESEND] Subject: %s", subject)
+	
+	// Resend API payload
+	payload := map[string]interface{}{
+		"from":    fmt.Sprintf("%s <%s>", s.fromName, s.fromEmail),
+		"to":      []string{to},
+		"subject": subject,
+		"html":    body,
+	}
+	
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("[RESEND ERROR] Failed to marshal JSON: %v", err)
+		return fmt.Errorf("failed to prepare email data: %v", err)
+	}
+	
+	// Create HTTP request
+	req, err := http.NewRequest("POST", "https://api.resend.com/emails", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Printf("[RESEND ERROR] Failed to create request: %v", err)
+		return fmt.Errorf("failed to create request: %v", err)
+	}
+	
+	// Set headers
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Content-Type", "application/json")
+	
+	// Send request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("[RESEND ERROR] HTTP request failed: %v", err)
+		return fmt.Errorf("resend API request failed: %v", err)
+	}
+	defer resp.Body.Close()
+	
+	// Check response
+	if resp.StatusCode != 200 {
+		log.Printf("[RESEND ERROR] API returned status %d", resp.StatusCode)
+		return fmt.Errorf("resend API failed with status %d", resp.StatusCode)
+	}
+	
+	log.Printf("[RESEND SUCCESS] ✅ Email sent successfully via Resend to %s", to)
+	return nil
 }
