@@ -32,6 +32,18 @@ func SetupRoutes(router *gin.Engine) {
 	sellerHandler := handlers.NewSellerHandler(emailService)
 	cartHandler := handlers.NewCartHandler()
 	categoryHandler := handlers.NewCategoryHandler()
+	notificationHandler := handlers.NewNotificationHandler()
+	badgeHandler := handlers.NewBadgeHandler()
+	walletHandler := handlers.NewWalletHandler()
+	reportHandler := handlers.NewReportHandler()
+	disputeHandler := handlers.NewDisputeHandler()
+	chatHandler := handlers.NewChatHandler()
+	alertHandler := handlers.NewAlertHandler()
+	dealHandler := handlers.NewDealHandler()
+	swapHandler := handlers.NewSwapHandler()
+	analyticsHandler := handlers.NewAnalyticsHandler()
+	sellerDashboardHandler := handlers.NewSellerDashboardHandler()
+	searchHandler := handlers.NewSearchHandler()
 
 	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
@@ -74,6 +86,9 @@ func SetupRoutes(router *gin.Engine) {
 				categories.GET("/", categoryHandler.GetCategories)
 				categories.GET("/:id", categoryHandler.GetCategory)
 			}
+
+			// Search routes
+			public.GET("/search", searchHandler.SearchProducts)
 		}
 
 		// Protected routes (authentication required)
@@ -143,28 +158,19 @@ func SetupRoutes(router *gin.Engine) {
 				}
 
 				// Seller dashboard
-				seller.GET("/dashboard", func(c *gin.Context) {
-					utils.SuccessResponse(c, 200, "Seller dashboard data", map[string]interface{}{
-						"total_products": 0,
-						"total_orders": 0,
-						"total_revenue": 0,
-						"pending_orders": 0,
-						"recent_orders": []interface{}{},
-						"top_products": []interface{}{},
-					})
-				})
+				seller.GET("/dashboard", sellerDashboardHandler.GetSellerDashboard)
 
 				// Seller analytics
 				sellerAnalytics := seller.Group("/analytics")
 				{
-					sellerAnalytics.GET("/sales", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Sales data", []interface{}{}) })
-					sellerAnalytics.GET("/products", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Product performance", []interface{}{}) })
-					sellerAnalytics.GET("/revenue", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Revenue data", []interface{}{}) })
+					sellerAnalytics.GET("/sales", sellerDashboardHandler.GetSellerSalesAnalytics)
+					sellerAnalytics.GET("/products", sellerDashboardHandler.GetSellerProductAnalytics)
+					sellerAnalytics.GET("/revenue", sellerDashboardHandler.GetSellerRevenueAnalytics)
 				}
 
 				// Seller profile
-				seller.GET("/profile", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Seller profile", nil) })
-				seller.PUT("/profile", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Profile updated", nil) })
+				seller.GET("/profile", sellerDashboardHandler.GetSellerProfile)
+				seller.PUT("/profile", sellerDashboardHandler.UpdateSellerProfile)
 			}
 
 			// Order routes
@@ -187,94 +193,92 @@ func SetupRoutes(router *gin.Engine) {
 			// Swap deals routes
 			swap := protected.Group("/swap")
 			{
-				swap.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Swap deals", []interface{}{}) })
-				swap.POST("/create", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Swap deal created", nil) })
-				swap.GET("/:id", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Swap deal details", nil) })
-				swap.PUT("/:id/accept", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Swap deal accepted", nil) })
-				swap.PUT("/:id/reject", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Swap deal rejected", nil) })
+				swap.GET("/", swapHandler.GetUserSwapDeals)
+				swap.POST("/create", swapHandler.CreateSwapDeal)
+				swap.GET("/:id", swapHandler.GetSwapDeal)
+				swap.PUT("/:id/accept", swapHandler.AcceptSwapDeal)
+				swap.PUT("/:id/reject", swapHandler.RejectSwapDeal)
 			}
 
 			// Analytics routes
 			analytics := protected.Group("/analytics")
 			{
-				analytics.GET("/dashboard", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Analytics data", map[string]interface{}{"sales": 0, "orders": 0, "revenue": 0}) })
-				analytics.GET("/sales", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Sales analytics", []interface{}{}) })
-				analytics.GET("/products", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Product analytics", []interface{}{}) })
+				analytics.GET("/dashboard", analyticsHandler.GetDashboardAnalytics)
+				analytics.GET("/sales", analyticsHandler.GetSalesAnalytics)
+				analytics.GET("/products", analyticsHandler.GetProductAnalytics)
 			}
 
 			// Notifications routes
 			notifications := protected.Group("/notifications")
 			{
-				notifications.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Notifications", []interface{}{}) })
-				notifications.PUT("/:id/read", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Notification marked as read", nil) })
-				notifications.DELETE("/:id", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Notification deleted", nil) })
+				notifications.GET("/", notificationHandler.GetNotifications)
+				notifications.PUT("/:id/read", notificationHandler.MarkNotificationAsRead)
+				notifications.DELETE("/:id", notificationHandler.DeleteNotification)
 			}
 
 			// Reports routes
 			reports := protected.Group("/reports")
 			{
-				reports.POST("/product", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Product reported", nil) })
-				reports.POST("/user", func(c *gin.Context) { utils.SuccessResponse(c, 201, "User reported", nil) })
-				reports.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Reports", []interface{}{}) })
+				reports.POST("/product", reportHandler.ReportProduct)
+				reports.POST("/user", reportHandler.ReportUser)
 			}
 
 			// Disputes routes
 			disputes := protected.Group("/disputes")
 			{
-				disputes.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Disputes", []interface{}{}) })
-				disputes.POST("/create", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Dispute created", nil) })
-				disputes.GET("/:id", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Dispute details", nil) })
+				disputes.GET("/", disputeHandler.GetDisputes)
+				disputes.POST("/create", disputeHandler.CreateDispute)
+				disputes.GET("/:id", disputeHandler.GetDispute)
 			}
 
 			// Wallet routes
 			wallet := protected.Group("/wallet")
 			{
-				wallet.GET("/balance", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Wallet balance", map[string]interface{}{"balance": 0}) })
-				wallet.GET("/transactions", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Transactions", []interface{}{}) })
-				wallet.POST("/withdraw", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Withdrawal requested", nil) })
+				wallet.GET("/balance", walletHandler.GetWalletBalance)
+				wallet.GET("/transactions", walletHandler.GetWalletTransactions)
+				wallet.POST("/withdraw", walletHandler.RequestWithdrawal)
 			}
 
 			// User-specific routes
 			userSpecific := protected.Group("/user")
 			{
-				userSpecific.GET("/badges", func(c *gin.Context) { utils.SuccessResponse(c, 200, "User badges", []interface{}{}) })
-				userSpecific.GET("/rewards", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Reward points", map[string]interface{}{"points": 0}) })
-				userSpecific.GET("/rewards/history", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Points history", []interface{}{}) })
-				userSpecific.GET("/alerts", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Price alerts", []interface{}{}) })
-				userSpecific.GET("/disputes", func(c *gin.Context) { utils.SuccessResponse(c, 200, "User disputes", []interface{}{}) })
+				userSpecific.GET("/badges", badgeHandler.GetUserBadges)
+				userSpecific.GET("/rewards", badgeHandler.GetUserRewards)
+				userSpecific.GET("/rewards/history", badgeHandler.GetRewardsHistory)
+				userSpecific.GET("/alerts", alertHandler.GetUserAlerts)
+				userSpecific.GET("/disputes", disputeHandler.GetDisputes)
 			}
 
 			// Badges routes
 			badges := protected.Group("/badges")
 			{
-				badges.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "User badges", []interface{}{}) })
-				badges.GET("/available", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Available badges", []interface{}{}) })
+				badges.GET("/", badgeHandler.GetUserBadges)
+				badges.GET("/available", badgeHandler.GetAvailableBadges)
 			}
 
 			// Alerts routes
 			alerts := protected.Group("/alerts")
 			{
-				alerts.POST("/price", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Price alert created", nil) })
+				alerts.POST("/price", alertHandler.CreatePriceAlert)
 			}
 
 			// Deals routes
 			deals := protected.Group("/deals")
 			{
-				deals.GET("/exclusive", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Exclusive deals", []interface{}{}) })
+				deals.GET("/exclusive", dealHandler.GetExclusiveDeals)
 			}
 
 			// Chat routes
 			conversations := protected.Group("/conversations")
 			{
-				conversations.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Conversations", []interface{}{}) })
-				conversations.POST("/", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Conversation created", nil) })
-				conversations.GET("/:id/messages", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Messages", []interface{}{}) })
+				conversations.GET("/", chatHandler.GetConversations)
+				conversations.POST("/", chatHandler.CreateConversation)
+				conversations.GET("/:id/messages", chatHandler.GetMessages)
 			}
 
 			messages := protected.Group("/messages")
 			{
-				messages.POST("/", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Message sent", nil) })
-				messages.PUT("/:id/read", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Message marked as read", nil) })
+				messages.POST("/", chatHandler.SendMessage)
 			}
 
 			// WebSocket routes

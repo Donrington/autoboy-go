@@ -41,6 +41,12 @@ func main() {
 		}
 	}()
 
+	// Initialize collections
+	config.Coll = config.DB.InitializeCollections()
+
+	// Set utils DB reference
+	utils.SetDB(config.DB.Database)
+
 	// Initialize services
 	services.InitializeServices()
 
