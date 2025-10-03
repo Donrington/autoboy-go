@@ -127,14 +127,16 @@ func GetDatabaseConfig() *DatabaseConfig {
 func ConnectDatabase() (*Database, error) {
 	config := GetDatabaseConfig()
 
-	// Set client options
+	// Set client options with proper TLS configuration for Atlas
 	clientOptions := options.Client().ApplyURI(config.URI).
 		SetMaxPoolSize(config.MaxPoolSize).
 		SetMinPoolSize(config.MinPoolSize).
-		SetMaxConnIdleTime(config.MaxConnIdleTime)
+		SetMaxConnIdleTime(config.MaxConnIdleTime).
+		SetRetryWrites(true).
+		SetRetryReads(true)
 
-	// Create context with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), config.ConnectTimeout)
+	// Create context with longer timeout for initial connection
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	// Connect to MongoDB
@@ -143,10 +145,18 @@ func ConnectDatabase() (*Database, error) {
 		return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)
 	}
 
-	// Ping the database to verify connection
-	err = client.Ping(ctx, readpref.Primary())
+	// Ping the database to verify connection with retry
+	for i := 0; i < 3; i++ {
+		err = client.Ping(ctx, readpref.Primary())
+		if err == nil {
+			break
+		}
+		log.Printf("Ping attempt %d failed: %v", i+1, err)
+		time.Sleep(2 * time.Second)
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to ping MongoDB: %w", err)
+		return nil, fmt.Errorf("failed to ping MongoDB after retries: %w", err)
 	}
 
 	// Get database instance

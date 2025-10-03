@@ -88,6 +88,21 @@ export default function Settings() {
       case '/report-bug':
         router.push('/report-bug');
         break;
+      case '/wallet':
+        router.push('/wallet');
+        break;
+      case '/price-alerts':
+        router.push('/price-alerts');
+        break;
+      case '/swap':
+        router.push('/swap');
+        break;
+      case '/disputes':
+        router.push('/disputes');
+        break;
+      case '/badges':
+        router.push('/badges');
+        break;
       default:
         showAlert('Navigation', `Navigate to ${route}`);
     }
@@ -467,6 +482,36 @@ export default function Settings() {
             title="Favorite Products"
             subtitle="View your saved items"
             onPress={() => navigateTo('/favorites')}
+          />
+          <SettingsItem
+            icon="wallet-outline"
+            title="My Wallet"
+            subtitle="Manage your balance and transactions"
+            onPress={() => navigateTo('/wallet')}
+          />
+          <SettingsItem
+            icon="notifications-outline"
+            title="Price Alerts"
+            subtitle="Manage your price notifications"
+            onPress={() => navigateTo('/price-alerts')}
+          />
+          <SettingsItem
+            icon="swap-horizontal-outline"
+            title="Swap Deals"
+            subtitle="View your swap transactions"
+            onPress={() => navigateTo('/swap')}
+          />
+          <SettingsItem
+            icon="shield-outline"
+            title="My Disputes"
+            subtitle="View and manage disputes"
+            onPress={() => navigateTo('/disputes')}
+          />
+          <SettingsItem
+            icon="trophy-outline"
+            title="Badges & Rewards"
+            subtitle="View your achievements and points"
+            onPress={() => navigateTo('/badges')}
           />
         </SettingsSection>
 

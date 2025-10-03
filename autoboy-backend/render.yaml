@@ -2,6 +2,7 @@ services:
   - type: web
     name: autoboy-backend
     env: go
+    rootDir: autoboy-backend
     buildCommand: go build -o main .
     startCommand: ./main
     plan: free

@@ -2906,6 +2906,7 @@ body.dark-mode .assurance-column p {
     }
 
     .newsletter-title {
+<<<<<<< HEAD
         font-size: 1.5rem;
         line-height: 1.3;
     }
@@ -2965,6 +2966,9 @@ body.dark-mode .assurance-column p {
 
     .credibility-section .container {
         padding: 0 1rem;
+=======
+        font-size: 1.6rem;
+>>>>>>> b08cef53d40808e4465c79b8460fa5af4531e2e0
     }
 
     .credibility-title {
