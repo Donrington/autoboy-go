@@ -38,6 +38,7 @@ type Collections struct {
 	ProductViews     *mongo.Collection
 	ProductFlags     *mongo.Collection
 	ProductAnalytics *mongo.Collection
+	CartItems        *mongo.Collection
 
 	// Order related collections
 	Orders         *mongo.Collection
@@ -179,6 +180,7 @@ func (db *Database) InitializeCollections() *Collections {
 		ProductViews:     db.Database.Collection("product_views"),
 		ProductFlags:     db.Database.Collection("product_flags"),
 		ProductAnalytics: db.Database.Collection("product_analytics"),
+		CartItems:        db.Database.Collection("cart_items"),
 
 		// Order related collections
 		Orders:        db.Database.Collection("orders"),

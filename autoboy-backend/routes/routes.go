@@ -15,6 +15,9 @@ import (
 
 // SetupRoutes configures all application routes
 func SetupRoutes(router *gin.Engine) {
+	// Initialize WebSocket hub
+	go services.WSHub.Run()
+
 	// Initialize services
 	emailService := services.NewEmailService()
 	smsService := services.NewSMSService()
@@ -26,6 +29,7 @@ func SetupRoutes(router *gin.Engine) {
 	productHandler := handlers.NewProductHandler(imageService)
 	userHandler := handlers.NewUserHandler(emailService, smsService)
 	orderHandler := handlers.NewOrderHandler(paymentService, emailService)
+	sellerHandler := handlers.NewSellerHandler(emailService)
 	cartHandler := handlers.NewCartHandler()
 	categoryHandler := handlers.NewCategoryHandler()
 
@@ -51,6 +55,8 @@ func SetupRoutes(router *gin.Engine) {
 				auth.POST("/register", authHandler.Register)
 				auth.POST("/login", authHandler.Login)
 				auth.GET("/verify-email", authHandler.VerifyEmail)
+				auth.POST("/forgot-password", authHandler.ForgotPassword)
+				auth.POST("/reset-password", authHandler.ResetPassword)
 			}
 
 			// Public product routes
@@ -107,6 +113,9 @@ func SetupRoutes(router *gin.Engine) {
 					wishlist.POST("/", userHandler.AddToWishlist)
 					wishlist.DELETE("/:id", userHandler.RemoveFromWishlist)
 				}
+
+				// Seller application
+				user.POST("/apply-seller", sellerHandler.ApplyToBecomeseller)
 			}
 
 			// Seller routes
@@ -147,6 +156,20 @@ func SetupRoutes(router *gin.Engine) {
 				cart.PUT("/update", cartHandler.UpdateCartItem)
 				cart.DELETE("/remove/:id", cartHandler.RemoveFromCart)
 				cart.DELETE("/clear", cartHandler.ClearCart)
+			}
+
+			// WebSocket routes
+			ws := protected.Group("/ws")
+			{
+				ws.GET("/connect", handlers.WebSocketHandler)
+				ws.GET("/online", handlers.GetOnlineUsers)
+			}
+
+			// Admin WebSocket routes
+			admin := protected.Group("/admin")
+			admin.Use(middleware.RequireUserType(models.UserTypeAdmin))
+			{
+				admin.POST("/broadcast", handlers.BroadcastNotification)
 			}
 		}
 	}

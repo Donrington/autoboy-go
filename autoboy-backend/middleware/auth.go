@@ -255,3 +255,8 @@ func GenerateToken(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(utils.GetEnv("JWT_SECRET", "your-secret-key")))
 }
+
+// ValidateJWTToken validates JWT token and returns claims (for WebSocket)
+func ValidateJWTToken(tokenString string) (*JWTClaims, error) {
+	return validateToken(tokenString)
+}

@@ -154,6 +154,16 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 	// Clear cart items for this user
 	config.Coll.CartItems.DeleteMany(ctx, bson.M{"user_id": buyerID})
 
+	// Send order confirmation email
+	var buyer models.User
+	config.Coll.Users.FindOne(ctx, bson.M{"_id": buyerID}).Decode(&buyer)
+	go h.emailService.SendOrderConfirmationEmail(
+		buyer.Email,
+		buyer.Profile.FirstName,
+		order.OrderNumber,
+		order.TotalAmount,
+	)
+
 	utils.CreatedResponse(c, "Order created successfully", order)
 }
 
@@ -407,6 +417,20 @@ func (h *OrderHandler) UpdateOrderStatus(c *gin.Context) {
 		utils.NotFoundResponse(c, "Order not found")
 		return
 	}
+
+	// Get order and buyer info for email notification
+	var order models.Order
+	config.Coll.Orders.FindOne(ctx, bson.M{"_id": orderObjID}).Decode(&order)
+	var buyer models.User
+	config.Coll.Users.FindOne(ctx, bson.M{"_id": order.BuyerID}).Decode(&buyer)
+
+	// Send order status update email
+	go h.emailService.SendOrderStatusEmail(
+		buyer.Email,
+		buyer.Profile.FirstName,
+		order.OrderNumber,
+		req.Status,
+	)
 
 	utils.SuccessResponse(c, http.StatusOK, "Order status updated successfully", nil)
 }
