@@ -1,0 +1,276 @@
+/* Import all required CSS files */
+@import '../assets/becomeseller.css';
+@import '../assets/styles.css';
+
+/* Override animation initial states for visibility */
+.seller-hero-container,
+.seller-benefits-container,
+.seller-enrollment-container {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.seller-hero-content,
+.seller-hero-visual,
+.seller-benefit-card,
+.seller-step-card {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Fix hero text visibility */
+.seller-hero-title,
+.seller-hero-subtitle,
+.seller-hero-cta {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.seller-hero-title {
+  color: white !important;
+  font-family: 'Syne', sans-serif !important;
+  font-size: clamp(3rem, 8vw, 5.5rem) !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  margin-bottom: 2rem !important;
+}
+
+.seller-hero-subtitle {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: clamp(1.2rem, 2vw, 1.5rem) !important;
+  margin-bottom: 3rem !important;
+}
+
+.seller-hero-visual {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+/* Dark Mode Support */
+.become-seller-page.dark-mode {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+/* Hero Section Dark Mode */
+.become-seller-page.dark-mode .seller-hero {
+  background-color: var(--bg-dark);
+}
+
+.become-seller-page.dark-mode .seller-hero-title {
+  color: var(--text-dark);
+}
+
+.become-seller-page.dark-mode .seller-hero-subtitle {
+  color: var(--text-dark-secondary);
+}
+
+.become-seller-page.dark-mode .seller-hero-cta {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+}
+
+.become-seller-page.dark-mode .seller-hero-cta:hover {
+  background: var(--gradient-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Benefits Section Dark Mode */
+.become-seller-page.dark-mode .seller-benefits {
+  background-color: var(--bg-dark-secondary);
+}
+
+.become-seller-page.dark-mode .seller-benefits-title {
+  color: var(--text-dark);
+}
+
+.become-seller-page.dark-mode .seller-benefit-card {
+  background-color: var(--bg-dark-tertiary);
+  border-color: var(--border-dark);
+}
+
+.become-seller-page.dark-mode .seller-benefit-icon {
+  color: var(--primary-green);
+}
+
+.become-seller-page.dark-mode .seller-benefit-title {
+  color: var(--text-dark);
+}
+
+.become-seller-page.dark-mode .seller-benefit-desc {
+  color: var(--text-dark-secondary);
+}
+
+.become-seller-page.dark-mode .seller-benefit-card:hover {
+  background-color: var(--bg-dark);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-5px);
+}
+
+/* Enrollment Section Dark Mode */
+.become-seller-page.dark-mode .seller-enrollment {
+  background-color: var(--bg-dark);
+}
+
+.become-seller-page.dark-mode .seller-enrollment-title {
+  color: var(--text-dark);
+}
+
+.become-seller-page.dark-mode .seller-step-card {
+  background-color: var(--bg-dark-secondary);
+  border-color: var(--border-dark);
+}
+
+.become-seller-page.dark-mode .seller-step-number {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.become-seller-page.dark-mode .seller-step-icon {
+  color: var(--primary-green);
+}
+
+.become-seller-page.dark-mode .seller-step-title {
+  color: var(--text-dark);
+}
+
+.become-seller-page.dark-mode .seller-step-desc {
+  color: var(--text-dark-secondary);
+}
+
+.become-seller-page.dark-mode .seller-step-highlight {
+  color: var(--primary-green);
+}
+
+.become-seller-page.dark-mode .seller-step-card:hover {
+  background-color: var(--bg-dark-tertiary);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-5px);
+}
+
+.become-seller-page.dark-mode .seller-enroll-btn {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.become-seller-page.dark-mode .seller-enroll-btn:hover {
+  background: var(--gradient-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Visual Elements Dark Mode */
+.become-seller-page.dark-mode .seller-visual-frame {
+  border-color: var(--border-dark);
+  background: var(--bg-dark-secondary);
+}
+
+.become-seller-page.dark-mode .seller-3d-boxes {
+  background: var(--gradient-primary);
+}
+
+.become-seller-page.dark-mode .seller-3d-character {
+  background: var(--bg-dark-tertiary);
+  border-color: var(--border-dark);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 50%;
+  right: 30px;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  z-index: 1000;
+  border: none;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: var(--shadow-glow);
+}
+
+.theme-toggle svg {
+  color: white;
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(20deg);
+}
+
+/* Back to Top Button */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  z-index: 999;
+}
+
+.back-to-top:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow);
+}
+
+.back-to-top svg {
+  color: white;
+  font-size: 16px;
+}
+
+.progress-ring {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+}
+
+.progress-ring__circle {
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 2;
+  fill: transparent;
+  r: 26;
+  cx: 28;
+  cy: 28;
+}
+
+/* Responsive adjustments for theme toggle */
+@media (max-width: 768px) {
+  .theme-toggle {
+    right: 20px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .theme-toggle svg {
+    font-size: 18px;
+  }
+
+  .back-to-top {
+    right: 20px;
+    bottom: 20px;
+    width: 45px;
+    height: 45px;
+  }
+}
