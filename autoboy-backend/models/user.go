@@ -63,6 +63,9 @@ type User struct {
 	// Embedded profile information
 	Profile Profile `bson:"profile" json:"profile"`
 
+	// Reward points
+	RewardPoints int `bson:"reward_points" json:"reward_points"`
+
 	// Security settings
 	LoginAttempts   int       `bson:"login_attempts" json:"login_attempts"`
 	LockedUntil     *time.Time `bson:"locked_until,omitempty" json:"locked_until,omitempty"`

@@ -201,6 +201,17 @@ type PartialRelease struct {
 	ReleasedAt  time.Time          `bson:"released_at" json:"released_at"`
 }
 
+// Wallet represents user wallet
+type Wallet struct {
+	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	UserID       primitive.ObjectID `bson:"user_id" json:"user_id"`
+	Balance      float64            `bson:"balance" json:"balance"`
+	HeldBalance  float64            `bson:"held_balance" json:"held_balance"`
+	Currency     string             `bson:"currency" json:"currency"`
+	CreatedAt    time.Time          `bson:"created_at" json:"created_at"`
+	UpdatedAt    time.Time          `bson:"updated_at" json:"updated_at"`
+}
+
 // WalletTransaction represents wallet transactions
 type WalletTransaction struct {
 	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
@@ -382,6 +393,18 @@ type Withdrawal struct {
 
 	CreatedAt       time.Time          `bson:"created_at" json:"created_at"`
 	UpdatedAt       time.Time          `bson:"updated_at" json:"updated_at"`
+}
+
+// WithdrawalRequest represents withdrawal requests (simplified version)
+type WithdrawalRequest struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	UserID      primitive.ObjectID `bson:"user_id" json:"user_id"`
+	Amount      float64            `bson:"amount" json:"amount"`
+	BankAccount string             `bson:"bank_account" json:"bank_account"`
+	BankName    string             `bson:"bank_name" json:"bank_name"`
+	AccountName string             `bson:"account_name" json:"account_name"`
+	Status      string             `bson:"status" json:"status"`
+	CreatedAt   primitive.DateTime `bson:"created_at" json:"created_at"`
 }
 
 // WithdrawalStatus represents withdrawal status

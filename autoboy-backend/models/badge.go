@@ -131,6 +131,16 @@ type PointsTransaction struct {
 	CreatedAt      time.Time          `bson:"created_at" json:"created_at"`
 }
 
+// RewardTransaction represents a reward transaction
+type RewardTransaction struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	UserID      primitive.ObjectID `bson:"user_id" json:"user_id"`
+	Type        string             `bson:"type" json:"type"` // earn, redeem
+	Points      int                `bson:"points" json:"points"`
+	Description string             `bson:"description" json:"description"`
+	CreatedAt   time.Time          `bson:"created_at" json:"created_at"`
+}
+
 // LevelProgress represents user level progression
 type LevelProgress struct {
 	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
