@@ -7,6 +7,7 @@ import (
 
 	"autoboy-backend/config"
 	"autoboy-backend/models"
+	"autoboy-backend/services"
 	"autoboy-backend/utils"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +16,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type SellerHandler struct{}
+type SellerHandler struct{
+	emailService *services.EmailService
+}
 
-func NewSellerHandler() *SellerHandler {
-	return &SellerHandler{}
+func NewSellerHandler(emailService *services.EmailService) *SellerHandler {
+	return &SellerHandler{
+		emailService: emailService,
+	}
 }
 
 func (h *SellerHandler) GetDashboard(c *gin.Context) {
@@ -221,6 +226,13 @@ func (h *SellerHandler) ApplyToBecomeseller(c *gin.Context) {
 		utils.InternalServerErrorResponse(c, "Failed to update seller application", err.Error())
 		return
 	}
+
+	// Get user info for email
+	var user models.User
+	config.Coll.Users.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+
+	// Send seller application confirmation email
+	go h.emailService.SendSellerApplicationEmail(user.Email, user.Profile.FirstName)
 
 	utils.SuccessResponse(c, http.StatusOK, "Seller application submitted successfully", nil)
 }

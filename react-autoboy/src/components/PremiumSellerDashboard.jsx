@@ -6,7 +6,8 @@ import {
   faCheckCircle, faNairaSign, faEdit, faEye, faTrash, faFilter,
   faSearch, faUpload, faSave, faUser, faEnvelope, faPhone, faMapMarkerAlt,
   faTimes, faCheck, faClipboardList, faWallet, faComments, faFileAlt,
-  faCrown, faHeadset, faPaperPlane, faStar, faAward, faBolt, faShieldAlt
+  faCrown, faHeadset, faPaperPlane, faStar, faAward, faBolt, faShieldAlt,
+  faBell, faSignOutAlt, faUserCircle, faQuestionCircle
 } from '@fortawesome/free-solid-svg-icons';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import {
@@ -20,6 +21,7 @@ import {
   Legend,
   ArcElement,
   BarElement,
+  Filler,
 } from 'chart.js';
 import { format, startOfWeek, endOfWeek, subDays } from 'date-fns';
 import CustomCursor from './CustomCursor';
@@ -37,7 +39,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  BarElement
+  BarElement,
+  Filler
 );
 
 const PremiumSellerDashboard = () => {
@@ -49,6 +52,8 @@ const PremiumSellerDashboard = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [productImages, setProductImages] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [stats, setStats] = useState({
     activeProducts: 24,
     pendingOrders: 5,
@@ -74,6 +79,14 @@ const PremiumSellerDashboard = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageText, setMessageText] = useState('');
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Notifications data
+  const [notifications] = useState([
+    { id: 1, title: 'VIP Order Received', message: 'Premium order #1234 - Priority handling required', time: '3 min ago', unread: true, type: 'order' },
+    { id: 2, title: 'Payment Received', message: '₦2,500,000 credited to your account', time: '45 min ago', unread: true, type: 'payment' },
+    { id: 3, title: 'New Message', message: 'Premium buyer sent you a message', time: '2 hours ago', unread: false, type: 'message' },
+    { id: 4, title: 'Badge Unlocked', message: 'Congratulations! You earned "Top Seller" badge', time: '1 day ago', unread: false, type: 'achievement' }
+  ]);
 
   // Sample data for demo
   const [products] = useState([
@@ -1486,9 +1499,105 @@ const PremiumSellerDashboard = () => {
             </h1>
           </div>
           <div className="autoboy-dash-header-actions">
+            {/* Notifications */}
+            <div className="autoboy-dash-notification-wrapper">
+              <button
+                className="autoboy-dash-notification-btn"
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  setShowSettings(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faBell} />
+                {notifications.filter(n => n.unread).length > 0 && (
+                  <span className="autoboy-dash-notification-badge">
+                    {notifications.filter(n => n.unread).length}
+                  </span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="autoboy-dash-dropdown autoboy-dash-notifications-dropdown">
+                  <div className="autoboy-dash-dropdown-header">
+                    <h3>Notifications</h3>
+                    <button className="autoboy-dash-mark-read-btn">Mark all as read</button>
+                  </div>
+                  <div className="autoboy-dash-dropdown-content">
+                    {notifications.map(notif => (
+                      <div key={notif.id} className={`autoboy-dash-notification-item ${notif.unread ? 'unread' : ''}`}>
+                        <div className="autoboy-dash-notification-icon">
+                          <FontAwesomeIcon icon={
+                            notif.type === 'order' ? faShoppingCart :
+                            notif.type === 'payment' ? faDollarSign :
+                            notif.type === 'message' ? faComments :
+                            notif.type === 'achievement' ? faStar :
+                            faBell
+                          } />
+                        </div>
+                        <div className="autoboy-dash-notification-content">
+                          <h4>{notif.title}</h4>
+                          <p>{notif.message}</p>
+                          <span>{notif.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="autoboy-dash-dropdown-footer">
+                    <button>View All Notifications</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Theme Toggle */}
             <button className="autoboy-dash-theme-toggle" onClick={toggleTheme}>
               <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
             </button>
+
+            {/* Settings Dropdown */}
+            <div className="autoboy-dash-settings-wrapper">
+              <button
+                className="autoboy-dash-settings-btn"
+                onClick={() => {
+                  setShowSettings(!showSettings);
+                  setShowNotifications(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faCog} />
+              </button>
+
+              {showSettings && (
+                <div className="autoboy-dash-dropdown autoboy-dash-settings-dropdown">
+                  <div className="autoboy-dash-dropdown-content">
+                    <button className="autoboy-dash-dropdown-item" onClick={() => setActiveSection('settings')}>
+                      <FontAwesomeIcon icon={faUserCircle} />
+                      <span>My Profile</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item" onClick={() => setActiveSection('settings')}>
+                      <FontAwesomeIcon icon={faCog} />
+                      <span>Settings</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item">
+                      <FontAwesomeIcon icon={faShieldAlt} />
+                      <span>Privacy & Security</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item">
+                      <FontAwesomeIcon icon={faQuestionCircle} />
+                      <span>Help & Support</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item" onClick={() => setActiveSection('vip-support')}>
+                      <FontAwesomeIcon icon={faHeadset} />
+                      <span>VIP Support</span>
+                    </button>
+                    <div className="autoboy-dash-dropdown-divider"></div>
+                    <button className="autoboy-dash-dropdown-item autoboy-dash-logout-btn" onClick={() => window.location.href = '/login'}>
+                      <FontAwesomeIcon icon={faSignOutAlt} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -93,15 +94,28 @@ func (rl *RateLimiter) cleanup() {
 }
 
 var (
-	// Global rate limiter - 100 requests per minute per IP
-	globalLimiter = NewRateLimiter(100, time.Minute)
-	
-	// Auth rate limiter - 5 login attempts per minute per IP
-	authLimiter = NewRateLimiter(5, time.Minute)
-	
-	// API rate limiter - 1000 requests per hour per user
-	apiLimiter = NewRateLimiter(1000, time.Hour)
+	globalLimiter *RateLimiter
+	authLimiter   *RateLimiter
+	apiLimiter    *RateLimiter
 )
+
+// InitializeRateLimiters initializes rate limiters with environment variables
+func InitializeRateLimiters() {
+	// Global rate limiter - configurable requests per minute per IP
+	globalRequests, _ := strconv.Atoi(utils.GetEnv("RATE_LIMIT_REQUESTS", "100"))
+	globalWindow, _ := strconv.Atoi(utils.GetEnv("RATE_LIMIT_WINDOW_MINUTES", "15"))
+	globalLimiter = NewRateLimiter(globalRequests, time.Duration(globalWindow)*time.Minute)
+	
+	// Auth rate limiter - configurable login attempts per minute per IP
+	authRequests, _ := strconv.Atoi(utils.GetEnv("AUTH_RATE_LIMIT_REQUESTS", "5"))
+	authWindow, _ := strconv.Atoi(utils.GetEnv("AUTH_RATE_LIMIT_WINDOW_MINUTES", "1"))
+	authLimiter = NewRateLimiter(authRequests, time.Duration(authWindow)*time.Minute)
+	
+	// API rate limiter - configurable requests per hour per user
+	apiRequests, _ := strconv.Atoi(utils.GetEnv("API_RATE_LIMIT_REQUESTS", "1000"))
+	apiWindow, _ := strconv.Atoi(utils.GetEnv("API_RATE_LIMIT_WINDOW_HOURS", "1"))
+	apiLimiter = NewRateLimiter(apiRequests, time.Duration(apiWindow)*time.Hour)
+}
 
 // RateLimit middleware for general rate limiting
 func RateLimit() gin.HandlerFunc {

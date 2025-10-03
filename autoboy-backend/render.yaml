@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: autoboy-backend
+    env: go
+    rootDir: autoboy-backend
+    buildCommand: go build -o main .
+    startCommand: ./main
+    plan: free
+    envVars:
+      - key: GIN_MODE
+        value: release
+      - key: PORT
+        value: 8080
+      - key: MONGODB_URI
+        fromDatabase:
+          name: autoboy-mongodb
+          property: connectionString
+      - key: REDIS_URL
+        fromDatabase:
+          name: autoboy-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://autoboy.vercel.app
+
+databases:
+  - name: autoboy-mongodb
+    databaseName: autoboy
+    user: autoboy
+    plan: free
+
+  - name: autoboy-redis
+    plan: free

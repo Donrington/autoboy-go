@@ -4,7 +4,8 @@ import {
   faChartBar, faShoppingCart, faCog, faBars, faMoon, faSun, faTruck,
   faMobileAlt, faCheckCircle, faNairaSign, faEye, faFilter, faSearch,
   faUser, faTimes, faHeart, faBell, faHistory, faMapMarked, faStar,
-  faExchangeAlt, faShoppingBag, faBox, faChartLine
+  faExchangeAlt, faShoppingBag, faBox, faChartLine, faSignOutAlt,
+  faUserCircle, faQuestionCircle, faShieldAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { format, subDays } from 'date-fns';
 import CustomCursor from './CustomCursor';
@@ -19,6 +20,16 @@ const BuyerDashboard = () => {
     return saved ? JSON.parse(saved) : false;
   });
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Notifications data
+  const [notifications] = useState([
+    { id: 1, title: 'Order Shipped', message: 'Your iPhone 15 Pro Max order is on the way', time: '10 min ago', unread: true, type: 'shipping' },
+    { id: 2, title: 'Price Drop Alert', message: 'MacBook Pro M3 is now ₦2,300,000', time: '2 hours ago', unread: true, type: 'alert' },
+    { id: 3, title: 'Wishlist Item Available', message: 'Samsung Galaxy S24 is back in stock', time: '5 hours ago', unread: false, type: 'wishlist' },
+    { id: 4, title: 'Order Delivered', message: 'Your order has been delivered successfully', time: '1 day ago', unread: false, type: 'delivery' }
+  ]);
 
   const [stats] = useState({
     activeOrders: 3,
@@ -348,8 +359,101 @@ const BuyerDashboard = () => {
               <h1 className="autoboy-dash-title">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1).replace('-', ' ')}</h1>
             </div>
             <div className="autoboy-dash-header-actions">
-              <button className="autoboy-dash-theme-toggle" onClick={toggleTheme}><FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} /></button>
+            {/* Notifications */}
+            <div className="autoboy-dash-notification-wrapper">
+              <button
+                className="autoboy-dash-notification-btn"
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  setShowSettings(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faBell} />
+                {notifications.filter(n => n.unread).length > 0 && (
+                  <span className="autoboy-dash-notification-badge">
+                    {notifications.filter(n => n.unread).length}
+                  </span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="autoboy-dash-dropdown autoboy-dash-notifications-dropdown">
+                  <div className="autoboy-dash-dropdown-header">
+                    <h3>Notifications</h3>
+                    <button className="autoboy-dash-mark-read-btn">Mark all as read</button>
+                  </div>
+                  <div className="autoboy-dash-dropdown-content">
+                    {notifications.map(notif => (
+                      <div key={notif.id} className={`autoboy-dash-notification-item ${notif.unread ? 'unread' : ''}`}>
+                        <div className="autoboy-dash-notification-icon">
+                          <FontAwesomeIcon icon={
+                            notif.type === 'shipping' ? faTruck :
+                            notif.type === 'alert' ? faBell :
+                            notif.type === 'wishlist' ? faHeart :
+                            faCheckCircle
+                          } />
+                        </div>
+                        <div className="autoboy-dash-notification-content">
+                          <h4>{notif.title}</h4>
+                          <p>{notif.message}</p>
+                          <span>{notif.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="autoboy-dash-dropdown-footer">
+                    <button>View All Notifications</button>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Theme Toggle */}
+            <button className="autoboy-dash-theme-toggle" onClick={toggleTheme}>
+              <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
+            </button>
+
+            {/* Settings Dropdown */}
+            <div className="autoboy-dash-settings-wrapper">
+              <button
+                className="autoboy-dash-settings-btn"
+                onClick={() => {
+                  setShowSettings(!showSettings);
+                  setShowNotifications(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faCog} />
+              </button>
+
+              {showSettings && (
+                <div className="autoboy-dash-dropdown autoboy-dash-settings-dropdown">
+                  <div className="autoboy-dash-dropdown-content">
+                    <button className="autoboy-dash-dropdown-item" onClick={() => setActiveSection('settings')}>
+                      <FontAwesomeIcon icon={faUserCircle} />
+                      <span>My Profile</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item" onClick={() => setActiveSection('settings')}>
+                      <FontAwesomeIcon icon={faCog} />
+                      <span>Settings</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item">
+                      <FontAwesomeIcon icon={faShieldAlt} />
+                      <span>Privacy & Security</span>
+                    </button>
+                    <button className="autoboy-dash-dropdown-item">
+                      <FontAwesomeIcon icon={faQuestionCircle} />
+                      <span>Help & Support</span>
+                    </button>
+                    <div className="autoboy-dash-dropdown-divider"></div>
+                    <button className="autoboy-dash-dropdown-item autoboy-dash-logout-btn" onClick={() => window.location.href = '/login'}>
+                      <FontAwesomeIcon icon={faSignOutAlt} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
           </div>
 
           <div className="autoboy-dash-content-area">{getContentForSection()}</div>

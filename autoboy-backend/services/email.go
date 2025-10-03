@@ -25,8 +25,8 @@ func NewEmailService() *EmailService {
 		smtpPort:     utils.GetEnv("SMTP_PORT", "587"),
 		smtpUsername: utils.GetEnv("SMTP_USERNAME", ""),
 		smtpPassword: utils.GetEnv("SMTP_PASSWORD", ""),
-		fromEmail:    utils.GetEnv("FROM_EMAIL", "noreply@autoboy.com"),
-		fromName:     utils.GetEnv("FROM_NAME", "AutoBoy"),
+		fromEmail:    utils.GetEnv("EMAIL_FROM", "autoboyexpress@gmail.com"),
+		fromName:     "AutoBoy",
 	}
 }
 
@@ -263,4 +263,127 @@ func (s *EmailService) SendWelcomeEmail(email, name string) error {
 
 	body := fmt.Sprintf(template, name)
 	return s.SendEmail(email, "Welcome to AutoBoy - Start Trading Gadgets!", body)
+}
+
+// SendOrderStatusEmail sends order status update email
+func (s *EmailService) SendOrderStatusEmail(email, name, orderNumber, status string) error {
+	template := `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Update - AutoBoy</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #22C55E; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Status Update</h1>
+        </div>
+        <div class="content">
+            <h2>Hi %s,</h2>
+            <p>Your order <strong>%s</strong> has been updated.</p>
+            <p>New Status: <span class="status-badge" style="background: #22C55E; color: white;">%s</span></p>
+            <p>You can track your order anytime by logging into your AutoBoy account.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 AutoBoy. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>`
+
+	body := fmt.Sprintf(template, name, orderNumber, status)
+	return s.SendEmail(email, fmt.Sprintf("Order Update - %s", orderNumber), body)
+}
+
+// SendDisputeNotificationEmail sends dispute notification email
+func (s *EmailService) SendDisputeNotificationEmail(email, name, orderNumber, disputeReason string) error {
+	template := `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dispute Notification - AutoBoy</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #EF4444; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Dispute Opened</h1>
+        </div>
+        <div class="content">
+            <h2>Hi %s,</h2>
+            <p>A dispute has been opened for order <strong>%s</strong>.</p>
+            <p><strong>Reason:</strong> %s</p>
+            <p>Our support team will review this dispute and contact you within 24 hours.</p>
+            <p>You can view the dispute details in your AutoBoy account.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 AutoBoy. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>`
+
+	body := fmt.Sprintf(template, name, orderNumber, disputeReason)
+	return s.SendEmail(email, fmt.Sprintf("Dispute Opened - Order %s", orderNumber), body)
+}
+
+// SendSellerApplicationEmail sends seller application confirmation email
+func (s *EmailService) SendSellerApplicationEmail(email, name string) error {
+	template := `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Seller Application - AutoBoy</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #22C55E; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Seller Application Received</h1>
+        </div>
+        <div class="content">
+            <h2>Hi %s,</h2>
+            <p>Thank you for applying to become a seller on AutoBoy!</p>
+            <p>We've received your application and our team will review it within 2-3 business days.</p>
+            <p>Once approved, you'll be able to:</p>
+            <ul>
+                <li>List unlimited products</li>
+                <li>Access seller analytics</li>
+                <li>Manage orders and inventory</li>
+                <li>Receive payments directly</li>
+            </ul>
+            <p>We'll notify you once your application is processed.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 AutoBoy. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>`
+
+	body := fmt.Sprintf(template, name)
+	return s.SendEmail(email, "Seller Application Received - AutoBoy", body)
 }

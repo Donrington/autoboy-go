@@ -1,0 +1,11 @@
+.env
+.env.example
+*.md
+.git
+.gitignore
+Dockerfile
+.dockerignore
+*.exe
+*.log
+tmp/
+vendor/

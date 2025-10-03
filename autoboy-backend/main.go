@@ -44,6 +44,9 @@ func main() {
 	// Initialize services
 	services.InitializeServices()
 
+	// Initialize rate limiters
+	middleware.InitializeRateLimiters()
+
 	// Initialize Redis for caching and sessions
 	if err := config.InitializeRedis(); err != nil {
 		log.Printf("Warning: Redis initialization failed: %v", err)
