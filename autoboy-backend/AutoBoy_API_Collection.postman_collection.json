@@ -336,9 +336,9 @@
 							"raw": "{\n  \"title\": \"iPhone 15 Pro Max\",\n  \"description\": \"Brand new iPhone 15 Pro Max with 256GB storage. Comes with original box and accessories.\",\n  \"price\": 1200000,\n  \"currency\": \"NGN\",\n  \"condition\": \"new\",\n  \"brand\": \"Apple\",\n  \"model\": \"iPhone 15 Pro Max\",\n  \"color\": \"Natural Titanium\",\n  \"category_id\": \"category_object_id_here\",\n  \"specifications\": {\n    \"storage\": \"256GB\",\n    \"ram\": \"8GB\",\n    \"screen_size\": \"6.7 inches\",\n    \"camera\": \"48MP Main Camera\"\n  },\n  \"images\": [\n    \"https://example.com/image1.jpg\",\n    \"https://example.com/image2.jpg\"\n  ],\n  \"quantity\": 5,\n  \"location\": {\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\",\n    \"country\": \"Nigeria\",\n    \"postal_code\": \"100001\"\n  },\n  \"swap_available\": true,\n  \"tags\": [\"iphone\", \"apple\", \"smartphone\", \"new\"]\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/seller/products/",
+							"raw": "{{base_url}}/seller/products",
 							"host": ["{{base_url}}"],
-							"path": ["seller", "products", ""]
+							"path": ["seller", "products"]
 						}
 					}
 				},
@@ -1317,9 +1317,11 @@
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
 						"url": {
-							"raw": "{{base_url}}/ws/connect",
-							"host": ["{{base_url}}"],
-							"path": ["ws", "connect"]
+							"raw": "wss://autoboy-go.onrender.com/api/v1/ws/connect?token={{auth_token}}",
+							"protocol": "wss",
+							"host": ["autoboy-go.onrender.com"],
+							"path": ["api", "v1", "ws", "connect"],
+							"query": [{"key": "token", "value": "{{auth_token}}"}]
 						}
 					},
 					"response": [
