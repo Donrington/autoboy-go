@@ -17,10 +17,12 @@
 # Go workspace file
 go.work
 
-# Environment variables
+# Environment variables (NEVER COMMIT THESE)
 .env
 .env.local
 .env.production
+.env.development
+*.env
 
 # IDE
 .vscode/

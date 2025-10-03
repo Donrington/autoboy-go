@@ -12,7 +12,7 @@ services:
       - key: PORT
         value: 8080
       - key: MONGODB_URI
-        value: mongodb+srv://autoboy:autoboy%401234@autoboy-cluster.w0wwtuo.mongodb.net/autoboy?retryWrites=true&w=majority&ssl=true
+        value: # Set in Render dashboard
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
@@ -22,11 +22,11 @@ services:
       - key: SMTP_PORT
         value: 587
       - key: SMTP_USERNAME
-        value: autoboyexpress@gmail.com
+        value: # Set in Render dashboard
       - key: SMTP_PASSWORD
-        value: jtuz mnoz qzqb lsqz
+        value: # Set in Render dashboard
       - key: EMAIL_FROM
-        value: autoboyexpress@gmail.com
+        value: # Set in Render dashboard
       - key: RATE_LIMIT_REQUESTS
         value: 100
       - key: RATE_LIMIT_WINDOW_MINUTES
