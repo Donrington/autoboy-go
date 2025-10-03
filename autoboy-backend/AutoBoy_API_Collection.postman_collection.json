@@ -1181,11 +1181,50 @@
 					}
 				},
 				{
-					"name": "Get Seller Analytics",
+					"name": "Get Seller Sales Analytics",
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
 						"url": {"raw": "{{base_url}}/seller/analytics/sales", "host": ["{{base_url}}"], "path": ["seller", "analytics", "sales"]}
+					}
+				},
+				{
+					"name": "Get Seller Product Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/seller/analytics/products", "host": ["{{base_url}}"], "path": ["seller", "analytics", "products"]}
+					}
+				},
+				{
+					"name": "Get Seller Revenue Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/seller/analytics/revenue", "host": ["{{base_url}}"], "path": ["seller", "analytics", "revenue"]}
+					}
+				},
+				{
+					"name": "Get Seller Profile",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
+						"url": {"raw": "{{base_url}}/seller/profile", "host": ["{{base_url}}"], "path": ["seller", "profile"]}
+					}
+				},
+				{
+					"name": "Update Seller Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"business_name\": \"Updated Tech Solutions\",\n  \"business_description\": \"Premium electronics retailer\",\n  \"contact_email\": \"business@techsolutions.com\",\n  \"contact_phone\": \"+2348123456789\"\n}"
+						},
+						"url": {"raw": "{{base_url}}/seller/profile", "host": ["{{base_url}}"], "path": ["seller", "profile"]}
 					}
 				}
 			]
@@ -1230,7 +1269,7 @@
 			"name": "Analytics",
 			"item": [
 				{
-					"name": "Get Analytics Dashboard",
+					"name": "Get User Analytics Dashboard",
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
@@ -1238,7 +1277,7 @@
 					}
 				},
 				{
-					"name": "Get Sales Analytics",
+					"name": "Get User Sales Analytics",
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
@@ -1246,7 +1285,7 @@
 					}
 				},
 				{
-					"name": "Get Product Analytics",
+					"name": "Get User Product Analytics",
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
