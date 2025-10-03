@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/smtp"
+	"os"
 
 	"autoboy-backend/utils"
 )
@@ -19,6 +20,13 @@ type EmailService struct {
 	smtpPassword string
 	fromEmail    string
 	fromName     string
+}
+
+// flushLogs forces immediate log output
+func flushLogs() {
+	if f, ok := os.Stdout.(*os.File); ok {
+		f.Sync()
+	}
 }
 
 // NewEmailService creates a new email service
@@ -42,6 +50,15 @@ type EmailTemplate struct {
 // SendEmail sends an email
 func (s *EmailService) SendEmail(to, subject, body string) error {
 	// Primary: Gmail SMTP
+	fmt.Printf("\n=== EMAIL SERVICE DEBUG START ===\n")
+	fmt.Printf("[EMAIL] Recipient: %s\n", to)
+	fmt.Printf("[EMAIL] Subject: %s\n", subject)
+	fmt.Printf("[EMAIL] SMTP Host: %s\n", s.smtpHost)
+	fmt.Printf("[EMAIL] SMTP Port: %s\n", s.smtpPort)
+	fmt.Printf("[EMAIL] SMTP Username: %s\n", s.smtpUsername)
+	fmt.Printf("[EMAIL] From Email: %s\n", s.fromEmail)
+	fmt.Printf("[EMAIL] Password Length: %d\n", len(s.smtpPassword))
+	
 	log.Printf("=== EMAIL SERVICE DEBUG START ===")
 	log.Printf("[EMAIL] Recipient: %s", to)
 	log.Printf("[EMAIL] Subject: %s", subject)
@@ -50,9 +67,12 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 	log.Printf("[EMAIL] SMTP Username: %s", s.smtpUsername)
 	log.Printf("[EMAIL] From Email: %s", s.fromEmail)
 	log.Printf("[EMAIL] Password Length: %d", len(s.smtpPassword))
+	flushLogs()
 	
 	if s.smtpUsername == "" || s.smtpPassword == "" {
+		fmt.Printf("[EMAIL ERROR] SMTP credentials not configured - Username: '%s', Password Length: %d\n", s.smtpUsername, len(s.smtpPassword))
 		log.Printf("[EMAIL ERROR] SMTP credentials not configured - Username: '%s', Password Length: %d", s.smtpUsername, len(s.smtpPassword))
+		flushLogs()
 		return fmt.Errorf("SMTP credentials not configured")
 	}
 
@@ -73,17 +93,29 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 	))
 
 	// Send email with detailed error logging
+	fmt.Printf("[EMAIL] Attempting SMTP connection to %s:%s\n", s.smtpHost, s.smtpPort)
+	fmt.Printf("[EMAIL] Auth details - Username: %s, From: %s\n", s.smtpUsername, s.fromEmail)
 	log.Printf("[EMAIL] Attempting SMTP connection to %s:%s", s.smtpHost, s.smtpPort)
 	log.Printf("[EMAIL] Auth details - Username: %s, From: %s", s.smtpUsername, s.fromEmail)
+	flushLogs()
 	
 	err := smtp.SendMail(s.smtpHost+":"+s.smtpPort, auth, s.fromEmail, []string{to}, msg)
 	if err != nil {
+		fmt.Printf("[EMAIL ERROR] SMTP SendMail failed: %v\n", err)
+		fmt.Printf("[EMAIL ERROR] Error type: %T\n", err)
+		fmt.Printf("[EMAIL ERROR] Full error details: %+v\n", err)
 		log.Printf("[EMAIL ERROR] SMTP SendMail failed: %v", err)
 		log.Printf("[EMAIL ERROR] Error type: %T", err)
 		log.Printf("[EMAIL ERROR] Full error details: %+v", err)
+		flushLogs()
 		
 		// Log specific Gmail errors
 		if s.smtpHost == "smtp.gmail.com" {
+			fmt.Printf("[EMAIL ERROR] Gmail troubleshooting:\n")
+			fmt.Printf("[EMAIL ERROR] 1. Verify 2FA is enabled on autoboyexpress@gmail.com\n")
+			fmt.Printf("[EMAIL ERROR] 2. Verify app password is correct: %s\n", s.smtpPassword[:4]+"...")
+			fmt.Printf("[EMAIL ERROR] 3. Check Gmail security settings\n")
+			fmt.Printf("[EMAIL ERROR] 4. Verify account is not locked\n")
 			log.Printf("[EMAIL ERROR] Gmail troubleshooting:")
 			log.Printf("[EMAIL ERROR] 1. Verify 2FA is enabled on autoboyexpress@gmail.com")
 			log.Printf("[EMAIL ERROR] 2. Verify app password is correct: %s", s.smtpPassword[:4]+"...")
@@ -91,11 +123,14 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 			log.Printf("[EMAIL ERROR] 4. Verify account is not locked")
 		}
 		
+		fmt.Printf("=== EMAIL SERVICE DEBUG END (FAILED) ===\n")
 		log.Printf("=== EMAIL SERVICE DEBUG END (FAILED) ===")
+		flushLogs()
 		
 		// Try Resend as fallback
 		resendKey := utils.GetEnv("RESEND_API_KEY", "")
 		if resendKey != "" {
+			fmt.Printf("[EMAIL] Gmail failed, trying Resend as fallback...\n")
 			log.Printf("[EMAIL] Gmail failed, trying Resend as fallback...")
 			return s.sendWithResend(to, subject, body, resendKey)
 		}
@@ -103,9 +138,13 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 		return fmt.Errorf("email send failed: %v", err)
 	}
 
+	fmt.Printf("[EMAIL SUCCESS] ✅ Email sent successfully to %s\n", to)
+	fmt.Printf("[EMAIL SUCCESS] Subject: %s\n", subject)
+	fmt.Printf("=== EMAIL SERVICE DEBUG END (SUCCESS) ===\n")
 	log.Printf("[EMAIL SUCCESS] ✅ Email sent successfully to %s", to)
 	log.Printf("[EMAIL SUCCESS] Subject: %s", subject)
 	log.Printf("=== EMAIL SERVICE DEBUG END (SUCCESS) ===")
+	flushLogs()
 	return nil
 }
 
