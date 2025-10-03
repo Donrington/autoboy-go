@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: autoboy-backend
+    env: go
+    rootDir: autoboy-backend
+    buildCommand: go build -o main .
+    startCommand: ./main
+    plan: free
+    envVars:
+      - key: GIN_MODE
+        value: release
+      - key: PORT
+        value: 8080
+      - key: MONGODB_URI
+        value: mongodb+srv://autoboy:autoboy%401234@autoboy-cluster.w0wwtuo.mongodb.net/autoboy
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://autoboy-frontend.onrender.com
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USERNAME
+        value: autoboyexpress@gmail.com
+      - key: SMTP_PASSWORD
+        value: jtuz mnoz qzqb lsqz
+      - key: EMAIL_FROM
+        value: autoboyexpress@gmail.com
