@@ -27,3 +27,15 @@ services:
         value: jtuz mnoz qzqb lsqz
       - key: EMAIL_FROM
         value: autoboyexpress@gmail.com
+      - key: RATE_LIMIT_REQUESTS
+        value: 100
+      - key: RATE_LIMIT_WINDOW_MINUTES
+        value: 15
+      - key: AUTH_RATE_LIMIT_REQUESTS
+        value: 5
+      - key: AUTH_RATE_LIMIT_WINDOW_MINUTES
+        value: 1
+      - key: API_RATE_LIMIT_REQUESTS
+        value: 1000
+      - key: API_RATE_LIMIT_WINDOW_HOURS
+        value: 1
