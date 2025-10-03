@@ -1,0 +1,769 @@
+/* ========================================
+   AutoBoy Admin Dashboard Styles
+   Extends base dashboard styles with admin-specific components
+   ======================================== */
+
+/* Import base styles from BuyerDashboard.css - These styles are shared */
+/* Admin-specific components and overrides below */
+
+/* ========================================
+   Admin Dashboard Specific Stats Grid
+   ======================================== */
+
+.autoboy-admin-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* ========================================
+   Admin Management Tabs
+   ======================================== */
+
+.autoboy-admin-management-tabs,
+.autoboy-admin-cms-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 0;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-management-tabs,
+.autoboy-dash-dark-mode .autoboy-admin-cms-tabs {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-admin-tab-btn {
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-light-secondary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    bottom: -2px;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-tab-btn {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-tab-btn:hover {
+    color: var(--primary-green);
+}
+
+.autoboy-admin-tab-btn.active {
+    color: var(--primary-green);
+    border-bottom-color: var(--primary-green);
+}
+
+/* ========================================
+   Admin Role & Type Badges
+   ======================================== */
+
+.autoboy-admin-role-badge {
+    padding: 0.375rem 0.875rem;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.autoboy-admin-type-badge {
+    padding: 0.25rem 0.75rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-light);
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-type-badge {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-admin-priority-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
+
+/* ========================================
+   Admin Activity Items
+   ======================================== */
+
+.autoboy-admin-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-activity-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-admin-activity-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-admin-activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    font-size: 1.125rem;
+}
+
+.autoboy-admin-activity-info p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-activity-info p {
+    color: var(--text-dark);
+}
+
+.autoboy-admin-activity-info span {
+    font-size: 0.8rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-activity-info span {
+    color: var(--text-dark-tertiary);
+}
+
+/* ========================================
+   Admin Report Items
+   ======================================== */
+
+.autoboy-admin-report-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-report-item {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-admin-report-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-report-item:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-admin-report-item h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-report-item h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-admin-report-item p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-report-item p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-report-meta {
+    font-size: 0.8rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-report-meta {
+    color: var(--text-dark-tertiary);
+}
+
+/* ========================================
+   Admin Analytics Cards
+   ======================================== */
+
+.autoboy-admin-analytics-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.autoboy-admin-analytics-card {
+    padding: 2rem;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-analytics-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-admin-analytics-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-admin-analytics-card h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-analytics-card h3 {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-analytics-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.autoboy-admin-analytics-stats > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-analytics-stats > div {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-admin-analytics-stats > div:last-child {
+    border-bottom: none;
+}
+
+.autoboy-admin-analytics-stats span {
+    font-size: 0.9rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-analytics-stats span {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-analytics-stats strong {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    font-family: 'Syne', sans-serif;
+}
+
+/* ========================================
+   Admin Analytics Items
+   ======================================== */
+
+.autoboy-admin-analytics-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-analytics-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-admin-analytics-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-admin-analytics-item h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-analytics-item h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-admin-analytics-item p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-analytics-item p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-analytics-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    font-family: 'Syne', sans-serif;
+}
+
+/* ========================================
+   System Health - Metrics Cards
+   ======================================== */
+
+.autoboy-admin-system-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.autoboy-admin-metric-card {
+    padding: 1.5rem;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-metric-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-admin-metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-admin-metric-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-metric-header {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-metric-header svg {
+    font-size: 1.5rem;
+    color: var(--primary-green);
+}
+
+.autoboy-admin-metric-header h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.autoboy-admin-metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+    font-family: 'Syne', sans-serif;
+}
+
+.autoboy-admin-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-light-tertiary);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-progress-bar {
+    background: var(--bg-dark-tertiary);
+}
+
+.autoboy-admin-progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* ========================================
+   System Status Grid
+   ======================================== */
+
+.autoboy-admin-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.autoboy-admin-status-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-status-item {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-admin-status-item span {
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+    font-weight: 500;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-status-item span {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-status-item strong {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-light);
+    font-family: 'Syne', sans-serif;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-status-item strong {
+    color: var(--text-dark);
+}
+
+/* ========================================
+   System Logs
+   ======================================== */
+
+.autoboy-admin-log-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-log-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-admin-log-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-admin-log-type {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.autoboy-admin-log-content {
+    flex: 1;
+}
+
+.autoboy-admin-log-content p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-log-content p {
+    color: var(--text-dark);
+}
+
+.autoboy-admin-log-content span {
+    font-size: 0.8rem;
+    color: var(--text-light-tertiary);
+    font-family: monospace;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-log-content span {
+    color: var(--text-dark-tertiary);
+}
+
+/* ========================================
+   CMS Grid
+   ======================================== */
+
+.autoboy-admin-cms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.autoboy-admin-cms-card {
+    padding: 2rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-cms-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-admin-cms-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-admin-cms-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.75rem;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-admin-cms-card h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-cms-card h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-admin-cms-card p {
+    margin: 0 0 1.5rem 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-admin-cms-card p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-admin-cms-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ========================================
+   Admin Dashboard Grid Layouts
+   ======================================== */
+
+.autoboy-admin-dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+}
+
+/* ========================================
+   Responsive Styles for Admin Components
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .autoboy-admin-analytics-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-admin-system-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .autoboy-admin-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .autoboy-admin-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .autoboy-admin-management-tabs,
+    .autoboy-admin-cms-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .autoboy-admin-tab-btn {
+        white-space: nowrap;
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .autoboy-admin-system-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-admin-status-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-admin-cms-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-admin-report-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .autoboy-admin-analytics-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .autoboy-admin-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-admin-analytics-card {
+        padding: 1.5rem;
+    }
+
+    .autoboy-admin-metric-card {
+        padding: 1rem;
+    }
+
+    .autoboy-admin-cms-card {
+        padding: 1.5rem;
+    }
+}
+
+/* ========================================
+   Code Elements Styling
+   ======================================== */
+
+code {
+    padding: 0.25rem 0.5rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: var(--primary-green);
+}
+
+.autoboy-dash-dark-mode code {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+}
+
+/* ========================================
+   Admin Table Enhancements
+   ======================================== */
+
+.autoboy-dash-table code {
+    padding: 0.125rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.autoboy-dash-table th {
+    position: sticky;
+    top: 0;
+    background: var(--card-light);
+    z-index: 10;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-table th {
+    background: var(--card-dark);
+}
+
+/* ========================================
+   Admin Select Dropdowns
+   ======================================== */
+
+.autoboy-dash-form-group select {
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    background: var(--bg-light);
+    color: var(--text-light);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-group select {
+    background: var(--bg-dark-secondary);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-form-group select:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* ========================================
+   Print Styles for Admin Reports
+   ======================================== */
+
+@media print {
+    .autoboy-admin-management-tabs,
+    .autoboy-admin-cms-tabs,
+    .autoboy-dash-filters,
+    .autoboy-dash-actions {
+        display: none !important;
+    }
+
+    .autoboy-admin-analytics-cards,
+    .autoboy-admin-system-metrics {
+        break-inside: avoid;
+    }
+
+    .autoboy-dash-section {
+        page-break-inside: avoid;
+    }
+}

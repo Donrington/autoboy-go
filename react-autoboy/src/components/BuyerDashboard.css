@@ -1,0 +1,1885 @@
+/* ========================================
+   AutoBoy Seller Dashboard Styles
+   ======================================== */
+
+:root {
+    --primary-green: #22C55E;
+    --primary-green-dark: #16A34A;
+    --primary-green-light: #4ADE80;
+    --primary-green-glow: #10B981;
+
+    /* Light Mode Colors */
+    --bg-light: #FFFFFF;
+    --bg-light-secondary: #F9FAFB;
+    --bg-light-tertiary: #F3F4F6;
+    --text-light: #1F2937;
+    --text-light-secondary: #6B7280;
+    --text-light-tertiary: #9CA3AF;
+
+    /* Dark Mode Colors */
+    --bg-dark: #0A0A0A;
+    --bg-dark-secondary: #111111;
+    --bg-dark-tertiary: #1A1A1A;
+    --text-dark: #F3F4F6;
+    --text-dark-secondary: #9CA3AF;
+    --text-dark-tertiary: #6B7280;
+
+    /* Overlays and Cards */
+    --overlay-light: rgba(255, 255, 255, 0.9);
+    --overlay-dark: rgba(10, 10, 10, 0.85);
+    --card-light: rgba(255, 255, 255, 0.95);
+    --card-dark: rgba(30, 30, 30, 0.95);
+    --card-hover-light: rgba(255, 255, 255, 1);
+    --card-hover-dark: rgba(40, 40, 40, 1);
+
+    /* Borders and Shadows */
+    --border-light: rgba(0, 0, 0, 0.08);
+    --border-dark: rgba(255, 255, 255, 0.08);
+    --shadow-light: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-dark: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 60px rgba(34, 197, 94, 0.3);
+    --shadow-glow-intense: 0 0 120px rgba(34, 197, 94, 0.5);
+
+    /* Glassmorphism */
+    --glassmorphism-light: rgba(255, 255, 255, 0.25);
+    --glassmorphism-dark: rgba(255, 255, 255, 0.05);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
+    --gradient-green-light: linear-gradient(135deg, var(--primary-green-light), var(--primary-green));
+}
+
+/* ========================================
+   Base Container & Layout
+   ======================================== */
+
+.autoboy-dash-container {
+    display: flex;
+    height: 100vh;
+    background: var(--bg-light);
+    color: var(--text-light);
+    font-family: 'Epilogue', sans-serif;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-container {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+}
+
+/* ========================================
+   Sidebar Styles
+   ======================================== */
+
+.autoboy-dash-sidebar {
+    width: 280px;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--border-light);
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+    transform: translateX(-100%);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-sidebar {
+    background: var(--card-dark);
+    border-right-color: var(--border-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-dash-sidebar-open {
+    transform: translateX(0);
+}
+
+.autoboy-dash-logo {
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.autoboy-dash-logo img {
+    height: 100px;
+    width: auto;
+}
+
+.autoboy-dash-profile {
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.autoboy-dash-profile-avatar {
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-profile-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.autoboy-dash-profile-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--primary-green);
+    opacity: 0.8;
+}
+
+.autoboy-dash-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+}
+
+.autoboy-dash-nav-item {
+    margin: 0.5rem 1rem;
+}
+
+.autoboy-dash-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--text-light-secondary);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-nav-link {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-nav-link:hover {
+    background: var(--glassmorphism-light);
+    color: var(--text-light);
+    transform: translateX(5px);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-nav-link:hover {
+    background: var(--glassmorphism-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-nav-link.active {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-nav-icon {
+    width: 20px;
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   Mobile Overlay
+   ======================================== */
+
+.autoboy-dash-mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+/* ========================================
+   Main Content Area
+   ======================================== */
+
+.autoboy-dash-main {
+    flex: 1;
+    margin-left: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.autoboy-dash-header {
+    padding: 1.5rem 2rem;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-header {
+    background: var(--card-dark);
+    border-bottom-color: var(--border-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-dash-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-mobile-toggle {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-mobile-toggle:hover {
+    background: var(--primary-green);
+    color: white;
+    transform: scale(1.05);
+}
+
+.autoboy-dash-title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.autoboy-dash-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.autoboy-dash-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-theme-toggle {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-theme-toggle:hover {
+    background: var(--primary-green);
+    color: white;
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: var(--shadow-glow);
+}
+
+/* ========================================
+   Content Area
+   ======================================== */
+
+.autoboy-dash-content-area {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background: var(--bg-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-content-area {
+    background: var(--bg-dark-secondary);
+}
+
+.autoboy-dash-content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   Quick Actions
+   ======================================== */
+
+.autoboy-dash-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.autoboy-dash-quick-action {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-quick-action {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-dash-quick-action:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+    background: var(--card-hover-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-quick-action:hover {
+    background: var(--card-hover-dark);
+}
+
+.autoboy-dash-quick-action-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-quick-action h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.autoboy-dash-quick-action p {
+    margin: 0;
+    color: var(--text-light-secondary);
+    font-size: 0.9rem;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-quick-action p {
+    color: var(--text-dark-secondary);
+}
+
+/* ========================================
+   Stats Cards
+   ======================================== */
+
+.autoboy-dash-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.autoboy-dash-stat-card {
+    padding: 1.5rem;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-stat-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-dash-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+}
+
+.autoboy-dash-stat-header {
+    margin-bottom: 1rem;
+}
+
+.autoboy-dash-stat-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    margin: 0 auto;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 0.5rem;
+    font-family: 'Syne', sans-serif;
+}
+
+.autoboy-dash-stat-label {
+    color: var(--text-light-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-stat-label {
+    color: var(--text-dark-secondary);
+}
+
+/* ========================================
+   Content Grid & Sections
+   ======================================== */
+
+.autoboy-dash-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.autoboy-dash-section {
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-section {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-dash-section:hover {
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-section-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-section-header {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-dash-section-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-section-title {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-section-content {
+    padding: 1.5rem;
+}
+
+/* ========================================
+   Orders
+   ======================================== */
+
+.autoboy-dash-order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-order-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-dash-order-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-dash-order-info h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.autoboy-dash-order-info p {
+    margin: 0 0 0.25rem 0;
+    color: var(--text-light-secondary);
+    font-size: 0.9rem;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-order-info p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-order-id {
+    font-size: 0.8rem;
+    color: var(--text-light-tertiary);
+    font-family: monospace;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-order-id {
+    color: var(--text-dark-tertiary);
+}
+
+.autoboy-dash-order-details {
+    text-align: right;
+}
+
+.autoboy-dash-order-amount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-green);
+    margin-bottom: 0.25rem;
+}
+
+.autoboy-dash-order-status {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ========================================
+   Charts
+   ======================================== */
+
+.autoboy-dash-chart-container {
+    height: 300px;
+    position: relative;
+}
+
+/* ========================================
+   Tables
+   ======================================== */
+
+.autoboy-dash-table-container {
+    overflow-x: auto;
+}
+
+.autoboy-dash-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.autoboy-dash-table th,
+.autoboy-dash-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-table th,
+.autoboy-dash-dark-mode .autoboy-dash-table td {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-dash-table th {
+    font-weight: 600;
+    color: var(--text-light-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-table th {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-table tr:hover {
+    background: var(--glassmorphism-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-table tr:hover {
+    background: var(--glassmorphism-dark);
+}
+
+.autoboy-dash-product-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.autoboy-dash-product-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.autoboy-dash-customer-info > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.autoboy-dash-customer-email {
+    font-size: 0.8rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-customer-email {
+    color: var(--text-dark-tertiary);
+}
+
+.autoboy-dash-status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: white;
+    text-transform: capitalize;
+}
+
+.autoboy-dash-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.autoboy-dash-action-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: var(--glassmorphism-light);
+    color: var(--text-light-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-action-btn {
+    background: var(--glassmorphism-dark);
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-action-btn:hover {
+    background: var(--primary-green);
+    color: white;
+    transform: scale(1.1);
+}
+
+.autoboy-dash-action-btn-danger:hover {
+    background: #ef4444;
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+
+.autoboy-dash-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.autoboy-dash-btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow-intense);
+}
+
+/* ========================================
+   Filters & Search
+   ======================================== */
+
+.autoboy-dash-filters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.autoboy-dash-filter-btn {
+    padding: 0.5rem 1rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-filter-btn {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-filter-btn:hover {
+    background: var(--primary-green);
+    color: white;
+}
+
+.autoboy-dash-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.autoboy-dash-search svg {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--text-light-tertiary);
+    z-index: 1;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-search svg {
+    color: var(--text-dark-tertiary);
+}
+
+.autoboy-dash-search input {
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    min-width: 200px;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-search input {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-search input::placeholder {
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-search input::placeholder {
+    color: var(--text-dark-tertiary);
+}
+
+/* ========================================
+   Earnings Section
+   ======================================== */
+
+.autoboy-dash-earnings-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.autoboy-dash-earnings-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-earnings-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-dash-earnings-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-earnings-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    box-shadow: var(--shadow-glow);
+}
+
+.autoboy-dash-earnings-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-earnings-info h3 {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-earnings-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    font-family: 'Syne', sans-serif;
+}
+
+.autoboy-dash-earnings-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.autoboy-dash-breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.autoboy-dash-breakdown-total {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-green);
+}
+
+/* ========================================
+   Analytics & Metrics
+   ======================================== */
+
+.autoboy-dash-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+}
+
+.autoboy-dash-metric {
+    text-align: center;
+    padding: 1rem;
+    background: var(--glassmorphism-light);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-metric {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-dash-metric h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--text-light-secondary);
+    font-weight: 500;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-metric h4 {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    font-family: 'Syne', sans-serif;
+}
+
+/* ========================================
+   Settings & Forms
+   ======================================== */
+
+.autoboy-dash-settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.autoboy-dash-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.autoboy-dash-form-group label {
+    font-weight: 500;
+    color: var(--text-light-secondary);
+    font-size: 0.9rem;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-group label {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-form-group input,
+.autoboy-dash-form-group textarea {
+    padding: 0.75rem;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-group input,
+.autoboy-dash-dark-mode .autoboy-dash-form-group textarea {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-form-group input:focus,
+.autoboy-dash-form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.autoboy-dash-notification-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.autoboy-dash-notification-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.autoboy-dash-notification-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-green);
+}
+
+/* ========================================
+   Add Product Modal & Form Styles
+   ======================================== */
+
+.autoboy-dash-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.autoboy-dash-modal {
+    background: var(--card-light);
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-dark);
+    animation: slideUp 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal {
+    background: var(--card-dark);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.autoboy-dash-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    background: var(--card-light);
+    backdrop-filter: blur(20px);
+    z-index: 10;
+    border-radius: 20px 20px 0 0;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal-header {
+    border-bottom-color: var(--border-dark);
+    background: var(--card-dark);
+}
+
+.autoboy-dash-modal-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal-header h2 {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-modal-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--glassmorphism-light);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-modal-close {
+    background: var(--glassmorphism-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-modal-close:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.05);
+}
+
+.autoboy-dash-product-form {
+    padding: 2rem;
+}
+
+.autoboy-dash-form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-section {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-dash-form-section:last-of-type {
+    border-bottom: none;
+}
+
+.autoboy-dash-form-section h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-section h3 {
+    color: var(--text-dark);
+}
+
+.autoboy-dash-form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.autoboy-dash-form-row:last-child {
+    margin-bottom: 0;
+}
+
+.autoboy-dash-form-group select {
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    background: var(--bg-light);
+    color: var(--text-light);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-group select {
+    background: var(--bg-dark-secondary);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.autoboy-dash-form-group select:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.autoboy-dash-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.autoboy-dash-checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-green);
+    cursor: pointer;
+}
+
+.autoboy-dash-checkbox-label span {
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-checkbox-label span {
+    color: var(--text-dark);
+}
+
+/* Image Upload Styles */
+.autoboy-dash-image-upload-area {
+    margin-bottom: 1.5rem;
+}
+
+.autoboy-dash-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem 2rem;
+    border: 2px dashed var(--border-light);
+    border-radius: 15px;
+    background: var(--glassmorphism-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-upload-label {
+    border-color: var(--border-dark);
+    background: var(--glassmorphism-dark);
+}
+
+.autoboy-dash-upload-label:hover {
+    border-color: var(--primary-green);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.autoboy-dash-upload-label svg {
+    font-size: 2.5rem;
+    color: var(--primary-green);
+}
+
+.autoboy-dash-upload-label span {
+    font-size: 0.95rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-upload-label span {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-dash-image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.autoboy-dash-image-preview {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--border-light);
+    background: var(--bg-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-image-preview {
+    border-color: var(--border-dark);
+    background: var(--bg-dark-secondary);
+}
+
+.autoboy-dash-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.autoboy-dash-remove-image {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-remove-image:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+.autoboy-dash-form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-form-actions {
+    border-top-color: var(--border-dark);
+}
+
+.autoboy-dash-btn-secondary {
+    background: var(--glassmorphism-light);
+    color: var(--text-light);
+    border: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-btn-secondary {
+    background: var(--glassmorphism-dark);
+    color: var(--text-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-dash-btn-secondary:hover {
+    background: var(--bg-light-secondary);
+    transform: translateY(-2px);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-btn-secondary:hover {
+    background: var(--bg-dark-tertiary);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (min-width: 1024px) {
+    .autoboy-dash-sidebar {
+        position: fixed;
+        transform: translateX(0);
+    }
+
+    .autoboy-dash-main {
+        margin-left: 280px;
+    }
+
+    .autoboy-dash-mobile-toggle {
+        display: none;
+    }
+}
+
+@media (max-width: 1023px) {
+    .autoboy-dash-mobile-overlay {
+        display: block;
+    }
+
+    .autoboy-dash-content-area {
+        padding: 1rem;
+    }
+
+    .autoboy-dash-header {
+        padding: 1rem;
+    }
+
+    .autoboy-dash-title {
+        font-size: 1.5rem;
+    }
+
+    .autoboy-dash-quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-dash-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .autoboy-dash-content {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-dash-earnings-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-dash-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .autoboy-dash-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-dash-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-dash-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .autoboy-dash-search input {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .autoboy-dash-table-container {
+        font-size: 0.8rem;
+    }
+
+    .autoboy-dash-table th,
+    .autoboy-dash-table td {
+        padding: 0.5rem;
+    }
+
+    .autoboy-dash-order-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .autoboy-dash-order-details {
+        text-align: left;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Modal Responsive */
+    .autoboy-dash-modal {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .autoboy-dash-modal-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .autoboy-dash-modal-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .autoboy-dash-product-form {
+        padding: 1rem;
+    }
+
+    .autoboy-dash-form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .autoboy-dash-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .autoboy-dash-form-actions button {
+        width: 100%;
+    }
+
+    .autoboy-dash-image-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .autoboy-dash-section-content {
+        padding: 1rem;
+    }
+
+    .autoboy-dash-quick-action {
+        padding: 1rem;
+    }
+
+    .autoboy-dash-stat-card {
+        padding: 1rem;
+    }
+
+    .autoboy-dash-earnings-card {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   Scroll Behavior
+   ======================================== */
+
+.autoboy-dash-content-area {
+    scroll-behavior: smooth;
+}
+
+.autoboy-dash-content-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.autoboy-dash-content-area::-webkit-scrollbar-track {
+    background: var(--bg-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-dash-content-area::-webkit-scrollbar-track {
+    background: var(--bg-dark-tertiary);
+}
+
+.autoboy-dash-content-area::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+}
+
+.autoboy-dash-content-area::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-green-dark);
+}
+
+/* ========================================
+   Loading States & Animations
+   ======================================== */
+
+@keyframes autoboy-dash-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.autoboy-dash-content-wrapper > * {
+    animation: autoboy-dash-fadeIn 0.5s ease forwards;
+}
+
+.autoboy-dash-content-wrapper > *:nth-child(1) { animation-delay: 0.1s; }
+.autoboy-dash-content-wrapper > *:nth-child(2) { animation-delay: 0.2s; }
+.autoboy-dash-content-wrapper > *:nth-child(3) { animation-delay: 0.3s; }
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+    .autoboy-dash-sidebar,
+    .autoboy-dash-header,
+    .autoboy-dash-mobile-toggle,
+    .autoboy-dash-theme-toggle,
+    .autoboy-dash-actions {
+        display: none !important;
+    }
+
+    .autoboy-dash-main {
+        margin-left: 0 !important;
+    }
+
+    .autoboy-dash-content-area {
+        padding: 0 !important;
+    }
+}
+
+/* ========================================
+   Buyer-Specific Styles
+   ======================================== */
+
+/* Wishlist Grid */
+.autoboy-buyer-wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.autoboy-buyer-wishlist-card {
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-buyer-wishlist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-card:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-buyer-wishlist-image {
+    width: 100%;
+    height: 200px;
+    background: var(--bg-light-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-image {
+    background: var(--bg-dark-tertiary);
+}
+
+.autoboy-buyer-wishlist-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.autoboy-buyer-wishlist-info {
+    padding: 1.5rem;
+}
+
+.autoboy-buyer-wishlist-info h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-info h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-wishlist-seller,
+.autoboy-buyer-wishlist-condition {
+    margin: 0.25rem 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-seller,
+.autoboy-dash-dark-mode .autoboy-buyer-wishlist-condition {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-buyer-wishlist-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin: 1rem 0;
+}
+
+.autoboy-buyer-wishlist-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.autoboy-buyer-wishlist-actions button:first-child {
+    flex: 1;
+}
+
+.autoboy-buyer-wishlist-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Saved Searches */
+.autoboy-buyer-search-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-item {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-buyer-search-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-item:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-buyer-search-info h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-info h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-search-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-search-info p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-buyer-search-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* Activity Items */
+.autoboy-buyer-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-item {
+    border-bottom-color: var(--border-dark);
+}
+
+.autoboy-buyer-activity-item:last-child {
+    border-bottom: none;
+}
+
+.autoboy-buyer-activity-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.autoboy-buyer-activity-info p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info p {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-activity-info span {
+    font-size: 0.875rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info span {
+    color: var(--text-dark-secondary);
+}
+
+/* Large Activity Items */
+.autoboy-buyer-activity-item-large {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-item-large {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.autoboy-buyer-activity-item-large:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-item-large:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.autoboy-buyer-activity-icon-large {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.autoboy-buyer-activity-info-large h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info-large h4 {
+    color: var(--text-dark);
+}
+
+.autoboy-buyer-activity-info-large p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    color: var(--text-light-secondary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info-large p {
+    color: var(--text-dark-secondary);
+}
+
+.autoboy-buyer-activity-info-large span {
+    font-size: 0.875rem;
+    color: var(--text-light-tertiary);
+}
+
+.autoboy-dash-dark-mode .autoboy-buyer-activity-info-large span {
+    color: var(--text-dark-tertiary);
+}
+
+/* Responsive Buyer Styles */
+@media (max-width: 768px) {
+    .autoboy-buyer-wishlist-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .autoboy-buyer-search-item,
+    .autoboy-buyer-activity-item-large {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .autoboy-buyer-search-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .autoboy-buyer-search-actions button {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   High Contrast Mode Support
+   ======================================== */
+
+@media (prefers-contrast: high) {
+    :root {
+        --border-light: rgba(0, 0, 0, 0.2);
+        --border-dark: rgba(255, 255, 255, 0.2);
+    }
+}
