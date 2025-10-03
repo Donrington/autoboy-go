@@ -119,9 +119,9 @@ credentials.json
 *.code-workspace
 .history/
 
-# React Frontend Projects (temporarily allowing to restore)
-# react-autoboy/
-# react-autoboy-old/
+# React Frontend Projects (permanently excluded)
+react-autoboy/
+react-autoboy-old/
 
 # Miscellaneous
 .eslintcache
