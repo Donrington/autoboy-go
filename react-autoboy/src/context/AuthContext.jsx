@@ -18,23 +18,60 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
-    if (token) {
+    const cachedUser = localStorage.getItem('user');
+
+    if (token && cachedUser) {
+      // User has token and cached data - immediately authenticate
+      try {
+        const userData = JSON.parse(cachedUser);
+        setUser(userData);
+        setIsAuthenticated(true);
+        setLoading(false); // ✅ Set loading to false immediately for instant access
+
+        // Optionally fetch fresh user profile in background (don't block UI)
+        fetchUserProfile().catch(() => {
+          console.log('Using cached user data');
+        });
+      } catch (e) {
+        console.error('Error parsing cached user:', e);
+        // If cache is corrupted, fetch fresh
+        fetchUserProfile();
+      }
+    } else if (token) {
+      // Has token but no cached user - fetch from API
       fetchUserProfile();
     } else {
+      // No token - not authenticated
       setLoading(false);
     }
   }, []);
 
   const fetchUserProfile = async () => {
     try {
-      const userData = await userAPI.getProfile();
+      const response = await userAPI.getProfile();
+      // Handle Go backend response format: { success: true, data: { user: {...} } }
+      const userData = response.data?.user || response.data || response;
       setUser(userData);
       setIsAuthenticated(true);
+      // Cache user data
+      localStorage.setItem('user', JSON.stringify(userData));
+      setLoading(false);
     } catch (error) {
-      localStorage.removeItem('authToken');
-      setUser(null);
-      setIsAuthenticated(false);
-    } finally {
+      console.error('Profile fetch error:', error);
+
+      // ⚠️ TEMPORARY: Don't logout on background refresh failures
+      // Only logout if this is the initial auth check (no cached user)
+      const cachedUser = localStorage.getItem('user');
+      if (!cachedUser) {
+        // No cached user - this is a real auth failure
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        setUser(null);
+        setIsAuthenticated(false);
+      } else {
+        // Has cached user - keep using it, just log the error
+        console.warn('Using cached user data due to backend auth error');
+      }
       setLoading(false);
     }
   };
@@ -42,9 +79,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authAPI.login(credentials);
-      localStorage.setItem('authToken', response.token);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      // Handle Go backend response format: { success: true, data: { token, user } }
+      const token = response.data?.token || response.token;
+      const user = response.data?.user || response.user;
+
+      if (token) {
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        setUser(user);
+        setIsAuthenticated(true);
+      }
       return response;
     } catch (error) {
       throw error;
@@ -54,9 +98,16 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authAPI.register(userData);
-      localStorage.setItem('authToken', response.token);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      // Handle Go backend response format: { success: true, data: { token, user } }
+      const token = response.data?.token || response.token;
+      const user = response.data?.user || response.user;
+
+      if (token) {
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        setUser(user);
+        setIsAuthenticated(true);
+      }
       return response;
     } catch (error) {
       throw error;
@@ -70,8 +121,11 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
       setUser(null);
       setIsAuthenticated(false);
+      // Redirect to login page after logout
+      window.location.href = '/auth';
     }
   };
 

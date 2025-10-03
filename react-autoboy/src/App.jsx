@@ -20,11 +20,13 @@ import LoginSignup from './components/LoginSignup';
 import ProductDetails from './components/ProductDetails';
 import BecomeSeller from './components/BecomeSeller';
 import SellerSignup from './components/SellerSignup';
+import SellerLogin from './components/SellerLogin';
 import SellerDashboard from './components/SellerDashboard';
 import PremiumSellerDashboard from './components/PremiumSellerDashboard';
 import BuyerDashboard from './components/BuyerDashboard';
 import PremiumBuyerDashboard from './components/PremiumBuyerDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 // Register GSAP plugins
@@ -92,12 +94,32 @@ function App() {
           <Route path="/register" element={<LoginSignup />} />
           <Route path="/auth" element={<LoginSignup />} />
 
-          {/* Dashboard routes without navbar/footer */}
-          <Route path="/seller-dashboard" element={<SellerDashboard />} />
-          <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
-          <Route path="/premium-seller-dashboard" element={<PremiumSellerDashboard />} />
-          <Route path="/premium-buyer-dashboard" element={<PremiumBuyerDashboard />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          {/* Dashboard routes without navbar/footer - PROTECTED */}
+          <Route path="/seller-dashboard" element={
+            <ProtectedRoute>
+              <SellerDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/buyer-dashboard" element={
+            <ProtectedRoute>
+              <BuyerDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/premium-seller-dashboard" element={
+            <ProtectedRoute>
+              <PremiumSellerDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/premium-buyer-dashboard" element={
+            <ProtectedRoute>
+              <PremiumBuyerDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin-dashboard" element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
           {/* Routes with navbar and footer */}
           <Route path="/*" element={
             <>
@@ -110,17 +132,39 @@ function App() {
                   {/* Landing page with original design */}
                   <Route path="/" element={<LandingPage />} />
                   
-                  {/* Homepage with products showcase */}
-                  <Route path="/homepage" element={<Homepage />} />
-                  
-                  {/* Shop and other routes */}
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/product/:id" element={<ProductDetails />} />
-                  <Route path="/product-details" element={<ProductDetails />} />
+                  {/* Homepage with products showcase - PROTECTED */}
+                  <Route path="/homepage" element={
+                    <ProtectedRoute>
+                      <Homepage />
+                    </ProtectedRoute>
+                  } />
+
+                  {/* Shop and other routes - PROTECTED */}
+                  <Route path="/shop" element={
+                    <ProtectedRoute>
+                      <Shop />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/cart" element={
+                    <ProtectedRoute>
+                      <Cart />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/product/:id" element={
+                    <ProtectedRoute>
+                      <ProductDetails />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/product-details" element={
+                    <ProtectedRoute>
+                      <ProductDetails />
+                    </ProtectedRoute>
+                  } />
+                  {/* Become Seller - PUBLIC (no login required) */}
                   <Route path="/become-seller" element={<BecomeSeller />} />
                   <Route path="/seller-signup" element={<SellerSignup />} />
-                  <Route path="/seller-signin" element={<div>Seller Sign In - Coming Soon</div>} />
+                  <Route path="/seller-signin" element={<SellerLogin />} />
+                  <Route path="/seller-login" element={<SellerLogin />} />
                   <Route path="/category/:id" element={<div>Category Page - Coming Soon</div>} />
                   <Route path="/profile" element={<div>Profile Page - Coming Soon</div>} />
                   

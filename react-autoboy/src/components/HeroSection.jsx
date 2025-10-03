@@ -114,7 +114,7 @@ const HeroSection = () => {
               Explore our curated selection of the latest gadgets and unbeatable deals. Join a community where buying, selling, and swapping electronics is seamless and secure.
             </motion.p>
             
-            <motion.div 
+            <motion.div
               className="hero-buttons"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -122,7 +122,82 @@ const HeroSection = () => {
             >
               <a href="/login" className="btn btn-primary">Shop Now</a>
               <a href="/login" className="btn btn-secondary">Sign Up</a>
+              <motion.a
+                href="/become-seller"
+                className="btn btn-seller"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 1,
+                  type: "spring",
+                  stiffness: 100
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 20px 40px rgba(34, 197, 94, 0.4)",
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: 'linear-gradient(135deg, #22C55E, #16A34A)',
+                  color: 'white',
+                  border: 'none',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                <motion.span
+                  initial={{ x: -100, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 1.2, duration: 0.4 }}
+                >
+                  Become a Seller
+                </motion.span>
+                <motion.i
+                  className="fas fa-arrow-right"
+                  style={{ marginLeft: '8px' }}
+                  animate={{
+                    x: [0, 5, 0]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </motion.a>
             </motion.div>
+
+            {/* Responsive Styles */}
+            <style>{`
+              @media (max-width: 768px) {
+                .hero-buttons {
+                  flex-direction: column;
+                  gap: 1rem;
+                  width: 100%;
+                }
+
+                .hero-buttons .btn {
+                  width: 100%;
+                  justify-content: center;
+                  padding: 1rem 2rem;
+                  font-size: 1rem;
+                }
+
+                .hero-buttons .btn-seller {
+                  order: -1; /* Move to top on mobile */
+                  font-weight: 600;
+                }
+              }
+
+              @media (max-width: 480px) {
+                .hero-buttons .btn {
+                  padding: 0.875rem 1.5rem;
+                  font-size: 0.95rem;
+                }
+              }
+            `}</style>
           </div>
         </div>
       </div>

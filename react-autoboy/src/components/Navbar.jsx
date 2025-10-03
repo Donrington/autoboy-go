@@ -1,11 +1,51 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import lightLogo from '../assets/autoboy_logo2.png';
 import darkLogo from '../assets/autoboy_logo3.png';
 
 const Navbar = ({ darkMode }) => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      logout();
+    }
+  };
+
+  const handleDashboardClick = (e) => {
+    e.preventDefault();
+    const dashboardUrl = getDashboardUrl();
+    navigate(dashboardUrl);
+  };
+
+  // Get dashboard URL based on user type
+  const getDashboardUrl = () => {
+    if (!isAuthenticated || !user) return '/auth';
+
+    const userType = user.user_type || user.type || 'buyer';
+    switch (userType.toLowerCase()) {
+      case 'seller':
+        return '/seller-dashboard';
+      case 'admin':
+        return '/admin-dashboard';
+      case 'buyer':
+      default:
+        return '/buyer-dashboard';
+    }
+  };
+
+  // Get display name for navbar
+  const getDisplayName = () => {
+    if (!isAuthenticated || !user) return 'Account';
+
+    const firstName = user.first_name || user.firstName || user.username || 'User';
+    return `Hi, ${firstName}`;
+  };
 
 
   useEffect(() => {
@@ -138,9 +178,13 @@ const Navbar = ({ darkMode }) => {
           
           {/* Navigation Right */}
           <div className="nav-right">
-            <a href="/account" className="nav-link">
-              <i className="fas fa-user"></i>
-              <span>Account</span>
+            <a
+              href={getDashboardUrl()}
+              className="nav-link"
+              onClick={handleDashboardClick}
+            >
+              <i className="fas fa-user-circle"></i>
+              <span>{getDisplayName()}</span>
             </a>
             <a href="/cart" className="nav-link">
               <i className="fas fa-shopping-cart"></i>
@@ -150,7 +194,28 @@ const Navbar = ({ darkMode }) => {
               <i className="fas fa-headphones"></i>
               <span>Help</span>
             </a>
-            
+
+            {/* Logout Button - Only show when logged in */}
+            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                className="nav-link"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'inherit',
+                  fontSize: 'inherit',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <i className="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </button>
+            )}
+
             {/* Mobile Menu Button */}
             <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
               <div className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}>
@@ -219,9 +284,13 @@ const Navbar = ({ darkMode }) => {
                   </div>
                 </div>
                 
-                <a href="/account" className="mobile-nav-link">
-                  <i className="fas fa-user"></i>
-                  Account
+                <a
+                  href={getDashboardUrl()}
+                  className="mobile-nav-link"
+                  onClick={handleDashboardClick}
+                >
+                  <i className="fas fa-user-circle"></i>
+                  {getDisplayName()}
                 </a>
                 <a href="/cart" className="mobile-nav-link">
                   <i className="fas fa-shopping-cart"></i>
@@ -235,6 +304,30 @@ const Navbar = ({ darkMode }) => {
                   <i className="fas fa-headset"></i>
                   Support
                 </a>
+
+                {/* Logout Button - Only show when logged in */}
+                {isAuthenticated && (
+                  <button
+                    onClick={handleLogout}
+                    className="mobile-nav-link"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'inherit',
+                      fontSize: 'inherit',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: 'inherit',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <i className="fas fa-sign-out-alt"></i>
+                    Logout
+                  </button>
+                )}
               </div>
           </div>
 

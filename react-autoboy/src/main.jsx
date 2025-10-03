@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 import './assets/css/styles.css';
 
 // Initialize AOS
@@ -21,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 const root = createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>
 );

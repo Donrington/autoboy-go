@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck, faArrowLeft, faArrowRight, faEye, faEyeSlash,
   faSun, faMoon, faArrowUp, faClock, faBox, faShoppingBag, faPercentage
 } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../context/AuthContext';
+import { authAPI } from '../services/api';
+import Toast from './Toast';
+import Alert from './Alert';
 
 // Import logo
 import autoboyLogo from '../assets/autoboy_logo2.png';
@@ -14,8 +19,12 @@ import '../assets/styles.css';
 import './SellerSignup.css';
 
 const SellerSignup = () => {
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
   // State management
   const [currentStep, setCurrentStep] = useState(1);
+  const [skipEmailVerification] = useState(true); // Skip email verification during signup
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -24,6 +33,8 @@ const SellerSignup = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [alert, setAlert] = useState(null);
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -67,14 +78,19 @@ const SellerSignup = () => {
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Form handlers
-  const handleInputChange = (field, value) => {
+  // Form handlers - memoized to prevent re-creation
+  const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
+    setErrors(prev => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
 
   // Validation functions
   const validateStep = (step) => {
@@ -122,15 +138,11 @@ const SellerSignup = () => {
   };
 
   // Navigation functions
-  const nextStep = () => {
+  const nextStep = async () => {
     if (validateStep(currentStep)) {
-      if (currentStep === 2) {
-        // Simulate sending verification code
-        setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          setCurrentStep(currentStep + 1);
-        }, 1500);
+      if (skipEmailVerification && currentStep === 2) {
+        // Skip steps 2 and 3 (email verification) - backend handles this after registration
+        setCurrentStep(4); // Jump to password step
       } else {
         setCurrentStep(currentStep + 1);
       }
@@ -139,29 +151,79 @@ const SellerSignup = () => {
 
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      if (skipEmailVerification && currentStep === 4) {
+        // Skip back over verification steps
+        setCurrentStep(2);
+      } else {
+        setCurrentStep(currentStep - 1);
+      }
     }
   };
 
   const handleSubmit = async () => {
     if (validateStep(5)) {
       setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
+
+      try {
+        // Prepare registration data for backend
+        const registrationData = {
+          email: formData.email,
+          password: formData.password,
+          first_name: formData.shopName.split(' ')[0] || formData.shopName,
+          last_name: formData.shopName.split(' ').slice(1).join(' ') || formData.shopName,
+          username: formData.email.split('@')[0],
+          phone: `+234${formData.phoneNumber}`,
+          user_type: 'seller', // Set as seller
+          accept_terms: formData.agreeToTerms,
+          // Additional seller-specific data (if backend supports)
+          shop_name: formData.shopName,
+          shop_location: formData.shopLocation,
+          account_type: formData.accountType
+        };
+
+        console.log('Seller registration data:', registrationData);
+
+        await register(registrationData);
+
+        // Show success toast
+        setToast({
+          message: '🎉 Seller account created successfully! Please check your email to verify your account.',
+          type: 'success'
+        });
+
+        // Redirect to homepage after successful registration
+        setTimeout(() => {
+          navigate('/homepage');
+        }, 2000);
+
+      } catch (error) {
+        console.error('Seller registration error:', error);
+        setToast({
+          message: error.message || 'Registration failed. Please try again.',
+          type: 'error'
+        });
         setIsLoading(false);
-        alert('Registration completed successfully!');
-        // Redirect to seller dashboard
-        window.location.href = '/seller-dashboard';
-      }, 2000);
+      }
     }
   };
 
-  const resendVerificationCode = () => {
+  const resendVerificationCode = async () => {
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await authAPI.resendEmailVerification(formData.email);
+      setAlert({
+        message: `Verification code resent to ${formData.email}`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      setAlert({
+        message: error.message || 'Failed to resend verification code',
+        type: 'error'
+      });
+    } finally {
       setIsLoading(false);
-      alert('Verification code resent to ' + formData.email);
-    }, 1000);
+    }
   };
 
   // Step components
@@ -186,7 +248,7 @@ const SellerSignup = () => {
     </form>
   );
 
-  const Step2 = () => (
+  const Step2 = useMemo(() => (
     <form className="seller-form-step active">
       <div className="seller-form-group">
         <label className="seller-form-label">Enter your email</label>
@@ -196,11 +258,12 @@ const SellerSignup = () => {
           placeholder="Enter your email"
           value={formData.email}
           onChange={(e) => handleInputChange('email', e.target.value)}
+          autoComplete="email"
         />
         {errors.email && <span className="seller-error-message">{errors.email}</span>}
       </div>
     </form>
-  );
+  ), [formData.email, errors.email, handleInputChange]);
 
   const Step3 = () => (
     <form className="seller-form-step active">
@@ -229,7 +292,7 @@ const SellerSignup = () => {
     </form>
   );
 
-  const Step4 = () => (
+  const Step4 = useMemo(() => (
     <form className="seller-form-step active">
       <div className="seller-phone-group seller-form-group">
         <label className="seller-form-label">Phone Number</label>
@@ -299,9 +362,9 @@ const SellerSignup = () => {
         </ul>
       </div>
     </form>
-  );
+  ), [formData.phoneNumber, formData.password, formData.confirmPassword, errors.phoneNumber, errors.password, errors.confirmPassword, showPassword, showConfirmPassword, handleInputChange]);
 
-  const Step5 = () => (
+  const Step5 = useMemo(() => (
     <form className="seller-form-step active">
       <div className="seller-radio-group seller-form-group">
         <label className="seller-form-label">Account Type</label>
@@ -366,21 +429,39 @@ const SellerSignup = () => {
         {errors.agreeToTerms && <span className="seller-error-message">{errors.agreeToTerms}</span>}
       </div>
     </form>
-  );
+  ), [formData.accountType, formData.shopName, formData.shopLocation, formData.agreeToTerms, errors.accountType, errors.shopName, errors.shopLocation, errors.agreeToTerms, handleInputChange]);
 
   const renderStep = () => {
     switch (currentStep) {
       case 1: return <Step1 />;
-      case 2: return <Step2 />;
+      case 2: return Step2;
       case 3: return <Step3 />;
-      case 4: return <Step4 />;
-      case 5: return <Step5 />;
+      case 4: return Step4;
+      case 5: return Step5;
       default: return <Step1 />;
     }
   };
 
   return (
     <div className={`seller-signup-page ${isDarkMode ? 'dark-mode' : ''}`} style={{paddingTop: '0px'}}>
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* Alert Notification */}
+      {alert && (
+        <Alert
+          message={alert.message}
+          type={alert.type}
+          onClose={() => setAlert(null)}
+        />
+      )}
+
       <div className="seller-auth-container">
         {/* Left Visual Side */}
         <div className="seller-auth-visual">
@@ -421,7 +502,9 @@ const SellerSignup = () => {
           <div className="seller-form-card">
             {/* Progress Bar */}
             <div className="seller-progress-bar">
-              <div className="seller-progress-fill" style={{width: `${(currentStep / 5) * 100}%`}}></div>
+              <div className="seller-progress-fill" style={{width: `${skipEmailVerification ?
+                (currentStep === 1 ? 33.33 : currentStep === 2 ? 66.66 : currentStep === 4 ? 66.66 : 100) :
+                (currentStep / 5) * 100}%`}}></div>
             </div>
 
             {/* Logo */}

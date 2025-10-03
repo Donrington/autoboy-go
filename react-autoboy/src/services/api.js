@@ -1,6 +1,6 @@
 // API Configuration for Go Backend Integration
 const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:8080/api/v1',
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 };
@@ -27,12 +27,19 @@ class APIClient {
 
     try {
       const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
+
+      // Try to get error details from response body
       const data = await response.json();
+
+      if (!response.ok) {
+        // Extract error message from backend response
+        const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        error.data = data;
+        throw error;
+      }
+
       return data;
     } catch (error) {
       console.error(`API Error for ${endpoint}:`, error);
@@ -201,16 +208,22 @@ export const userAPI = {
 export const authAPI = {
   // User login
   login: (credentials) => apiClient.post('/auth/login', credentials),
-  
+
   // User registration
   register: (userData) => apiClient.post('/auth/register', userData),
-  
+
   // User logout
   logout: () => apiClient.post('/user/logout'),
-  
-  // Verify email
-  verifyEmail: (token) => apiClient.get('/auth/verify-email', { token }),
-  
+
+  // Send email verification (after registration)
+  sendEmailVerification: (email) => apiClient.post('/auth/send-email-verification', { email }),
+
+  // Resend email verification
+  resendEmailVerification: (email) => apiClient.post('/auth/resend-email-verification', { email }),
+
+  // Verify email with token
+  verifyEmail: (token) => apiClient.get(`/auth/verify-email?token=${token}`),
+
   // Verify phone
   verifyPhone: (phoneData) => apiClient.post('/user/verify-phone', phoneData),
 };

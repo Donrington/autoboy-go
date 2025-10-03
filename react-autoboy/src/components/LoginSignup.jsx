@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import styles from './LoginSignup.module.css';
 import logo from '../assets/autoboy_logo3.png';
 import { useAuth } from '../context/AuthContext';
 import { useAsyncAPI } from '../hooks/useAPI';
+import Toast from './Toast';
 
 const LoginSignup = () => {
+  const navigate = useNavigate();
   const [isSignup, setIsSignup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -21,7 +24,8 @@ const LoginSignup = () => {
     confirm: false
   });
   const [errors, setErrors] = useState({});
-  
+  const [toast, setToast] = useState(null);
+
   const particlesRef = useRef(null);
   const orb1Ref = useRef(null);
   const orb2Ref = useRef(null);
@@ -274,13 +278,28 @@ const LoginSignup = () => {
     if (!validateForm()) return;
 
     try {
-      await execute(() => login({
+      const response = await execute(() => login({
         email: formData.email,
         password: formData.password
       }));
-      alert('Login successful!');
-      window.location.href = '/';
+
+      // Get user data from response
+      const userData = response?.data?.user || response?.user;
+      const userType = userData?.user_type || userData?.type || 'buyer';
+
+      // Show success toast
+      setToast({
+        message: '🎉 Login successful! Welcome back!',
+        type: 'success'
+      });
+
+      // Redirect to homepage after a short delay to show the toast
+      setTimeout(() => {
+        navigate('/homepage');
+      }, 1500);
+
     } catch (error) {
+      console.error('Login error:', error);
       setErrors({ general: error.message || 'Login failed' });
     }
   };
@@ -293,14 +312,43 @@ const LoginSignup = () => {
     if (!validateForm()) return;
 
     try {
-      await execute(() => register({
+      // Split full name into first and last name
+      const nameParts = formData.fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || nameParts[0];
+
+      const registrationData = {
         email: formData.email,
-        full_name: formData.fullName,
-        password: formData.password
-      }));
-      alert('Account created successfully!');
-      window.location.href = '/';
+        password: formData.password,
+        first_name: firstName,
+        last_name: lastName,
+        username: formData.email.split('@')[0], // Use email prefix as username
+        phone: '+2341234567890', // Placeholder phone - backend might require it
+        user_type: 'buyer', // Default to buyer
+        accept_terms: true
+      };
+
+      console.log('Registration data:', registrationData); // Debug log
+
+      const response = await execute(() => register(registrationData));
+
+      // Get user data from response
+      const userData = response?.data?.user || response?.user;
+      const userType = userData?.user_type || userData?.type || 'buyer';
+
+      // Show success toast
+      setToast({
+        message: '🎉 Account created successfully! Welcome to AutoBoy!',
+        type: 'success'
+      });
+
+      // Redirect to homepage after a short delay to show the toast
+      setTimeout(() => {
+        navigate('/homepage');
+      }, 1500);
+
     } catch (error) {
+      console.error('Registration error:', error); // Debug log
       setErrors({ general: error.message || 'Registration failed' });
     }
   };
@@ -367,6 +415,15 @@ const LoginSignup = () => {
 
   return (
     <div className={styles.authContainer}>
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       {/* Custom Cursor Elements */}
       <div ref={cursorDotRef} className="cursor-dot"></div>
       <div ref={cursorOutlineRef} className="cursor-outline"></div>

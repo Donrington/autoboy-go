@@ -2906,69 +2906,6 @@ body.dark-mode .assurance-column p {
     }
 
     .newsletter-title {
-<<<<<<< HEAD
-        font-size: 1.5rem;
-        line-height: 1.3;
-    }
-
-    .newsletter-section {
-        padding: 3rem 0;
-    }
-
-    .newsletter-section .container {
-        padding: 0 1rem;
-    }
-
-    .newsletter-content {
-        padding: 1.75rem 1rem;
-        border-radius: 16px;
-    }
-
-    .newsletter-subtitle {
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-
-    .newsletter-benefits {
-        flex-direction: column;
-        gap: 0.75rem;
-        align-items: center;
-    }
-
-    .benefit-item {
-        font-size: 0.85rem;
-    }
-
-    .newsletter-input-group {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .newsletter-input {
-        font-size: 0.95rem;
-        padding: 0.85rem 1rem;
-    }
-
-    .newsletter-btn {
-        width: 100%;
-        padding: 0.9rem 1.5rem;
-        font-size: 0.95rem;
-    }
-
-    .newsletter-privacy {
-        font-size: 0.8rem;
-    }
-
-    /* Credibility Section Mobile */
-    .credibility-section {
-        padding: 3rem 0;
-    }
-
-    .credibility-section .container {
-        padding: 0 1rem;
-=======
-        font-size: 1.6rem;
->>>>>>> b08cef53d40808e4465c79b8460fa5af4531e2e0
     }
 
     .credibility-title {

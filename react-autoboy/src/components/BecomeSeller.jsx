@@ -61,7 +61,7 @@ const BecomeSeller = () => {
               Start your journey with Autoboy and reach millions of customers across Nigeria.
               Join our growing marketplace today!
             </p>
-            <a href="/seller-signin" className="seller-hero-cta">Get Started Now</a>
+            <a href="/seller-signup" className="seller-hero-cta">Get Started Now</a>
           </div>
           <div className="seller-hero-visual">
             <div className="seller-visual-frame"></div>

@@ -154,6 +154,63 @@ const TrendingSection = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Become a Seller CTA */}
+        <motion.div
+          className="ab-seller-cta"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          style={{
+            marginTop: '4rem',
+            textAlign: 'center',
+            padding: '3rem 2rem',
+            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1))',
+            borderRadius: '20px',
+            border: '1px solid rgba(34, 197, 94, 0.3)'
+          }}
+        >
+          <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }} className="seller-cta-title">
+            Want to sell your gadgets?
+          </h3>
+          <style>{`
+            .seller-cta-title {
+              color: var(--text-light);
+            }
+            body.dark-mode .seller-cta-title {
+              color: white;
+            }
+          `}</style>
+          <p style={{ fontSize: '1.1rem', marginBottom: '2rem', opacity: 0.8 }}>
+            Join thousands of sellers and reach millions of buyers on AutoBoy
+          </p>
+          <a
+            href="/become-seller"
+            style={{
+              display: 'inline-block',
+              padding: '1rem 2.5rem',
+              background: 'linear-gradient(135deg, #22C55E, #16A34A)',
+              color: 'white',
+              borderRadius: '50px',
+              textDecoration: 'none',
+              fontWeight: '600',
+              fontSize: '1.1rem',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 10px 30px rgba(34, 197, 94, 0.3)'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 15px 40px rgba(34, 197, 94, 0.4)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 10px 30px rgba(34, 197, 94, 0.3)';
+            }}
+          >
+            Become a Seller <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
+          </a>
+        </motion.div>
       </div>
     </section>
   );
