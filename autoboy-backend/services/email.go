@@ -25,7 +25,7 @@ func NewEmailService() *EmailService {
 		smtpPort:     utils.GetEnv("SMTP_PORT", "587"),
 		smtpUsername: utils.GetEnv("SMTP_USERNAME", ""),
 		smtpPassword: utils.GetEnv("SMTP_PASSWORD", ""),
-		fromEmail:    utils.GetEnv("EMAIL_FROM", "autoboyexpress@gmail.com"),
+		fromEmail:    utils.GetEnv("FROM_EMAIL", "autoboyexpress@gmail.com"),
 		fromName:     "AutoBoy",
 	}
 }
