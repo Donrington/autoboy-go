@@ -105,14 +105,21 @@ func GetDatabaseConfig() *DatabaseConfig {
 func ConnectDatabase() (*Database, error) {
 	config := GetDatabaseConfig()
 
-	// Set client options
+	// Set client options with robust network settings
 	clientOptions := options.Client().ApplyURI(config.URI).
 		SetMaxPoolSize(config.MaxPoolSize).
 		SetMinPoolSize(config.MinPoolSize).
-		SetMaxConnIdleTime(config.MaxConnIdleTime)
+		SetMaxConnIdleTime(config.MaxConnIdleTime).
+		SetServerSelectionTimeout(60 * time.Second).
+		SetConnectTimeout(60 * time.Second).
+		SetSocketTimeout(60 * time.Second).
+		SetHeartbeatInterval(10 * time.Second).
+		SetMaxConnecting(2).
+		SetRetryWrites(true).
+		SetRetryReads(true)
 
-	// Create context with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), config.ConnectTimeout)
+	// Create context with longer timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 
 	// Connect to MongoDB
