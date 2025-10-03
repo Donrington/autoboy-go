@@ -234,11 +234,47 @@ func SetupRoutes(router *gin.Engine) {
 				wallet.POST("/withdraw", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Withdrawal requested", nil) })
 			}
 
+			// User-specific routes
+			userSpecific := protected.Group("/user")
+			{
+				userSpecific.GET("/badges", func(c *gin.Context) { utils.SuccessResponse(c, 200, "User badges", []interface{}{}) })
+				userSpecific.GET("/rewards", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Reward points", map[string]interface{}{"points": 0}) })
+				userSpecific.GET("/rewards/history", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Points history", []interface{}{}) })
+				userSpecific.GET("/alerts", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Price alerts", []interface{}{}) })
+				userSpecific.GET("/disputes", func(c *gin.Context) { utils.SuccessResponse(c, 200, "User disputes", []interface{}{}) })
+			}
+
 			// Badges routes
 			badges := protected.Group("/badges")
 			{
 				badges.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "User badges", []interface{}{}) })
 				badges.GET("/available", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Available badges", []interface{}{}) })
+			}
+
+			// Alerts routes
+			alerts := protected.Group("/alerts")
+			{
+				alerts.POST("/price", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Price alert created", nil) })
+			}
+
+			// Deals routes
+			deals := protected.Group("/deals")
+			{
+				deals.GET("/exclusive", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Exclusive deals", []interface{}{}) })
+			}
+
+			// Chat routes
+			conversations := protected.Group("/conversations")
+			{
+				conversations.GET("/", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Conversations", []interface{}{}) })
+				conversations.POST("/", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Conversation created", nil) })
+				conversations.GET("/:id/messages", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Messages", []interface{}{}) })
+			}
+
+			messages := protected.Group("/messages")
+			{
+				messages.POST("/", func(c *gin.Context) { utils.SuccessResponse(c, 201, "Message sent", nil) })
+				messages.PUT("/:id/read", func(c *gin.Context) { utils.SuccessResponse(c, 200, "Message marked as read", nil) })
 			}
 
 			// WebSocket routes

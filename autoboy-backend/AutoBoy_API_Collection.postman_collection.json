@@ -39,10 +39,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/health",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
+					"raw": "https://autoboy-go.onrender.com/health",
+					"protocol": "https",
+					"host": ["autoboy-go.onrender.com"],
 					"path": ["health"]
 				}
 			}
@@ -818,7 +817,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/chat/conversations/", "host": ["{{base_url}}"], "path": ["chat", "conversations", ""]}
+						"url": {"raw": "{{base_url}}/conversations/", "host": ["{{base_url}}"], "path": ["conversations", ""]}
 					}
 				},
 				{
@@ -833,7 +832,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"conversation_id\": \"conversation_id_here\",\n  \"type\": \"text\",\n  \"content\": \"Hello, is this product still available?\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/chat/messages/", "host": ["{{base_url}}"], "path": ["chat", "messages", ""]}
+						"url": {"raw": "{{base_url}}/messages/", "host": ["{{base_url}}"], "path": ["messages", ""]}
 					}
 				},
 				{
@@ -841,7 +840,7 @@
 					"request": {
 						"method": "GET",
 						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/chat/conversations/conversation_id_here/messages/", "host": ["{{base_url}}"], "path": ["chat", "conversations", "conversation_id_here", "messages", ""]}
+						"url": {"raw": "{{base_url}}/conversations/conversation_id_here/messages/", "host": ["{{base_url}}"], "path": ["conversations", "conversation_id_here", "messages", ""]}
 					}
 				}
 			]
@@ -861,7 +860,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"order_id\": \"order_id_here\",\n  \"reason\": \"not_received\",\n  \"description\": \"I paid for the product but never received it. Seller is not responding to messages.\",\n  \"disputed_amount\": 150000\n}"
 						},
-						"url": {"raw": "{{base_url}}/disputes/", "host": ["{{base_url}}"], "path": ["disputes", ""]}
+						"url": {"raw": "{{base_url}}/disputes/create", "host": ["{{base_url}}"], "path": ["disputes", "create"]}
 					}
 				},
 				{
@@ -904,7 +903,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"type\": \"user\",\n  \"reason\": \"scam\",\n  \"description\": \"This user is trying to scam buyers with fake products\",\n  \"reported_user_id\": \"user_id_here\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/reports/", "host": ["{{base_url}}"], "path": ["reports", ""]}
+						"url": {"raw": "{{base_url}}/reports/user", "host": ["{{base_url}}"], "path": ["reports", "user"]}
 					}
 				},
 				{
@@ -919,7 +918,7 @@
 							"mode": "raw",
 							"raw": "{\n  \"type\": \"product\",\n  \"reason\": \"counterfeit\",\n  \"description\": \"This product appears to be a counterfeit item\",\n  \"reported_product_id\": \"product_id_here\"\n}"
 						},
-						"url": {"raw": "{{base_url}}/reports/", "host": ["{{base_url}}"], "path": ["reports", ""]}
+						"url": {"raw": "{{base_url}}/reports/product", "host": ["{{base_url}}"], "path": ["reports", "product"]}
 					}
 				}
 			]
