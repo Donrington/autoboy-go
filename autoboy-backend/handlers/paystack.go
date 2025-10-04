@@ -44,6 +44,12 @@ type PaystackResponse struct {
 func (h *PaystackHandler) InitializePayment(c *gin.Context) {
 	userID := c.GetUint("user_id")
 	
+	// Validate Paystack secret key
+	if PaystackSecretKey == "" {
+		utils.InternalServerErrorResponse(c, "Payment service not configured", "Paystack secret key not found")
+		return
+	}
+	
 	var req InitializePaymentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.BadRequestResponse(c, "Invalid request data", err.Error())

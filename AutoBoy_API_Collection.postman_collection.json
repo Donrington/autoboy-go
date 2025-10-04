@@ -1499,7 +1499,16 @@
 					"name": "Initialize Payment",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"email\": \"user@example.com\",\n  \"amount\": 250000,\n  \"currency\": \"NGN\",\n  \"callback_url\": \"https://yourapp.com/callback\"\n}",
@@ -1526,7 +1535,12 @@
 					"name": "Verify Payment",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
 						"url": {
 							"raw": "{{base_url}}/payment/verify/:reference",
 							"host": [
