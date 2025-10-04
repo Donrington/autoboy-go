@@ -79,9 +79,9 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	user, _ := c.Get("user")
 	currentUser := user.(*models.User)
 
-	// Check if user is a seller
-	if currentUser.UserType != models.UserTypeSeller {
-		utils.ForbiddenResponse(c, "Only sellers can create products")
+	// Check if user is a seller or admin
+	if currentUser.UserType != models.UserTypeSeller && currentUser.UserType != models.UserTypeAdmin {
+		utils.ForbiddenResponse(c, "Only sellers and admins can create products")
 		return
 	}
 
@@ -130,7 +130,7 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 			Coordinates: req.Location.Coordinates,
 		},
 		SwapAvailable: req.SwapAvailable,
-		Status:        models.ProductStatusDraft,
+		Status:        getProductStatus(currentUser.UserType),
 		IsFeatured:    false,
 		Tags:          req.Tags,
 		CreatedAt:     time.Now(),
@@ -453,4 +453,12 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Product deleted successfully", nil)
+}
+
+// getProductStatus returns appropriate status based on user type
+func getProductStatus(userType models.UserType) models.ProductStatus {
+	if userType == models.UserTypeAdmin {
+		return models.ProductStatusActive
+	}
+	return models.ProductStatusDraft
 }

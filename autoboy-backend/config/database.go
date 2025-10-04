@@ -49,6 +49,7 @@ type Collections struct {
 
 	// Payment related collections
 	Payments         *mongo.Collection
+	Transactions     *mongo.Collection
 	Escrows          *mongo.Collection
 	WalletTransactions *mongo.Collection
 	PaymentWebhooks  *mongo.Collection
@@ -201,6 +202,7 @@ func (db *Database) InitializeCollections() *Collections {
 
 		// Payment related collections
 		Payments:           db.Database.Collection("payments"),
+		Transactions:       db.Database.Collection("transactions"),
 		Escrows:            db.Database.Collection("escrows"),
 		WalletTransactions: db.Database.Collection("wallet_transactions"),
 		PaymentWebhooks:    db.Database.Collection("payment_webhooks"),

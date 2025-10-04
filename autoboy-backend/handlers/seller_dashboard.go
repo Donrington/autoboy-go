@@ -51,9 +51,18 @@ func (h *SellerDashboardHandler) GetSellerDashboard(c *gin.Context) {
 func (h *SellerDashboardHandler) GetSellerSalesAnalytics(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, "Sales analytics retrieved", gin.H{
 		"daily_sales": []gin.H{
-			{"date": "2024-01-01", "sales": 250000},
-			{"date": "2024-01-02", "sales": 180000},
-			{"date": "2024-01-03", "sales": 320000},
+			{"date": "2024-01-01", "sales": 250000, "orders": 12},
+			{"date": "2024-01-02", "sales": 180000, "orders": 8},
+			{"date": "2024-01-03", "sales": 320000, "orders": 15},
+		},
+		"weekly_sales": []gin.H{
+			{"day": "Mon", "amount": 65000, "orders": 3},
+			{"day": "Tue", "amount": 89000, "orders": 4},
+			{"day": "Wed", "amount": 120000, "orders": 6},
+			{"day": "Thu", "amount": 81000, "orders": 4},
+			{"day": "Fri", "amount": 156000, "orders": 8},
+			{"day": "Sat", "amount": 255000, "orders": 12},
+			{"day": "Sun", "amount": 140000, "orders": 7},
 		},
 		"monthly_revenue": 2500000,
 		"growth_rate": 15.5,
@@ -63,7 +72,14 @@ func (h *SellerDashboardHandler) GetSellerSalesAnalytics(c *gin.Context) {
 // GetSellerProductAnalytics gets seller product analytics
 func (h *SellerDashboardHandler) GetSellerProductAnalytics(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, "Product analytics retrieved", gin.H{
-		"best_performing": []gin.H{
+		"top_categories": []gin.H{
+			{"category": "iPhone", "count": 35, "sales": 4200000},
+			{"category": "Samsung", "count": 25, "sales": 3000000},
+			{"category": "Google", "count": 20, "sales": 2400000},
+			{"category": "OnePlus", "count": 15, "sales": 1800000},
+			{"category": "Others", "count": 5, "sales": 600000},
+		},
+		"top_products": []gin.H{
 			{"product": "iPhone 15 Pro", "sales": 25, "revenue": 1250000},
 			{"product": "MacBook Air", "sales": 18, "revenue": 900000},
 		},

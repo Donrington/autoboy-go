@@ -44,6 +44,10 @@ func SetupRoutes(router *gin.Engine) {
 	analyticsHandler := handlers.NewAnalyticsHandler()
 	sellerDashboardHandler := handlers.NewSellerDashboardHandler()
 	searchHandler := handlers.NewSearchHandler()
+	adminHandler := handlers.NewAdminHandler()
+	subscriptionHandler := handlers.NewSubscriptionHandler()
+	supportHandler := handlers.NewSupportHandler()
+	paystackHandler := handlers.NewPaystackHandler()
 
 	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
@@ -247,6 +251,8 @@ func SetupRoutes(router *gin.Engine) {
 				userSpecific.GET("/rewards/history", badgeHandler.GetRewardsHistory)
 				userSpecific.GET("/alerts", alertHandler.GetUserAlerts)
 				userSpecific.GET("/disputes", disputeHandler.GetDisputes)
+				userSpecific.GET("/premium/status", userHandler.GetPremiumStatus)
+				userSpecific.GET("/premium/analytics", userHandler.GetPremiumAnalytics)
 			}
 
 			// Badges routes
@@ -260,12 +266,17 @@ func SetupRoutes(router *gin.Engine) {
 			alerts := protected.Group("/alerts")
 			{
 				alerts.POST("/price", alertHandler.CreatePriceAlert)
+				alerts.GET("/price", alertHandler.GetPriceAlerts)
+				alerts.PUT("/price/:id", alertHandler.UpdatePriceAlert)
+				alerts.DELETE("/price/:id", alertHandler.DeletePriceAlert)
 			}
 
 			// Deals routes
 			deals := protected.Group("/deals")
 			{
 				deals.GET("/exclusive", dealHandler.GetExclusiveDeals)
+				deals.GET("/priority-listings", dealHandler.GetPriorityListings)
+				deals.GET("/flash-deals", dealHandler.GetFlashDeals)
 			}
 
 			// Chat routes
@@ -288,11 +299,89 @@ func SetupRoutes(router *gin.Engine) {
 				ws.GET("/online", handlers.GetOnlineUsers)
 			}
 
-			// Admin WebSocket routes
+			// Payment routes
+			payment := protected.Group("/payment")
+			{
+				payment.POST("/initialize", paystackHandler.InitializePayment)
+				payment.GET("/verify/:reference", paystackHandler.VerifyPayment)
+			}
+
+			// Premium subscription routes
+			premium := protected.Group("/premium")
+			{
+				premium.POST("/subscribe", subscriptionHandler.Subscribe)
+				premium.POST("/cancel", subscriptionHandler.CancelSubscription)
+				premium.GET("/status", subscriptionHandler.GetSubscriptionStatus)
+				premium.GET("/plans", subscriptionHandler.GetSubscriptionPlans)
+				premium.GET("/features", subscriptionHandler.GetPremiumFeatures)
+				premium.POST("/upgrade", subscriptionHandler.UpgradeSubscription)
+				premium.GET("/billing-history", subscriptionHandler.GetBillingHistory)
+			}
+
+			// VIP Support routes (Premium only)
+			vipSupport := protected.Group("/vip-support")
+			vipSupport.Use(middleware.RequirePremiumUser())
+			{
+				vipSupport.POST("/ticket", supportHandler.CreateVIPTicket)
+				vipSupport.GET("/tickets", supportHandler.GetVIPTickets)
+				vipSupport.GET("/tickets/:id", supportHandler.GetVIPTicket)
+				vipSupport.POST("/chat", supportHandler.StartVIPChat)
+			}
+
+			// Admin routes
 			admin := protected.Group("/admin")
 			admin.Use(middleware.RequireUserType(models.UserTypeAdmin))
 			{
+				// Dashboard
+				admin.GET("/dashboard/stats", adminHandler.GetDashboardStats)
+				
+				// User Management
+				admin.GET("/users", adminHandler.GetAllUsers)
+				admin.GET("/users/:id", adminHandler.GetUserDetails)
+				admin.PUT("/users/:id/suspend", adminHandler.SuspendUser)
+				admin.PUT("/users/:id/activate", adminHandler.ActivateUser)
+				
+				// Admin Management
+				admin.GET("/admins", adminHandler.GetAllAdmins)
+				admin.POST("/admins", adminHandler.CreateAdmin)
+				
+				// Product Management
+				admin.GET("/products", adminHandler.GetAllProducts)
+				admin.PUT("/products/:id/approve", adminHandler.ApproveProduct)
+				admin.PUT("/products/:id/reject", adminHandler.RejectProduct)
+				
+				// Transaction Management
+				admin.GET("/transactions", orderHandler.GetAllTransactions)
+				
+				// Analytics
+				admin.GET("/analytics", adminHandler.GetAnalytics)
+				
+				// Dispute Management
+				admin.GET("/disputes", disputeHandler.GetAllDisputes)
+				admin.PUT("/disputes/:id/resolve", disputeHandler.ResolveDispute)
+				
+				// System Management
+				admin.GET("/system/health", adminHandler.GetSystemHealth)
+				admin.GET("/system/logs", adminHandler.GetSystemLogs)
+				
+				// Settings Management
+				admin.GET("/settings", adminHandler.GetSystemSettings)
+				admin.PUT("/settings", adminHandler.UpdateSystemSettings)
+				
+				// Data Export
+				admin.POST("/export", adminHandler.ExportData)
+				
+				// Reports Management
+				admin.GET("/reports", reportHandler.GetAllReports)
+				admin.PUT("/reports/:id/resolve", reportHandler.ResolveReport)
+				
+				// WebSocket broadcast
 				admin.POST("/broadcast", handlers.BroadcastNotification)
+				
+				// Premium Management
+				admin.GET("/premium/subscriptions", adminHandler.GetAllSubscriptions)
+				admin.PUT("/premium/subscriptions/:id/status", adminHandler.UpdateSubscriptionStatus)
+				admin.GET("/premium/analytics", adminHandler.GetPremiumAnalytics)
 			}
 		}
 	}

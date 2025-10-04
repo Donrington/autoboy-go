@@ -15,6 +15,7 @@ const (
 	ProductStatusSold      ProductStatus = "sold"
 	ProductStatusSuspended ProductStatus = "suspended"
 	ProductStatusDeleted   ProductStatus = "deleted"
+	ProductStatusRejected  ProductStatus = "rejected"
 )
 
 // ProductCondition represents the condition of a product
