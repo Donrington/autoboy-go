@@ -19,9 +19,10 @@ func NewSubscriptionHandler() *SubscriptionHandler {
 	return &SubscriptionHandler{}
 }
 
-// Subscribe handles premium subscription with payment
-func (h *SubscriptionHandler) Subscribe(c *gin.Context) {
-	userID := c.GetUint("user_id")
+// CreateSubscription handles premium subscription with payment
+func (h *SubscriptionHandler) CreateSubscription(c *gin.Context) {
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
 	
 	var req struct {
 		PlanID           string `json:"plan_id" binding:"required"`
@@ -43,7 +44,7 @@ func (h *SubscriptionHandler) Subscribe(c *gin.Context) {
 	// TODO: Verify payment with Paystack before creating subscription
 	subscription := models.Subscription{
 		ID:            primitive.NewObjectID(),
-		UserID:        userID,
+		UserID:        userObjID,
 		PlanID:        req.PlanID,
 		Status:        "active",
 		StartDate:     time.Now(),
@@ -66,9 +67,15 @@ func (h *SubscriptionHandler) Subscribe(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusCreated, "Subscription created successfully", subscription)
 }
 
+// Subscribe handles premium subscription with payment (alias for CreateSubscription)
+func (h *SubscriptionHandler) Subscribe(c *gin.Context) {
+	h.CreateSubscription(c)
+}
+
 // CancelSubscription handles subscription cancellation
 func (h *SubscriptionHandler) CancelSubscription(c *gin.Context) {
-	userID := c.GetUint("user_id")
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
 	
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -82,7 +89,7 @@ func (h *SubscriptionHandler) CancelSubscription(c *gin.Context) {
 		},
 	}
 	
-	result, err := config.Coll.PremiumMemberships.UpdateOne(ctx, bson.M{"user_id": userID, "status": "active"}, update)
+	result, err := config.Coll.PremiumMemberships.UpdateOne(ctx, bson.M{"user_id": userObjID, "status": "active"}, update)
 	if err != nil {
 		utils.InternalServerErrorResponse(c, "Failed to cancel subscription", err.Error())
 		return
@@ -98,13 +105,14 @@ func (h *SubscriptionHandler) CancelSubscription(c *gin.Context) {
 
 // GetSubscriptionStatus returns user's subscription status
 func (h *SubscriptionHandler) GetSubscriptionStatus(c *gin.Context) {
-	userID := c.GetUint("user_id")
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
 	
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	
 	var subscription models.Subscription
-	err := config.Coll.PremiumMemberships.FindOne(ctx, bson.M{"user_id": userID, "status": "active"}).Decode(&subscription)
+	err := config.Coll.PremiumMemberships.FindOne(ctx, bson.M{"user_id": userObjID, "status": "active"}).Decode(&subscription)
 	
 	if err != nil {
 		utils.SuccessResponse(c, http.StatusOK, "Subscription status retrieved", gin.H{
@@ -134,88 +142,244 @@ func (h *SubscriptionHandler) GetSubscriptionStatus(c *gin.Context) {
 	})
 }
 
-// GetSubscriptionPlans returns available subscription plans
+// GetSubscriptionPlans returns available subscription plans based on user type
 func (h *SubscriptionHandler) GetSubscriptionPlans(c *gin.Context) {
-	plans := []gin.H{
-		{
-			"id":               "monthly",
-			"name":             "Monthly Premium",
-			"price":            2500,
-			"duration_months":  1,
-			"currency":         "NGN",
-			"features": []string{
-				"Premium Badge",
-				"Priority Listings",
-				"Advanced Analytics",
-				"Priority Support",
-				"Enhanced Security",
-				"Exclusive Deals",
-			},
-		},
-		{
-			"id":               "yearly",
-			"name":             "Yearly Premium",
-			"price":            25000,
-			"duration_months":  12,
-			"currency":         "NGN",
-			"savings":          "17% OFF",
-			"features": []string{
-				"Premium Badge",
-				"Priority Listings",
-				"Advanced Analytics",
-				"Priority Support",
-				"Enhanced Security",
-				"Exclusive Deals",
-				"VIP Support",
-				"Advanced Reports",
-			},
-		},
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
+	
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	
+	// Get user to determine type
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{"_id": userObjID}).Decode(&user)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to get user info", err.Error())
+		return
 	}
 	
-	utils.SuccessResponse(c, http.StatusOK, "Subscription plans retrieved", plans)
+	var plans []gin.H
+	
+	if user.UserType == models.UserTypeSeller {
+		// Seller premium plans (higher pricing, seller-focused features)
+		plans = []gin.H{
+			{
+				"id":               "seller_monthly",
+				"name":             "Seller Monthly Premium",
+				"price":            5000,
+				"duration_months":  1,
+				"currency":         "NGN",
+				"user_type":        "seller",
+				"features": []string{
+					"Premium Seller Badge",
+					"Priority Listings (Top Search Results)",
+					"Advanced Sales Analytics",
+					"VIP Support (1-hour response)",
+					"Enhanced Security & Fraud Protection",
+					"Advanced Reports & Insights",
+					"Promotional Tools",
+					"Customer Behavior Analytics",
+					"Bulk Operations",
+					"API Access",
+				},
+			},
+			{
+				"id":               "seller_yearly",
+				"name":             "Seller Yearly Premium",
+				"price":            50000,
+				"duration_months":  12,
+				"currency":         "NGN",
+				"savings":          "17% OFF (Save ₦10,000)",
+				"user_type":        "seller",
+				"features": []string{
+					"Premium Seller Badge",
+					"Priority Listings (Top Search Results)",
+					"Advanced Sales Analytics",
+					"VIP Support (1-hour response)",
+					"Enhanced Security & Fraud Protection",
+					"Advanced Reports & Insights",
+					"Promotional Tools",
+					"Customer Behavior Analytics",
+					"Bulk Operations",
+					"API Access",
+					"White-label Store",
+					"Dedicated Account Manager",
+				},
+			},
+		}
+	} else {
+		// Buyer premium plans (lower pricing, buyer-focused features)
+		plans = []gin.H{
+			{
+				"id":               "buyer_monthly",
+				"name":             "Buyer Monthly Premium",
+				"price":            2500,
+				"duration_months":  1,
+				"currency":         "NGN",
+				"user_type":        "buyer",
+				"features": []string{
+					"Premium Buyer Badge",
+					"Early Access to New Products",
+					"Exclusive Deals & Discounts",
+					"Priority Support (30-min response)",
+					"Enhanced Buyer Protection",
+					"Purchase Analytics & Insights",
+					"Advanced Price Alerts",
+					"Bonus Reward Points (2x)",
+					"Free Premium Shipping",
+					"Extended Return Policy",
+				},
+			},
+			{
+				"id":               "buyer_yearly",
+				"name":             "Buyer Yearly Premium",
+				"price":            25000,
+				"duration_months":  12,
+				"currency":         "NGN",
+				"savings":          "17% OFF (Save ₦5,000)",
+				"user_type":        "buyer",
+				"features": []string{
+					"Premium Buyer Badge",
+					"Early Access to New Products",
+					"Exclusive Deals & Discounts",
+					"Priority Support (30-min response)",
+					"Enhanced Buyer Protection",
+					"Purchase Analytics & Insights",
+					"Advanced Price Alerts",
+					"Bonus Reward Points (2x)",
+					"Free Premium Shipping",
+					"Extended Return Policy",
+					"Personal Shopping Assistant",
+					"VIP Customer Status",
+				},
+			},
+		}
+	}
+	
+	utils.SuccessResponse(c, http.StatusOK, "Subscription plans retrieved", gin.H{
+		"user_type": user.UserType,
+		"plans": plans,
+	})
 }
 
-// GetPremiumFeatures returns premium features list
+// GetPremiumFeatures returns premium features list based on user type
 func (h *SubscriptionHandler) GetPremiumFeatures(c *gin.Context) {
-	features := []gin.H{
-		{
-			"icon":        "diamond",
-			"title":       "Premium Badge",
-			"description": "Stand out with a verified premium badge",
-		},
-		{
-			"icon":        "trending-up",
-			"title":       "Priority Listings",
-			"description": "Your products appear first in search results",
-		},
-		{
-			"icon":        "analytics",
-			"title":       "Advanced Analytics",
-			"description": "Detailed insights on your sales performance",
-		},
-		{
-			"icon":        "chatbubbles",
-			"title":       "Priority Support",
-			"description": "24/7 premium customer support",
-		},
-		{
-			"icon":        "shield-checkmark",
-			"title":       "Enhanced Security",
-			"description": "Advanced fraud protection and secure transactions",
-		},
-		{
-			"icon":        "star",
-			"title":       "Exclusive Deals",
-			"description": "Access to premium-only products and discounts",
-		},
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
+	
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	
+	// Get user to determine type
+	var user models.User
+	err := config.Coll.Users.FindOne(ctx, bson.M{"_id": userObjID}).Decode(&user)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to get user info", err.Error())
+		return
 	}
 	
-	utils.SuccessResponse(c, http.StatusOK, "Premium features retrieved", features)
+	var features []gin.H
+	
+	if user.UserType == models.UserTypeSeller {
+		// Seller premium features
+		features = []gin.H{
+			{
+				"icon":        "diamond",
+				"title":       "Premium Seller Badge",
+				"description": "Stand out with a verified premium seller badge",
+			},
+			{
+				"icon":        "trending-up",
+				"title":       "Priority Listings",
+				"description": "Your products appear first in search results",
+			},
+			{
+				"icon":        "analytics",
+				"title":       "Advanced Analytics",
+				"description": "Detailed insights on sales, revenue, and customer behavior",
+			},
+			{
+				"icon":        "chatbubbles",
+				"title":       "VIP Support",
+				"description": "24/7 dedicated seller support with priority response",
+			},
+			{
+				"icon":        "shield-checkmark",
+				"title":       "Enhanced Security",
+				"description": "Advanced fraud protection and secure transactions",
+			},
+			{
+				"icon":        "bar-chart",
+				"title":       "Advanced Reports",
+				"description": "Comprehensive sales reports and performance metrics",
+			},
+			{
+				"icon":        "megaphone",
+				"title":       "Promotional Tools",
+				"description": "Advanced marketing and promotional features",
+			},
+			{
+				"icon":        "people",
+				"title":       "Customer Insights",
+				"description": "Detailed customer analytics and behavior tracking",
+			},
+		}
+	} else {
+		// Buyer premium features
+		features = []gin.H{
+			{
+				"icon":        "diamond",
+				"title":       "Premium Buyer Badge",
+				"description": "Get recognized as a premium buyer with exclusive badge",
+			},
+			{
+				"icon":        "flash",
+				"title":       "Early Access",
+				"description": "Get first access to new products and flash sales",
+			},
+			{
+				"icon":        "star",
+				"title":       "Exclusive Deals",
+				"description": "Access to premium-only products and special discounts",
+			},
+			{
+				"icon":        "chatbubbles",
+				"title":       "Priority Support",
+				"description": "24/7 premium customer support with faster response",
+			},
+			{
+				"icon":        "shield-checkmark",
+				"title":       "Enhanced Security",
+				"description": "Advanced buyer protection and secure transactions",
+			},
+			{
+				"icon":        "analytics",
+				"title":       "Purchase Analytics",
+				"description": "Track your spending, savings, and purchase history",
+			},
+			{
+				"icon":        "notifications",
+				"title":       "Price Alerts",
+				"description": "Get notified when items in your wishlist drop in price",
+			},
+			{
+				"icon":        "gift",
+				"title":       "Reward Points",
+				"description": "Earn bonus reward points on every purchase",
+			},
+		}
+	}
+	
+	utils.SuccessResponse(c, http.StatusOK, "Premium features retrieved", gin.H{
+		"user_type": user.UserType,
+		"features": features,
+	})
 }
 
 // UpgradeSubscription handles subscription upgrades
 func (h *SubscriptionHandler) UpgradeSubscription(c *gin.Context) {
-	userID := c.GetUint("user_id")
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
 	
 	var req struct {
 		NewPlanID string `json:"new_plan_id" binding:"required"`
@@ -244,7 +408,7 @@ func (h *SubscriptionHandler) UpgradeSubscription(c *gin.Context) {
 		},
 	}
 	
-	result, err := config.Coll.PremiumMemberships.UpdateOne(ctx, bson.M{"user_id": userID, "status": "active"}, update)
+	result, err := config.Coll.PremiumMemberships.UpdateOne(ctx, bson.M{"user_id": userObjID, "status": "active"}, update)
 	if err != nil {
 		utils.InternalServerErrorResponse(c, "Failed to upgrade subscription", err.Error())
 		return
@@ -260,13 +424,14 @@ func (h *SubscriptionHandler) UpgradeSubscription(c *gin.Context) {
 
 // GetBillingHistory returns user's billing history
 func (h *SubscriptionHandler) GetBillingHistory(c *gin.Context) {
-	userID := c.GetUint("user_id")
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
 	
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	
 	var subscriptions []models.Subscription
-	cursor, err := config.Coll.PremiumMemberships.Find(ctx, bson.M{"user_id": userID})
+	cursor, err := config.Coll.PremiumMemberships.Find(ctx, bson.M{"user_id": userObjID})
 	if err != nil {
 		utils.InternalServerErrorResponse(c, "Failed to retrieve billing history", err.Error())
 		return
@@ -284,17 +449,33 @@ func (h *SubscriptionHandler) GetBillingHistory(c *gin.Context) {
 // Helper function to get subscription plan details
 func (h *SubscriptionHandler) getSubscriptionPlan(planID string) (*models.SubscriptionPlan, error) {
 	plans := map[string]*models.SubscriptionPlan{
-		"monthly": {
-			ID:             "monthly",
-			Name:           "Monthly Premium",
+		"seller_monthly": {
+			ID:             "seller_monthly",
+			Name:           "Seller Monthly Premium",
+			Price:          5000,
+			DurationMonths: 1,
+			UserType:       "seller",
+		},
+		"seller_yearly": {
+			ID:             "seller_yearly",
+			Name:           "Seller Yearly Premium",
+			Price:          50000,
+			DurationMonths: 12,
+			UserType:       "seller",
+		},
+		"buyer_monthly": {
+			ID:             "buyer_monthly",
+			Name:           "Buyer Monthly Premium",
 			Price:          2500,
 			DurationMonths: 1,
+			UserType:       "buyer",
 		},
-		"yearly": {
-			ID:             "yearly",
-			Name:           "Yearly Premium",
+		"buyer_yearly": {
+			ID:             "buyer_yearly",
+			Name:           "Buyer Yearly Premium",
 			Price:          25000,
 			DurationMonths: 12,
+			UserType:       "buyer",
 		},
 	}
 	

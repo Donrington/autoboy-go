@@ -576,3 +576,79 @@ func (h *OrderHandler) GetAllTransactions(c *gin.Context) {
 
 	utils.SuccessResponseWithMeta(c, http.StatusOK, "Transactions retrieved successfully", orders, meta)
 }
+
+// RequestRefund handles refund requests
+func (h *OrderHandler) RequestRefund(c *gin.Context) {
+	var req struct {
+		Reason      string  `json:"reason" binding:"required"`
+		Description string  `json:"description" binding:"required"`
+		Amount      float64 `json:"amount"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.BadRequestResponse(c, "Invalid request data", err.Error())
+		return
+	}
+
+	orderID := c.Param("id")
+	orderObjID, err := primitive.ObjectIDFromHex(orderID)
+	if err != nil {
+		utils.BadRequestResponse(c, "Invalid order ID", nil)
+		return
+	}
+
+	userID, _ := c.Get("user_id")
+	buyerID, _ := primitive.ObjectIDFromHex(userID.(string))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Get order details
+	var order models.Order
+	err = config.Coll.Orders.FindOne(ctx, bson.M{
+		"_id": orderObjID,
+		"buyer_id": buyerID,
+	}).Decode(&order)
+
+	if err != nil {
+		utils.NotFoundResponse(c, "Order not found")
+		return
+	}
+
+	// Validate refund amount
+	refundAmount := req.Amount
+	if refundAmount <= 0 || refundAmount > order.TotalAmount {
+		refundAmount = order.TotalAmount
+	}
+
+	// Create refund request
+	refundRequest := models.OrderReturn{
+		ID:          primitive.NewObjectID(),
+		OrderID:     orderObjID,
+		RequestedBy: buyerID,
+		Reason:      req.Reason,
+		Description: req.Description,
+		ReturnType:  "refund",
+		RefundAmount: refundAmount,
+		Status:      models.ReturnStatusRequested,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	_, err = config.Coll.OrderReturns.InsertOne(ctx, refundRequest)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to create refund request", err.Error())
+		return
+	}
+
+	// Update order status
+	config.Coll.Orders.UpdateOne(ctx,
+		bson.M{"_id": orderObjID},
+		bson.M{"$set": bson.M{
+			"refund_status": "requested",
+			"updated_at": time.Now(),
+		}},
+	)
+
+	utils.CreatedResponse(c, "Refund request submitted successfully", refundRequest)
+}

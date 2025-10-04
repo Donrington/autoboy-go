@@ -51,8 +51,11 @@ type Product struct {
 
 	// Inventory and availability
 	Quantity      int                `bson:"quantity" json:"quantity"`
+	SoldCount     int                `bson:"sold_count" json:"sold_count"`
 	SKU           string             `bson:"sku,omitempty" json:"sku,omitempty"`
 	Location      ProductLocation    `bson:"location" json:"location"`
+	IsInStock     bool               `bson:"is_in_stock" json:"is_in_stock"`
+	LowStockThreshold int            `bson:"low_stock_threshold" json:"low_stock_threshold"`
 
 	// Swap functionality
 	SwapAvailable bool               `bson:"swap_available" json:"swap_available"`
@@ -63,13 +66,28 @@ type Product struct {
 	LikeCount     int                `bson:"like_count" json:"like_count"`
 	ShareCount    int                `bson:"share_count" json:"share_count"`
 	SaveCount     int                `bson:"save_count" json:"save_count"`
+	WishlistCount int                `bson:"wishlist_count" json:"wishlist_count"`
+	QuestionCount int                `bson:"question_count" json:"question_count"`
+	
+	// Rating and reviews
+	AverageRating float64            `bson:"average_rating" json:"average_rating"`
+	ReviewCount   int                `bson:"review_count" json:"review_count"`
+	RatingBreakdown map[string]int   `bson:"rating_breakdown,omitempty" json:"rating_breakdown,omitempty"` // "5": 10, "4": 5, etc.
 
 	// Status and visibility
 	Status        ProductStatus      `bson:"status" json:"status"`
 	IsFeatured    bool               `bson:"is_featured" json:"is_featured"`
 	IsPremiumListing bool            `bson:"is_premium_listing" json:"is_premium_listing"`
+	IsNew         bool               `bson:"is_new" json:"is_new"`
+	IsHot         bool               `bson:"is_hot" json:"is_hot"`
+	IsTrending    bool               `bson:"is_trending" json:"is_trending"`
 	BoostLevel    int                `bson:"boost_level" json:"boost_level"`
 	BoostExpiresAt *time.Time        `bson:"boost_expires_at,omitempty" json:"boost_expires_at,omitempty"`
+	
+	// Seller information (denormalized for performance)
+	SellerName    string             `bson:"seller_name" json:"seller_name"`
+	SellerRating  float64            `bson:"seller_rating" json:"seller_rating"`
+	SellerVerified bool              `bson:"seller_verified" json:"seller_verified"`
 
 	// SEO and searchability
 	Tags          []string           `bson:"tags,omitempty" json:"tags,omitempty"`

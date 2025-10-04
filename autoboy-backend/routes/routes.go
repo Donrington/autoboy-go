@@ -43,11 +43,20 @@ func SetupRoutes(router *gin.Engine) {
 	swapHandler := handlers.NewSwapHandler()
 	analyticsHandler := handlers.NewAnalyticsHandler()
 	sellerDashboardHandler := handlers.NewSellerDashboardHandler()
+	buyerDashboardHandler := handlers.NewBuyerDashboardHandler()
+	reviewHandler := handlers.NewReviewHandler()
 	searchHandler := handlers.NewSearchHandler()
 	adminHandler := handlers.NewAdminHandler()
 	subscriptionHandler := handlers.NewSubscriptionHandler()
-	supportHandler := handlers.NewSupportHandler()
 	paystackHandler := handlers.NewPaystackHandler()
+	wishlistHandler := handlers.NewWishlistHandler()
+	followHandler := handlers.NewFollowHandler()
+	activityHandler := handlers.NewActivityHandler()
+	savedSearchHandler := handlers.NewSavedSearchHandler()
+	questionHandler := handlers.NewQuestionHandler()
+	trackingHandler := handlers.NewTrackingHandler()
+	priceAlertHandler := handlers.NewPriceAlertHandler()
+	systemHandler := handlers.NewSystemHandler()
 
 	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
@@ -74,6 +83,7 @@ func SetupRoutes(router *gin.Engine) {
 				auth.POST("/forgot-password", authHandler.ForgotPassword)
 				auth.POST("/reset-password", authHandler.ResetPassword)
 				auth.POST("/resend-email-verification", authHandler.ResendEmailVerification)
+				auth.POST("/resend-verification", authHandler.ResendEmailVerification)
 			}
 
 			// Public product routes
@@ -82,6 +92,8 @@ func SetupRoutes(router *gin.Engine) {
 			{
 				products.GET("/", productHandler.GetProducts)
 				products.GET("/:id", productHandler.GetProduct)
+				products.GET("/:id/reviews", reviewHandler.GetProductReviews)
+				products.GET("/:id/questions", questionHandler.GetProductQuestions)
 			}
 
 			// Public category routes
@@ -93,6 +105,11 @@ func SetupRoutes(router *gin.Engine) {
 
 			// Search routes
 			public.GET("/search", searchHandler.SearchProducts)
+			public.POST("/search/advanced", searchHandler.AdvancedSearch)
+			public.GET("/search/suggestions", searchHandler.GetSearchSuggestions)
+
+			// Order tracking (public with order number)
+			public.GET("/orders/:id/track", trackingHandler.GetOrderTracking)
 		}
 
 		// Protected routes (authentication required)
@@ -109,6 +126,7 @@ func SetupRoutes(router *gin.Engine) {
 				user.POST("/resend-phone-otp", authHandler.ResendPhoneOTP)
 				user.POST("/change-password", userHandler.ChangePassword)
 				user.POST("/logout", authHandler.Logout)
+				user.DELETE("/account", userHandler.DeleteAccount)
 
 				// User addresses
 				addresses := user.Group("/addresses")
@@ -125,18 +143,115 @@ func SetupRoutes(router *gin.Engine) {
 					orders.GET("/", orderHandler.GetUserOrders)
 					orders.GET("/:id", orderHandler.GetOrder)
 					orders.POST("/:id/cancel", orderHandler.CancelOrder)
+					orders.POST("/:id/return", orderHandler.RequestReturn)
+					orders.POST("/:id/refund", orderHandler.RequestRefund)
 				}
 
-				// User wishlist
-				wishlist := user.Group("/wishlist")
-				{
-					wishlist.GET("/", userHandler.GetWishlist)
-					wishlist.POST("/", userHandler.AddToWishlist)
-					wishlist.DELETE("/:id", userHandler.RemoveFromWishlist)
-				}
+				// User notifications
+				user.GET("/notifications", userHandler.GetNotifications)
+				user.PUT("/notifications/:id/read", userHandler.MarkNotificationRead)
+				user.PUT("/notifications/read-all", userHandler.MarkAllNotificationsRead)
+
+				// User activity
+				user.GET("/activity", activityHandler.GetUserActivity)
+
+				// Premium features
+				user.GET("/premium/status", userHandler.GetPremiumStatus)
+				user.GET("/premium/analytics", userHandler.GetPremiumAnalytics)
 
 				// Seller application
 				user.POST("/apply-seller", sellerHandler.ApplyToBecomeseller)
+			}
+
+			// Wishlist routes
+			wishlist := protected.Group("/wishlist")
+			{
+				wishlist.GET("/", wishlistHandler.GetWishlist)
+				wishlist.POST("/", wishlistHandler.AddToWishlist)
+				wishlist.DELETE("/:id", wishlistHandler.RemoveFromWishlist)
+			}
+
+			// Follow routes
+			follow := protected.Group("/follow")
+			{
+				follow.POST("/:id", followHandler.FollowUser)
+				follow.DELETE("/:id", followHandler.UnfollowUser)
+				follow.GET("/followers", followHandler.GetFollowers)
+				follow.GET("/following", followHandler.GetFollowing)
+			}
+
+			// Saved searches routes
+			searches := protected.Group("/saved-searches")
+			{
+				searches.GET("/", savedSearchHandler.GetSavedSearches)
+				searches.POST("/", savedSearchHandler.CreateSavedSearch)
+				searches.DELETE("/:id", savedSearchHandler.DeleteSavedSearch)
+			}
+
+			// Price alerts routes
+			alerts := protected.Group("/price-alerts")
+			{
+				alerts.GET("/", priceAlertHandler.GetPriceAlerts)
+				alerts.POST("/", priceAlertHandler.CreatePriceAlert)
+				alerts.DELETE("/:id", priceAlertHandler.DeletePriceAlert)
+			}
+
+			// Cart routes
+			cart := protected.Group("/cart")
+			{
+				cart.GET("/", cartHandler.GetCart)
+				cart.POST("/add", cartHandler.AddToCart)
+				cart.PUT("/update", cartHandler.UpdateCartItem)
+				cart.DELETE("/remove/:id", cartHandler.RemoveFromCart)
+				cart.DELETE("/clear", cartHandler.ClearCart)
+				cart.POST("/save-later/:id", cartHandler.SaveForLater)
+				cart.GET("/saved-items", cartHandler.GetSavedItems)
+				cart.POST("/move-to-cart/:id", cartHandler.MoveToCart)
+				cart.GET("/validate", cartHandler.ValidateCart)
+				cart.POST("/promo", cartHandler.ApplyPromoCode)
+			}
+
+			// Order routes
+			orders := protected.Group("/orders")
+			{
+				orders.POST("/", orderHandler.CreateOrder)
+				orders.GET("/:id/track", orderHandler.TrackOrder)
+			}
+
+			// Review routes
+			reviews := protected.Group("/reviews")
+			{
+				reviews.POST("/", reviewHandler.CreateReview)
+				reviews.GET("/my-reviews", reviewHandler.GetUserReviews)
+			}
+
+			// Question routes
+			questions := protected.Group("/questions")
+			{
+				questions.POST("/", questionHandler.CreateQuestion)
+				questions.PUT("/:id/answer", questionHandler.AnswerQuestion)
+			}
+
+			// Subscription routes
+			subscription := protected.Group("/subscription")
+			{
+				subscription.GET("/plans", subscriptionHandler.GetSubscriptionPlans)
+				subscription.GET("/features", subscriptionHandler.GetPremiumFeatures)
+				subscription.GET("/status", subscriptionHandler.GetSubscriptionStatus)
+				subscription.POST("/create", subscriptionHandler.CreateSubscription)
+				subscription.POST("/subscribe", subscriptionHandler.Subscribe)
+				subscription.POST("/cancel", subscriptionHandler.CancelSubscription)
+				subscription.POST("/upgrade", subscriptionHandler.UpgradeSubscription)
+				subscription.GET("/billing-history", subscriptionHandler.GetBillingHistory)
+			}
+
+			// Analytics routes (Premium only)
+			analytics := protected.Group("/analytics")
+			{
+				analytics.GET("/seller", analyticsHandler.GetSellerAnalytics)
+				analytics.GET("/buyer", analyticsHandler.GetBuyerAnalytics)
+				analytics.GET("/dashboard", analyticsHandler.GetDashboardAnalytics)
+				analytics.GET("/sales", analyticsHandler.GetSalesAnalytics)
 			}
 
 			// Seller routes
@@ -146,7 +261,7 @@ func SetupRoutes(router *gin.Engine) {
 				// Seller products
 				products := seller.Group("/products")
 				{
-					products.GET("/", productHandler.GetProducts)
+					products.GET("/", sellerHandler.GetProducts)
 					products.POST("/", productHandler.CreateProduct)
 					products.GET("/:id", productHandler.GetProduct)
 					products.PUT("/:id", productHandler.UpdateProduct)
@@ -159,7 +274,11 @@ func SetupRoutes(router *gin.Engine) {
 					orders.GET("/", orderHandler.GetSellerOrders)
 					orders.GET("/:id", orderHandler.GetSellerOrder)
 					orders.PUT("/:id/status", orderHandler.UpdateOrderStatus)
+					orders.POST("/:id/ship", orderHandler.ShipOrder)
 				}
+
+				// Seller tracking
+				seller.POST("/tracking", trackingHandler.AddTrackingEvent)
 
 				// Seller dashboard
 				seller.GET("/dashboard", sellerDashboardHandler.GetSellerDashboard)
@@ -177,21 +296,32 @@ func SetupRoutes(router *gin.Engine) {
 				seller.PUT("/profile", sellerDashboardHandler.UpdateSellerProfile)
 			}
 
-			// Order routes
-			orders := protected.Group("/orders")
+			// Admin routes
+			admin := protected.Group("/admin")
+			admin.Use(middleware.RequireUserType(models.UserTypeAdmin))
 			{
-				orders.POST("/", orderHandler.CreateOrder)
-				orders.GET("/:id/track", orderHandler.TrackOrder)
-			}
+				// Admin user management
+				admin.GET("/users", adminHandler.GetUsers)
+				admin.GET("/users/:id", adminHandler.GetUser)
+				admin.PUT("/users/:id/status", adminHandler.UpdateUserStatus)
 
-			// Cart routes
-			cart := protected.Group("/cart")
-			{
-				cart.GET("/", cartHandler.GetCart)
-				cart.POST("/add", cartHandler.AddToCart)
-				cart.PUT("/update", cartHandler.UpdateCartItem)
-				cart.DELETE("/remove/:id", cartHandler.RemoveFromCart)
-				cart.DELETE("/clear", cartHandler.ClearCart)
+				// Admin product management
+				admin.GET("/products", adminHandler.GetAllProducts)
+				admin.PUT("/products/:id/approve", adminHandler.ApproveProduct)
+				admin.PUT("/products/:id/reject", adminHandler.RejectProduct)
+
+				// Admin order management
+				admin.GET("/orders", orderHandler.GetAllTransactions)
+				admin.GET("/orders/:id", adminHandler.GetOrder)
+
+				// Admin analytics
+				admin.GET("/analytics", adminHandler.GetSystemAnalytics)
+				admin.GET("/dashboard", adminHandler.GetAdminDashboard)
+
+				// System management endpoints
+				admin.POST("/system/init-database", systemHandler.InitializeDatabase)
+				admin.GET("/system/test-endpoints", systemHandler.TestEndpoints)
+				admin.GET("/system/status", systemHandler.GetSystemStatus)
 			}
 
 			// Swap deals routes
@@ -204,20 +334,15 @@ func SetupRoutes(router *gin.Engine) {
 				swap.PUT("/:id/reject", swapHandler.RejectSwapDeal)
 			}
 
-			// Analytics routes
-			analytics := protected.Group("/analytics")
-			{
-				analytics.GET("/dashboard", analyticsHandler.GetDashboardAnalytics)
-				analytics.GET("/sales", analyticsHandler.GetSalesAnalytics)
-				analytics.GET("/products", analyticsHandler.GetProductAnalytics)
-			}
-
 			// Notifications routes
 			notifications := protected.Group("/notifications")
 			{
 				notifications.GET("/", notificationHandler.GetNotifications)
 				notifications.PUT("/:id/read", notificationHandler.MarkNotificationAsRead)
 				notifications.DELETE("/:id", notificationHandler.DeleteNotification)
+				notifications.POST("/preferences", notificationHandler.UpdateNotificationPreferences)
+				notifications.GET("/preferences", notificationHandler.GetNotificationPreferences)
+				notifications.POST("/send", notificationHandler.SendNotification)
 			}
 
 			// Reports routes
@@ -251,8 +376,14 @@ func SetupRoutes(router *gin.Engine) {
 				userSpecific.GET("/rewards/history", badgeHandler.GetRewardsHistory)
 				userSpecific.GET("/alerts", alertHandler.GetUserAlerts)
 				userSpecific.GET("/disputes", disputeHandler.GetDisputes)
-				userSpecific.GET("/premium/status", userHandler.GetPremiumStatus)
-				userSpecific.GET("/premium/analytics", userHandler.GetPremiumAnalytics)
+			}
+
+			// Buyer dashboard routes
+			buyer := protected.Group("/buyer")
+			buyer.Use(middleware.RequireUserType(models.UserTypeBuyer))
+			{
+				buyer.GET("/dashboard", buyerDashboardHandler.GetBuyerDashboard)
+				buyer.GET("/recent-activity", buyerDashboardHandler.GetBuyerRecentActivity)
 			}
 
 			// Badges routes
@@ -260,15 +391,6 @@ func SetupRoutes(router *gin.Engine) {
 			{
 				badges.GET("/", badgeHandler.GetUserBadges)
 				badges.GET("/available", badgeHandler.GetAvailableBadges)
-			}
-
-			// Alerts routes
-			alerts := protected.Group("/alerts")
-			{
-				alerts.POST("/price", alertHandler.CreatePriceAlert)
-				alerts.GET("/price", alertHandler.GetPriceAlerts)
-				alerts.PUT("/price/:id", alertHandler.UpdatePriceAlert)
-				alerts.DELETE("/price/:id", alertHandler.DeletePriceAlert)
 			}
 
 			// Deals routes
@@ -304,84 +426,9 @@ func SetupRoutes(router *gin.Engine) {
 			{
 				payment.POST("/initialize", paystackHandler.InitializePayment)
 				payment.GET("/verify/:reference", paystackHandler.VerifyPayment)
-			}
-
-			// Premium subscription routes
-			premium := protected.Group("/premium")
-			{
-				premium.POST("/subscribe", subscriptionHandler.Subscribe)
-				premium.POST("/cancel", subscriptionHandler.CancelSubscription)
-				premium.GET("/status", subscriptionHandler.GetSubscriptionStatus)
-				premium.GET("/plans", subscriptionHandler.GetSubscriptionPlans)
-				premium.GET("/features", subscriptionHandler.GetPremiumFeatures)
-				premium.POST("/upgrade", subscriptionHandler.UpgradeSubscription)
-				premium.GET("/billing-history", subscriptionHandler.GetBillingHistory)
-			}
-
-			// VIP Support routes (Premium only)
-			vipSupport := protected.Group("/vip-support")
-			vipSupport.Use(middleware.RequirePremiumUser())
-			{
-				vipSupport.POST("/ticket", supportHandler.CreateVIPTicket)
-				vipSupport.GET("/tickets", supportHandler.GetVIPTickets)
-				vipSupport.GET("/tickets/:id", supportHandler.GetVIPTicket)
-				vipSupport.POST("/chat", supportHandler.StartVIPChat)
-			}
-
-			// Admin routes
-			admin := protected.Group("/admin")
-			admin.Use(middleware.RequireUserType(models.UserTypeAdmin))
-			{
-				// Dashboard
-				admin.GET("/dashboard/stats", adminHandler.GetDashboardStats)
-				
-				// User Management
-				admin.GET("/users", adminHandler.GetAllUsers)
-				admin.GET("/users/:id", adminHandler.GetUserDetails)
-				admin.PUT("/users/:id/suspend", adminHandler.SuspendUser)
-				admin.PUT("/users/:id/activate", adminHandler.ActivateUser)
-				
-				// Admin Management
-				admin.GET("/admins", adminHandler.GetAllAdmins)
-				admin.POST("/admins", adminHandler.CreateAdmin)
-				
-				// Product Management
-				admin.GET("/products", adminHandler.GetAllProducts)
-				admin.PUT("/products/:id/approve", adminHandler.ApproveProduct)
-				admin.PUT("/products/:id/reject", adminHandler.RejectProduct)
-				
-				// Transaction Management
-				admin.GET("/transactions", orderHandler.GetAllTransactions)
-				
-				// Analytics
-				admin.GET("/analytics", adminHandler.GetAnalytics)
-				
-				// Dispute Management
-				admin.GET("/disputes", disputeHandler.GetAllDisputes)
-				admin.PUT("/disputes/:id/resolve", disputeHandler.ResolveDispute)
-				
-				// System Management
-				admin.GET("/system/health", adminHandler.GetSystemHealth)
-				admin.GET("/system/logs", adminHandler.GetSystemLogs)
-				
-				// Settings Management
-				admin.GET("/settings", adminHandler.GetSystemSettings)
-				admin.PUT("/settings", adminHandler.UpdateSystemSettings)
-				
-				// Data Export
-				admin.POST("/export", adminHandler.ExportData)
-				
-				// Reports Management
-				admin.GET("/reports", reportHandler.GetAllReports)
-				admin.PUT("/reports/:id/resolve", reportHandler.ResolveReport)
-				
-				// WebSocket broadcast
-				admin.POST("/broadcast", handlers.BroadcastNotification)
-				
-				// Premium Management
-				admin.GET("/premium/subscriptions", adminHandler.GetAllSubscriptions)
-				admin.PUT("/premium/subscriptions/:id/status", adminHandler.UpdateSubscriptionStatus)
-				admin.GET("/premium/analytics", adminHandler.GetPremiumAnalytics)
+				payment.POST("/refund", paystackHandler.ProcessRefund)
+				payment.POST("/dispute", paystackHandler.HandlePaymentDispute)
+				payment.POST("/webhook", paystackHandler.HandleWebhook)
 			}
 		}
 	}

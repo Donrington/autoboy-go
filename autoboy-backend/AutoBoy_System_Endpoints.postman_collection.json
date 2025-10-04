@@ -1,0 +1,378 @@
+{
+	"info": {
+		"_postman_id": "autoboy-system-endpoints",
+		"name": "AutoBoy System Endpoints",
+		"description": "System management endpoints for AutoBoy API - Database initialization and endpoint testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{admin_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://autoboy-go.onrender.com/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "local_url",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.data && response.data.token) {",
+									"        pm.collectionVariables.set('admin_token', response.data.token);",
+									"        console.log('Admin token saved:', response.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@autoboy.ng\",\n    \"password\": \"Admin123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as admin to get authentication token for system endpoints"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints to get admin token"
+		},
+		{
+			"name": "System Management",
+			"item": [
+				{
+					"name": "Initialize Database",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/system/init-database",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"system",
+								"init-database"
+							]
+						},
+						"description": "Initialize database with default categories, admin user, and system settings. Safe to run multiple times."
+					},
+					"response": []
+				},
+				{
+					"name": "Test All Endpoints",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/system/test-endpoints",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"system",
+								"test-endpoints"
+							]
+						},
+						"description": "Run comprehensive tests on all API endpoints and return detailed results"
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/system/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"system",
+								"status"
+							]
+						},
+						"description": "Get system health status including database connection and collection counts"
+					},
+					"response": []
+				}
+			],
+			"description": "System management endpoints for database initialization and testing"
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/../../health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"..",
+								"..",
+								"health"
+							]
+						},
+						"description": "Basic health check endpoint (no authentication required)"
+					},
+					"response": []
+				}
+			],
+			"description": "Basic health check endpoints"
+		},
+		{
+			"name": "Quick Tests",
+			"item": [
+				{
+					"name": "Test Public Endpoints",
+					"item": [
+						{
+							"name": "Get Products",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/products",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"products"
+									]
+								},
+								"description": "Test public products endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Categories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"categories"
+									]
+								},
+								"description": "Test public categories endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Search Products",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/search?q=phone",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"search"
+									],
+									"query": [
+										{
+											"key": "q",
+											"value": "phone"
+										}
+									]
+								},
+								"description": "Test public search endpoint"
+							},
+							"response": []
+						}
+					],
+					"description": "Quick tests for public endpoints"
+				},
+				{
+					"name": "Test Admin Endpoints",
+					"item": [
+						{
+							"name": "Admin Dashboard",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/dashboard",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"dashboard"
+									]
+								},
+								"description": "Test admin dashboard endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Users",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"users"
+									]
+								},
+								"description": "Test admin users endpoint"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Products (Admin)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/products",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"products"
+									]
+								},
+								"description": "Test admin products endpoint"
+							},
+							"response": []
+						}
+					],
+					"description": "Quick tests for admin endpoints"
+				}
+			],
+			"description": "Quick manual tests for key endpoints"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set the current environment URL",
+					"const currentUrl = pm.collectionVariables.get('base_url');",
+					"console.log('Using base URL:', currentUrl);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"pm.test('Response time is less than 5000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"pm.test('Response has correct Content-Type', function () {",
+					"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+					"});"
+				]
+			}
+		}
+	]
+}

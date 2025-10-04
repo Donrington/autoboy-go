@@ -26,23 +26,7 @@ const (
 	AlertStatusCancelled AlertStatus = "cancelled"
 )
 
-// PriceAlert represents a price drop alert
-type PriceAlert struct {
-	ID             primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	UserID         primitive.ObjectID `bson:"user_id" json:"user_id"`
-	ProductID      primitive.ObjectID `bson:"product_id" json:"product_id"`
-	TargetPrice    float64            `bson:"target_price" json:"target_price"`
-	CurrentPrice   float64            `bson:"current_price" json:"current_price"`
-	InitialPrice   float64            `bson:"initial_price" json:"initial_price"`
-	Status         AlertStatus        `bson:"status" json:"status"`
-	NotifyEmail    bool               `bson:"notify_email" json:"notify_email"`
-	NotifySMS      bool               `bson:"notify_sms" json:"notify_sms"`
-	NotifyPush     bool               `bson:"notify_push" json:"notify_push"`
-	TriggeredAt    *time.Time         `bson:"triggered_at,omitempty" json:"triggered_at,omitempty"`
-	ExpiresAt      *time.Time         `bson:"expires_at,omitempty" json:"expires_at,omitempty"`
-	CreatedAt      time.Time          `bson:"created_at" json:"created_at"`
-	UpdatedAt      time.Time          `bson:"updated_at" json:"updated_at"`
-}
+
 
 // StockAlert represents a back-in-stock alert
 type StockAlert struct {
@@ -58,50 +42,9 @@ type StockAlert struct {
 	UpdatedAt      time.Time          `bson:"updated_at" json:"updated_at"`
 }
 
-// SavedSearch represents a user's saved search query
-type SavedSearch struct {
-	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	UserID          primitive.ObjectID `bson:"user_id" json:"user_id"`
-	Name            string             `bson:"name" json:"name"`
-	SearchQuery     string             `bson:"search_query" json:"search_query"`
-	Filters         map[string]interface{} `bson:"filters,omitempty" json:"filters,omitempty"`
-	Category        *primitive.ObjectID `bson:"category,omitempty" json:"category,omitempty"`
-	PriceMin        float64            `bson:"price_min,omitempty" json:"price_min,omitempty"`
-	PriceMax        float64            `bson:"price_max,omitempty" json:"price_max,omitempty"`
-	Location        string             `bson:"location,omitempty" json:"location,omitempty"`
-	Condition       []string           `bson:"condition,omitempty" json:"condition,omitempty"`
-	NotifyOnMatch   bool               `bson:"notify_on_match" json:"notify_on_match"`
-	LastChecked     *time.Time         `bson:"last_checked,omitempty" json:"last_checked,omitempty"`
-	ResultCount     int                `bson:"result_count" json:"result_count"`
-	IsActive        bool               `bson:"is_active" json:"is_active"`
-	CreatedAt       time.Time          `bson:"created_at" json:"created_at"`
-	UpdatedAt       time.Time          `bson:"updated_at" json:"updated_at"`
-}
 
-// Wishlist represents a user's wishlist
-type Wishlist struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	UserID      primitive.ObjectID `bson:"user_id" json:"user_id"`
-	Name        string             `bson:"name" json:"name"` // Allow multiple wishlists
-	Description string             `bson:"description,omitempty" json:"description,omitempty"`
-	IsPrivate   bool               `bson:"is_private" json:"is_private"`
-	IsDefault   bool               `bson:"is_default" json:"is_default"`
-	Items       []WishlistItem     `bson:"items" json:"items"`
-	ShareToken  string             `bson:"share_token,omitempty" json:"share_token,omitempty"` // For sharing wishlist
-	CreatedAt   time.Time          `bson:"created_at" json:"created_at"`
-	UpdatedAt   time.Time          `bson:"updated_at" json:"updated_at"`
-}
 
-// WishlistItem represents an item in a wishlist
-type WishlistItem struct {
-	ProductID     primitive.ObjectID `bson:"product_id" json:"product_id"`
-	AddedAt       time.Time          `bson:"added_at" json:"added_at"`
-	PriceAtAdd    float64            `bson:"price_at_add" json:"price_at_add"`
-	Note          string             `bson:"note,omitempty" json:"note,omitempty"`
-	Priority      int                `bson:"priority" json:"priority"` // 1-5
-	NotifyOnDrop  bool               `bson:"notify_on_drop" json:"notify_on_drop"`
-	TargetPrice   float64            `bson:"target_price,omitempty" json:"target_price,omitempty"`
-}
+
 
 // ExclusiveDeal represents a premium/exclusive deal
 type ExclusiveDeal struct {

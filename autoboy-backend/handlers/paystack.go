@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"autoboy-backend/utils"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type PaystackHandler struct{}
@@ -165,10 +168,172 @@ func (h *PaystackHandler) VerifyPayment(c *gin.Context) {
 	status := paymentData["status"].(string)
 
 	if status == "success" {
-		// TODO: Update subscription status in database
+		// Update subscription status in database
+		paymentData := paystackResp.Data.(map[string]interface{})
+		if metadata, ok := paymentData["metadata"].(map[string]interface{}); ok {
+			if userIDStr, exists := metadata["user_id"]; exists {
+				userID := fmt.Sprintf("%v", userIDStr)
+				userObjID, _ := primitive.ObjectIDFromHex(userID)
+				
+				// Update user premium status
+				update := bson.M{
+					"$set": bson.M{
+						"premium_status": "active",
+						"premium_expires_at": time.Now().AddDate(0, 1, 0), // 1 month
+						"updated_at": time.Now(),
+					},
+				}
+				utils.DB.Collection("users").UpdateOne(c, bson.M{"_id": userObjID}, update)
+			}
+		}
+		
 		// TODO: Send confirmation email
 		utils.SuccessResponse(c, http.StatusOK, "Payment verified successfully", paystackResp.Data)
 	} else {
 		utils.BadRequestResponse(c, fmt.Sprintf("Payment status: %s", status), paystackResp.Data)
 	}
+}
+
+// ProcessRefund processes a payment refund
+func (h *PaystackHandler) ProcessRefund(c *gin.Context) {
+	var req struct {
+		TransactionID string  `json:"transaction_id" binding:"required"`
+		Amount        float64 `json:"amount"`
+		Reason        string  `json:"reason"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.BadRequestResponse(c, "Invalid request data", err.Error())
+		return
+	}
+
+	refundData := map[string]interface{}{
+		"transaction": req.TransactionID,
+	}
+
+	if req.Amount > 0 {
+		refundData["amount"] = int(req.Amount * 100) // Convert to kobo
+	}
+
+	jsonData, _ := json.Marshal(refundData)
+	httpReq, err := http.NewRequest("POST", PaystackBaseURL+"/refund", bytes.NewBuffer(jsonData))
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to create refund request", err.Error())
+		return
+	}
+
+	httpReq.Header.Set("Authorization", "Bearer "+PaystackSecretKey)
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to process refund", err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	var paystackResp PaystackResponse
+	json.Unmarshal(body, &paystackResp)
+
+	if !paystackResp.Status {
+		utils.BadRequestResponse(c, "Refund failed", paystackResp.Message)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Refund processed successfully", paystackResp.Data)
+}
+
+// HandlePaymentDispute handles payment disputes
+func (h *PaystackHandler) HandlePaymentDispute(c *gin.Context) {
+	var req struct {
+		TransactionID string `json:"transaction_id" binding:"required"`
+		Evidence      string `json:"evidence" binding:"required"`
+		UploadURL     string `json:"upload_url"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.BadRequestResponse(c, "Invalid request data", err.Error())
+		return
+	}
+
+	// Store dispute in database
+	dispute := bson.M{
+		"_id": primitive.NewObjectID(),
+		"transaction_id": req.TransactionID,
+		"evidence": req.Evidence,
+		"upload_url": req.UploadURL,
+		"status": "pending",
+		"created_at": time.Now(),
+	}
+
+	_, err := utils.DB.Collection("payment_disputes").InsertOne(c, dispute)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to record dispute", err.Error())
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Dispute recorded successfully", dispute)
+}
+
+// HandleWebhook handles Paystack webhooks
+func (h *PaystackHandler) HandleWebhook(c *gin.Context) {
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		utils.BadRequestResponse(c, "Failed to read webhook body", err.Error())
+		return
+	}
+
+	var webhook map[string]interface{}
+	if err := json.Unmarshal(body, &webhook); err != nil {
+		utils.BadRequestResponse(c, "Invalid webhook data", err.Error())
+		return
+	}
+
+	event := webhook["event"].(string)
+	data := webhook["data"].(map[string]interface{})
+
+	switch event {
+	case "charge.success":
+		// Handle successful payment
+		reference := data["reference"].(string)
+		_ = data["amount"].(float64)
+		
+		// Update order status
+		filter := bson.M{"payment_reference": reference}
+		update := bson.M{"$set": bson.M{
+			"payment_status": "paid",
+			"status": "confirmed",
+			"updated_at": time.Now(),
+		}}
+		utils.DB.Collection("orders").UpdateOne(c, filter, update)
+
+	case "subscription.create":
+		// TODO: Update subscription status in database
+		subscriptionCode := data["subscription_code"].(string)
+		customerEmail := data["customer"].(map[string]interface{})["email"].(string)
+		
+		// Update user subscription
+		filter := bson.M{"email": customerEmail}
+		update := bson.M{"$set": bson.M{
+			"subscription_code": subscriptionCode,
+			"subscription_status": "active",
+			"updated_at": time.Now(),
+		}}
+		utils.DB.Collection("users").UpdateOne(c, filter, update)
+
+	case "subscription.disable":
+		// Handle subscription cancellation
+		subscriptionCode := data["subscription_code"].(string)
+		filter := bson.M{"subscription_code": subscriptionCode}
+		update := bson.M{"$set": bson.M{
+			"subscription_status": "cancelled",
+			"updated_at": time.Now(),
+		}}
+		utils.DB.Collection("users").UpdateOne(c, filter, update)
+	}
+
+	// TODO: Send confirmation email based on event type
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }

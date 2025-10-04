@@ -1,0 +1,885 @@
+{
+	"info": {
+		"_postman_id": "autoboy-complete-api",
+		"name": "AutoBoy Complete API Collection",
+		"description": "Comprehensive collection of all AutoBoy API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-login if no token exists",
+					"if (!pm.collectionVariables.get('auth_token')) {",
+					"    console.log('No auth token found, attempting auto-login...');",
+					"    ",
+					"    const loginRequest = {",
+					"        url: pm.collectionVariables.get('base_url') + '/api/v1/auth/login',",
+					"        method: 'POST',",
+					"        header: {",
+					"            'Content-Type': 'application/json'",
+					"        },",
+					"        body: {",
+					"            mode: 'raw',",
+					"            raw: JSON.stringify({",
+					"                email: pm.collectionVariables.get('admin_email'),",
+					"                password: pm.collectionVariables.get('admin_password')",
+					"            })",
+					"        }",
+					"    };",
+					"    ",
+					"    pm.sendRequest(loginRequest, (err, response) => {",
+					"        if (err) {",
+					"            console.log('Login failed:', err);",
+					"        } else if (response.code === 200) {",
+					"            const responseJson = response.json();",
+					"            if (responseJson.data && responseJson.data.token) {",
+					"                pm.collectionVariables.set('auth_token', responseJson.data.token);",
+					"                console.log('Auto-login successful');",
+					"            }",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://autoboy-go.onrender.com",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_email",
+			"value": "admin@autoboy.ng",
+			"type": "string"
+		},
+		{
+			"key": "admin_password",
+			"value": "Admin123!",
+			"type": "string"
+		},
+		{
+			"key": "test_user_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "test_product_id",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": ["{{base_url}}"],
+					"path": ["health"]
+				}
+			}
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"Password123!\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"phone\": \"+2348012345678\",\n    \"user_type\": \"buyer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.data && responseJson.data.token) {",
+									"        pm.collectionVariables.set('auth_token', responseJson.data.token);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/verify-email?token=verification_token",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "verify-email"],
+							"query": [
+								{
+									"key": "token",
+									"value": "verification_token"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/forgot-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "forgot-password"]
+						}
+					}
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"reset_token\",\n    \"password\": \"NewPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/reset-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "reset-password"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Products (Public)",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "products"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/{{test_product_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "products", "{{test_product_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Product Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/{{test_product_id}}/reviews",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "products", "{{test_product_id}}", "reviews"]
+						}
+					}
+				},
+				{
+					"name": "Get Product Questions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/{{test_product_id}}/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "products", "{{test_product_id}}", "questions"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories (Public)",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories"]
+						}
+					}
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Search (Public)",
+			"item": [
+				{
+					"name": "Search Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/search?q=phone&category=electronics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "phone"
+								},
+								{
+									"key": "category",
+									"value": "electronics"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Advanced Search",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"smartphone\",\n    \"category\": \"electronics\",\n    \"min_price\": 100,\n    \"max_price\": 1000,\n    \"condition\": \"new\",\n    \"location\": \"Lagos\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/search/advanced",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "search", "advanced"]
+						}
+					}
+				},
+				{
+					"name": "Get Search Suggestions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/search/suggestions?q=phone",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "search", "suggestions"],
+							"query": [
+								{
+									"key": "q",
+									"value": "phone"
+								}
+							]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/user/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "user", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\",\n    \"phone\": \"+2348012345679\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/user/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "user", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_password\": \"OldPassword123!\",\n    \"new_password\": \"NewPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/user/change-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "user", "change-password"]
+						}
+					}
+				},
+				{
+					"name": "Get Addresses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/user/addresses",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "user", "addresses"]
+						}
+					}
+				},
+				{
+					"name": "Create Address",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"street\": \"123 Main Street\",\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\",\n    \"country\": \"Nigeria\",\n    \"postal_code\": \"100001\",\n    \"is_default\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/user/addresses",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "user", "addresses"]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		},
+		{
+			"name": "Cart & Orders",
+			"item": [
+				{
+					"name": "Get Cart",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/cart",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "cart"]
+						}
+					}
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": {{test_product_id}},\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/cart/add",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "cart", "add"]
+						}
+					}
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"shipping_address_id\": 1,\n    \"payment_method\": \"paystack\",\n    \"items\": [\n        {\n            \"product_id\": {{test_product_id}},\n            \"quantity\": 1\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/orders",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "orders"]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		},
+		{
+			"name": "Seller Routes",
+			"item": [
+				{
+					"name": "Get Seller Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/seller/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "seller", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "Get Seller Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/seller/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "seller", "products"]
+						}
+					}
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Product\",\n    \"description\": \"A test product\",\n    \"price\": 99.99,\n    \"category_id\": 1,\n    \"condition\": \"new\",\n    \"quantity\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/seller/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "seller", "products"]
+						}
+					}
+				},
+				{
+					"name": "Get Seller Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/seller/analytics/sales",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "seller", "analytics", "sales"]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		},
+		{
+			"name": "Admin Routes",
+			"item": [
+				{
+					"name": "Get Admin Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "users"]
+						}
+					}
+				},
+				{
+					"name": "Get System Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/analytics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "analytics"]
+						}
+					}
+				},
+				{
+					"name": "Initialize Database",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/system/init-database",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "system", "init-database"]
+						}
+					}
+				},
+				{
+					"name": "Test Endpoints",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/system/test-endpoints",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "system", "test-endpoints"]
+						}
+					}
+				},
+				{
+					"name": "Get System Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/system/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "system", "status"]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		},
+		{
+			"name": "Wishlist & Social",
+			"item": [
+				{
+					"name": "Get Wishlist",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wishlist",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "wishlist"]
+						}
+					}
+				},
+				{
+					"name": "Add to Wishlist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": {{test_product_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wishlist",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "wishlist"]
+						}
+					}
+				},
+				{
+					"name": "Follow User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/follow/{{test_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "follow", "{{test_user_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Followers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/follow/followers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "follow", "followers"]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		},
+		{
+			"name": "Analytics & Subscriptions",
+			"item": [
+				{
+					"name": "Get Seller Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/analytics/seller",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "analytics", "seller"]
+						}
+					}
+				},
+				{
+					"name": "Get Buyer Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/analytics/buyer",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "analytics", "buyer"]
+						}
+					}
+				},
+				{
+					"name": "Get Subscription Plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/subscription/plans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "subscription", "plans"]
+						}
+					}
+				},
+				{
+					"name": "Subscribe",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"plan_id\": \"premium\",\n    \"payment_method\": \"paystack\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/subscription/subscribe",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "subscription", "subscribe"]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		},
+		{
+			"name": "Payment & Wallet",
+			"item": [
+				{
+					"name": "Initialize Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 10000,\n    \"email\": \"test@example.com\",\n    \"order_id\": \"ORD123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payment/initialize",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payment", "initialize"]
+						}
+					}
+				},
+				{
+					"name": "Verify Payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/payment/verify/payment_reference",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payment", "verify", "payment_reference"]
+						}
+					}
+				},
+				{
+					"name": "Get Wallet Balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wallet/balance",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "wallet", "balance"]
+						}
+					}
+				},
+				{
+					"name": "Get Wallet Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wallet/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "wallet", "transactions"]
+						}
+					}
+				}
+			],
+			"auth": {
+				"type": "inherit"
+			}
+		}
+	]
+}

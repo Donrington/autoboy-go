@@ -82,10 +82,24 @@ type Collections struct {
 	PointsTransactions *mongo.Collection
 
 	// Alert & Deal collections
-	PriceAlerts       *mongo.Collection
-	SavedSearches     *mongo.Collection
-	Wishlists         *mongo.Collection
-	ExclusiveDeals    *mongo.Collection
+	PriceAlerts             *mongo.Collection
+	PriceAlertNotifications *mongo.Collection
+	SavedSearches           *mongo.Collection
+	SearchHistory           *mongo.Collection
+	SearchSuggestions       *mongo.Collection
+	Wishlists               *mongo.Collection
+	WishlistItems           *mongo.Collection
+	WishlistShares          *mongo.Collection
+	ExclusiveDeals          *mongo.Collection
+	PromoCodes              *mongo.Collection
+	PromoCodeUsage          *mongo.Collection
+	SavedForLater           *mongo.Collection
+	
+	// Analytics collections
+	UserAnalytics           *mongo.Collection
+	SellerAnalytics         *mongo.Collection
+	BuyerAnalytics          *mongo.Collection
+	PlatformAnalytics       *mongo.Collection
 
 	// Dispute & Report collections
 	Disputes          *mongo.Collection
@@ -235,10 +249,24 @@ func (db *Database) InitializeCollections() *Collections {
 		PointsTransactions: db.Database.Collection("points_transactions"),
 
 		// Alert & Deal collections
-		PriceAlerts:    db.Database.Collection("price_alerts"),
-		SavedSearches:  db.Database.Collection("saved_searches"),
-		Wishlists:      db.Database.Collection("wishlists"),
-		ExclusiveDeals: db.Database.Collection("exclusive_deals"),
+		PriceAlerts:             db.Database.Collection("price_alerts"),
+		PriceAlertNotifications: db.Database.Collection("price_alert_notifications"),
+		SavedSearches:           db.Database.Collection("saved_searches"),
+		SearchHistory:           db.Database.Collection("search_history"),
+		SearchSuggestions:       db.Database.Collection("search_suggestions"),
+		Wishlists:               db.Database.Collection("wishlists"),
+		WishlistItems:           db.Database.Collection("wishlist_items"),
+		WishlistShares:          db.Database.Collection("wishlist_shares"),
+		ExclusiveDeals:          db.Database.Collection("exclusive_deals"),
+		PromoCodes:              db.Database.Collection("promo_codes"),
+		PromoCodeUsage:          db.Database.Collection("promo_code_usage"),
+		SavedForLater:           db.Database.Collection("saved_for_later"),
+		
+		// Analytics collections
+		UserAnalytics:           db.Database.Collection("user_analytics"),
+		SellerAnalytics:         db.Database.Collection("seller_analytics"),
+		BuyerAnalytics:          db.Database.Collection("buyer_analytics"),
+		PlatformAnalytics:       db.Database.Collection("platform_analytics"),
 
 		// Dispute & Report collections
 		Disputes:           db.Database.Collection("disputes"),

@@ -134,7 +134,7 @@ func (h *DealHandler) GetFlashDeals(c *gin.Context) {
 		filter["is_premium_only"] = false
 	}
 
-	var deals []models.FlashDeal
+	var deals []models.ExclusiveDeal
 	cursor, err := utils.DB.Collection("flash_deals").Find(c, filter)
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to fetch flash deals", err.Error())
