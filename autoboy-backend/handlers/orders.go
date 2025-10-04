@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"autoboy-backend/config"
@@ -13,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type OrderHandler struct {
@@ -526,4 +528,51 @@ func (h *OrderHandler) TrackOrder(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Order tracking retrieved successfully", response)
+}
+
+// GetAllTransactions handles admin transaction retrieval
+func (h *OrderHandler) GetAllTransactions(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	status := c.Query("status")
+
+	filter := bson.M{}
+	if status != "" && status != "all" {
+		filter["status"] = status
+	}
+
+	page, limit, totalPages, offset := utils.CalculatePagination(page, limit, 0)
+
+	total, _ := config.Coll.Orders.CountDocuments(ctx, filter)
+	_, _, totalPages, _ = utils.CalculatePagination(page, limit, total)
+
+	findOptions := options.Find().
+		SetSkip(int64(offset)).
+		SetLimit(int64(limit)).
+		SetSort(bson.D{{Key: "created_at", Value: -1}})
+
+	cursor, err := config.Coll.Orders.Find(ctx, filter, findOptions)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to fetch transactions", err.Error())
+		return
+	}
+	defer cursor.Close(ctx)
+
+	var orders []models.Order
+	if err = cursor.All(ctx, &orders); err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to decode transactions", err.Error())
+		return
+	}
+
+	meta := &utils.Meta{
+		Page:       page,
+		Limit:      limit,
+		Total:      total,
+		TotalPages: totalPages,
+	}
+
+	utils.SuccessResponseWithMeta(c, http.StatusOK, "Transactions retrieved successfully", orders, meta)
 }

@@ -525,13 +525,20 @@ func (s *EmailService) sendWithResend(to, subject, body, apiKey string) error {
 	log.Printf("[RESEND] API Key length: %d", len(apiKey))
 	log.Printf("[RESEND] Body length: %d chars", len(body))
 	
-	// Resend API payload
+	// Resend API payload - use verified domain for Resend
+	resendFromEmail := "noreply@resend.dev" // Default Resend domain
+	if resendDomain := utils.GetEnv("RESEND_FROM_EMAIL", ""); resendDomain != "" {
+		resendFromEmail = resendDomain
+	}
+	
 	payload := map[string]interface{}{
-		"from":    fmt.Sprintf("%s <%s>", s.fromName, s.fromEmail),
+		"from":    fmt.Sprintf("%s <%s>", s.fromName, resendFromEmail),
 		"to":      []string{to},
 		"subject": subject,
 		"html":    body,
 	}
+	
+	log.Printf("[RESEND] Using from email: %s <%s>", s.fromName, resendFromEmail)
 	
 	log.Printf("[RESEND] Preparing JSON payload...")
 	jsonData, err := json.Marshal(payload)
@@ -570,10 +577,16 @@ func (s *EmailService) sendWithResend(to, subject, body, apiKey string) error {
 	
 	// Check response
 	if resp.StatusCode != 200 {
+		// Read response body for error details
+		var responseBody bytes.Buffer
+		responseBody.ReadFrom(resp.Body)
+		errorResponse := responseBody.String()
+		
 		log.Printf("[RESEND ERROR] API returned non-200 status: %d", resp.StatusCode)
+		log.Printf("[RESEND ERROR] Response body: %s", errorResponse)
 		log.Printf("[RESEND ERROR] Response headers: %v", resp.Header)
 		log.Printf("=== RESEND API END (FAILED) ===")
-		return fmt.Errorf("resend API failed with status %d", resp.StatusCode)
+		return fmt.Errorf("resend API failed with status %d: %s", resp.StatusCode, errorResponse)
 	}
 	
 	log.Printf("[RESEND SUCCESS] ✅ Email sent successfully via Resend to %s", to)

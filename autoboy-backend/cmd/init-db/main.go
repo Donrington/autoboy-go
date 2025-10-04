@@ -18,9 +18,14 @@ func main() {
 	}
 
 	ctx := context.Background()
+	log.Println("Starting database initialization...")
+
 	createDefaultCategories(ctx)
-	createSampleProducts(ctx)
 	createAdminUser(ctx)
+	createSampleProducts(ctx)
+	createSystemSettings(ctx)
+	createDefaultBadges(ctx)
+	createNotificationTemplates(ctx)
 	log.Println("Database initialization completed successfully!")
 }
 
@@ -112,4 +117,49 @@ func createAdminUser(ctx context.Context) {
 	config.Coll.Users.InsertOne(ctx, admin)
 	log.Println("Admin user created successfully")
 	log.Println("Admin credentials: admin@autoboy.ng / Admin123!")
+}
+
+func createSystemSettings(ctx context.Context) {
+	log.Println("Creating system settings...")
+	settings := []map[string]interface{}{
+		{"_id": primitive.NewObjectID(), "key": "platform_name", "value": "AutoBoy", "description": "Platform name", "type": "string", "created_at": time.Now(), "updated_at": time.Now()},
+		{"_id": primitive.NewObjectID(), "key": "commission_rate", "value": 0.05, "description": "Platform commission rate", "type": "number", "created_at": time.Now(), "updated_at": time.Now()},
+		{"_id": primitive.NewObjectID(), "key": "default_currency", "value": "NGN", "description": "Default platform currency", "type": "string", "created_at": time.Now(), "updated_at": time.Now()},
+		{"_id": primitive.NewObjectID(), "key": "escrow_auto_release_days", "value": 7, "description": "Days after which escrow is auto-released", "type": "number", "created_at": time.Now(), "updated_at": time.Now()},
+	}
+	var docs []interface{}
+	for _, setting := range settings {
+		docs = append(docs, setting)
+	}
+	config.Coll.SystemSettings.InsertMany(ctx, docs)
+	log.Printf("%d system settings created", len(settings))
+}
+
+func createDefaultBadges(ctx context.Context) {
+	log.Println("Creating default badges...")
+	badges := []models.Badge{
+		{ID: primitive.NewObjectID(), Name: "Verified Buyer", Description: "Completed identity verification", Type: models.BadgeTypeBuyer, Level: models.BadgeLevelBronze, IconURL: "/badges/shield.svg", Color: "#4169E1", RequirementType: "verification", RequiredValue: 1, IsActive: true, IsVisible: true, Perks: []string{"Increased trust", "Access to premium listings"}, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Top Seller", Description: "Completed over 100 successful sales", Type: models.BadgeTypeSeller, Level: models.BadgeLevelGold, IconURL: "/badges/star.svg", Color: "#FFD700", RequirementType: "total_sales", RequiredValue: 100, IsActive: true, IsVisible: true, Perks: []string{"Featured seller badge", "Priority listing placement"}, DiscountPercent: 3.0, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+	var docs []interface{}
+	for _, badge := range badges {
+		docs = append(docs, badge)
+	}
+	config.Coll.Badges.InsertMany(ctx, docs)
+	log.Printf("%d badges created", len(badges))
+}
+
+func createNotificationTemplates(ctx context.Context) {
+	log.Println("Creating notification templates...")
+	templates := []models.NotificationTemplate{
+		{ID: primitive.NewObjectID(), Name: "Order Placed", Type: models.NotificationTypeOrder, TitleTemplate: "Order Confirmation - Order #{{.order_id}}", MessageTemplate: "Your order #{{.order_id}} for {{.product_name}} has been placed successfully. Total: ₦{{.total_amount}}", Variables: []string{"order_id", "product_name", "total_amount"}, IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Order Shipped", Type: models.NotificationTypeShipping, TitleTemplate: "Your order has been shipped", MessageTemplate: "Good news! Your order #{{.order_id}} is on its way. Tracking: {{.tracking_number}}", Variables: []string{"order_id", "tracking_number"}, IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "New Message", Type: models.NotificationTypeMessage, TitleTemplate: "New message from {{.sender_name}}", MessageTemplate: "You have a new message from {{.sender_name}}: {{.message_preview}}", Variables: []string{"sender_name", "message_preview"}, IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+	var docs []interface{}
+	for _, template := range templates {
+		docs = append(docs, template)
+	}
+	config.Coll.NotificationTemplates.InsertMany(ctx, docs)
+	log.Printf("%d notification templates created", len(templates))
 }

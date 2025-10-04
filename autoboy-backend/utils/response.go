@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -109,3 +110,8 @@ func InternalServerErrorResponse(c *gin.Context, message string, err interface{}
 func BadRequestResponse(c *gin.Context, message string, err interface{}) {
 	ErrorResponse(c, http.StatusBadRequest, message, err)
 }
+
+// Common errors
+var (
+	ErrNotFound = errors.New("not found")
+)

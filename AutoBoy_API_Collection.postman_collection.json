@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "autoboy-api-collection",
-		"name": "AutoBoy API Collection",
+		"name": "Main API Collecttion",
 		"description": "Complete API collection for AutoBoy - Nigeria's premier gadget trading platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -199,42 +199,6 @@
 							"raw": "{{base_url}}/user/resend-phone-otp",
 							"host": ["{{base_url}}"],
 							"path": ["user", "resend-phone-otp"]
-						}
-					}
-				},
-				{
-					"name": "Admin Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 200) {",
-									"    const response = pm.response.json();",
-									"    if (response.data && response.data.token) {",
-									"        pm.collectionVariables.set('auth_token', response.data.token);",
-									"    }",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"admin@autoboy.ng\",\n  \"password\": \"Admin123!\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/auth/login",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "login"]
 						}
 					}
 				},
@@ -1461,228 +1425,6 @@
 			]
 		},
 		{
-			"name": "Admin Management",
-			"item": [
-				{
-					"name": "Get Admin Dashboard Stats",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/dashboard/stats", "host": ["{{base_url}}"], "path": ["admin", "dashboard", "stats"]}
-					}
-				},
-				{
-					"name": "Get All Users (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/users?page=1&limit=20&status=active", "host": ["{{base_url}}"], "path": ["admin", "users"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}, {"key": "status", "value": "active"}]}
-					}
-				},
-				{
-					"name": "Get User Details (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/users/user_id_here", "host": ["{{base_url}}"], "path": ["admin", "users", "user_id_here"]}
-					}
-				},
-				{
-					"name": "Suspend User (Admin)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"reason\": \"Violation of terms of service\",\n  \"duration_days\": 30\n}"
-						},
-						"url": {"raw": "{{base_url}}/admin/users/user_id_here/suspend", "host": ["{{base_url}}"], "path": ["admin", "users", "user_id_here", "suspend"]}
-					}
-				},
-				{
-					"name": "Activate User (Admin)",
-					"request": {
-						"method": "PUT",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/users/user_id_here/activate", "host": ["{{base_url}}"], "path": ["admin", "users", "user_id_here", "activate"]}
-					}
-				},
-				{
-					"name": "Get All Admins",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/admins", "host": ["{{base_url}}"], "path": ["admin", "admins"]}
-					}
-				},
-				{
-					"name": "Create Admin",
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": \"newadmin\",\n  \"email\": \"newadmin@autoboy.com\",\n  \"password\": \"AdminPass123!\",\n  \"first_name\": \"New\",\n  \"last_name\": \"Admin\",\n  \"role\": \"staff_admin\",\n  \"permissions\": [\"users\", \"products\", \"orders\"]\n}"
-						},
-						"url": {"raw": "{{base_url}}/admin/admins", "host": ["{{base_url}}"], "path": ["admin", "admins"]}
-					}
-				},
-				{
-					"name": "Update Admin",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"role\": \"moderator\",\n  \"permissions\": [\"reports\", \"moderation\"]\n}"
-						},
-						"url": {"raw": "{{base_url}}/admin/admins/admin_id_here", "host": ["{{base_url}}"], "path": ["admin", "admins", "admin_id_here"]}
-					}
-				},
-				{
-					"name": "Delete Admin",
-					"request": {
-						"method": "DELETE",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/admins/admin_id_here", "host": ["{{base_url}}"], "path": ["admin", "admins", "admin_id_here"]}
-					}
-				},
-				{
-					"name": "Get All Products (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/products?status=all&page=1&limit=20", "host": ["{{base_url}}"], "path": ["admin", "products"], "query": [{"key": "status", "value": "all"}, {"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]}
-					}
-				},
-				{
-					"name": "Approve Product (Admin)",
-					"request": {
-						"method": "PUT",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/products/product_id_here/approve", "host": ["{{base_url}}"], "path": ["admin", "products", "product_id_here", "approve"]}
-					}
-				},
-				{
-					"name": "Reject Product (Admin)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"reason\": \"Product does not meet quality standards\"\n}"
-						},
-						"url": {"raw": "{{base_url}}/admin/products/product_id_here/reject", "host": ["{{base_url}}"], "path": ["admin", "products", "product_id_here", "reject"]}
-					}
-				},
-				{
-					"name": "Get All Transactions (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/transactions?page=1&limit=20&status=all", "host": ["{{base_url}}"], "path": ["admin", "transactions"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}, {"key": "status", "value": "all"}]}
-					}
-				},
-				{
-					"name": "Get Analytics Data (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/analytics?period=month", "host": ["{{base_url}}"], "path": ["admin", "analytics"], "query": [{"key": "period", "value": "month"}]}
-					}
-				},
-				{
-					"name": "Get All Disputes (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/disputes?status=all&priority=all", "host": ["{{base_url}}"], "path": ["admin", "disputes"], "query": [{"key": "status", "value": "all"}, {"key": "priority", "value": "all"}]}
-					}
-				},
-				{
-					"name": "Resolve Dispute (Admin)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"resolution\": \"refund_buyer\",\n  \"admin_notes\": \"Buyer provided sufficient evidence. Refund approved.\",\n  \"refund_amount\": 1200000\n}"
-						},
-						"url": {"raw": "{{base_url}}/admin/disputes/dispute_id_here/resolve", "host": ["{{base_url}}"], "path": ["admin", "disputes", "dispute_id_here", "resolve"]}
-					}
-				},
-				{
-					"name": "Get System Health (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/system/health", "host": ["{{base_url}}"], "path": ["admin", "system", "health"]}
-					}
-				},
-				{
-					"name": "Get System Logs (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/system/logs?level=all&limit=50", "host": ["{{base_url}}"], "path": ["admin", "system", "logs"], "query": [{"key": "level", "value": "all"}, {"key": "limit", "value": "50"}]}
-					}
-				},
-				{
-					"name": "Update System Settings (Admin)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"commission_rate\": 0.05,\n  \"minimum_transaction_amount\": 1000,\n  \"maintenance_mode\": false\n}"
-						},
-						"url": {"raw": "{{base_url}}/admin/settings", "host": ["{{base_url}}"], "path": ["admin", "settings"]}
-					}
-				},
-				{
-					"name": "Get System Settings (Admin)",
-					"request": {
-						"method": "GET",
-						"header": [{"key": "Authorization", "value": "Bearer {{auth_token}}"}],
-						"url": {"raw": "{{base_url}}/admin/settings", "host": ["{{base_url}}"], "path": ["admin", "settings"]}
-					}
-				},
-				{
-					"name": "Export Data (Admin)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"type\": \"transactions\",\n  \"format\": \"csv\",\n  \"date_from\": \"2024-01-01\",\n  \"date_to\": \"2024-12-31\"\n}"
-						},
-						"url": {"raw": "{{base_url}}/admin/export", "host": ["{{base_url}}"], "path": ["admin", "export"]}
-					}
-				}
-			]
-		},
-		{
 			"name": "WebSocket Chat",
 			"item": [
 				{
@@ -1749,7 +1491,700 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "Initialize Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"amount\": 250000,\n  \"currency\": \"NGN\",\n  \"callback_url\": \"https://yourapp.com/callback\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/payment/initialize",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payment",
+								"initialize"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/payment/verify/:reference",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payment",
+								"verify",
+								":reference"
+							],
+							"variable": [
+								{
+									"key": "reference",
+									"value": "T123456789"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Premium Subscription",
+			"item": [
+				{
+					"name": "Get Subscription Plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/premium/plans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"premium",
+								"plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Premium Features",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/premium/features",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"premium",
+								"features"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe to Premium",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plan_id\": \"monthly\",\n  \"payment_reference\": \"T123456789\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/premium/subscribe",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"premium",
+								"subscribe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/premium/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"premium",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Subscription",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/premium/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"premium",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upgrade Subscription",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"new_plan_id\": \"yearly\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/premium/upgrade",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"premium",
+								"upgrade"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Billing History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/premium/billing-history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"premium",
+								"billing-history"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "VIP Support",
+			"item": [
+				{
+					"name": "Create VIP Ticket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subject\": \"Payment Issue\",\n  \"message\": \"I'm having trouble with my premium subscription payment\",\n  \"priority\": \"high\",\n  \"category\": \"billing\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/vip-support/ticket",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vip-support",
+								"ticket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get VIP Tickets",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vip-support/tickets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vip-support",
+								"tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get VIP Ticket",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vip-support/tickets/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vip-support",
+								"tickets",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start VIP Chat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subject\": \"Need immediate help\",\n  \"message\": \"I need urgent assistance with my account\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/vip-support/chat",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vip-support",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deals & Listings",
+			"item": [
+				{
+					"name": "Get Exclusive Deals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/deals/exclusive",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deals",
+								"exclusive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Priority Listings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/deals/priority-listings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deals",
+								"priority-listings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Flash Deals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/deals/flash-deals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deals",
+								"flash-deals"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Price Alerts",
+			"item": [
+				{
+					"name": "Create Price Alert",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"product_id\": \"64a1b2c3d4e5f6789012345\",\n  \"target_price\": 150000,\n  \"alert_type\": \"below\",\n  \"notify_method\": \"email\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/alerts/price",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"alerts",
+								"price"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Price Alerts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/alerts/price",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"alerts",
+								"price"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Price Alert",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"target_price\": 140000,\n  \"status\": \"active\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/alerts/price/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"alerts",
+								"price",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "64a1b2c3d4e5f6789012345"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Price Alert",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/alerts/price/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"alerts",
+								"price",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "64a1b2c3d4e5f6789012345"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Premium Analytics",
+			"item": [
+				{
+					"name": "Get Premium Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/premium/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"premium",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Premium Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/premium/analytics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"premium",
+								"analytics"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Premium Management",
+			"item": [
+				{
+					"name": "Get All Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/premium/subscriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"premium",
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subscription Status",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"suspended\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/premium/subscriptions/:id/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"premium",
+								"subscriptions",
+								":id",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Premium Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/premium/analytics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"premium",
+								"analytics"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/products/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "64a1b2c3d4e5f6789012345"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"bio\": \"Tech enthusiast\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
-		
 	]
 }

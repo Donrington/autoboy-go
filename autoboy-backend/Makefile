@@ -22,7 +22,7 @@ install:
 # Initialize database
 init-db:
 	@echo "Initializing database..."
-	go run scripts/init_db.go
+	go run cmd/init-db/main.go
 
 # Run development server
 dev:

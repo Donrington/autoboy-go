@@ -183,3 +183,63 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 func (h *UserHandler) DeleteAccount(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, "Account deletion requested", nil)
 }
+
+// GetPremiumStatus returns user's premium status and subscription details
+func (h *UserHandler) GetPremiumStatus(c *gin.Context) {
+	user, _ := c.Get("user")
+	currentUser := user.(*models.User)
+
+	// Mock premium status data - replace with actual database queries
+	premiumStatus := gin.H{
+		"is_premium": currentUser.Profile.PremiumStatus != "none",
+		"tier": currentUser.Profile.PremiumStatus,
+		"features": []string{
+			"Premium Badge",
+			"Priority Listings",
+			"Advanced Analytics",
+			"Priority Support",
+		},
+		"subscription": gin.H{
+			"plan": "monthly",
+			"status": "active",
+			"next_billing": "2024-02-15",
+			"amount": 2500,
+		},
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Premium status retrieved successfully", premiumStatus)
+}
+
+// GetPremiumAnalytics returns premium analytics for the user
+func (h *UserHandler) GetPremiumAnalytics(c *gin.Context) {
+	user, _ := c.Get("user")
+	currentUser := user.(*models.User)
+
+	// Check if user has premium access
+	if currentUser.Profile.PremiumStatus == "none" {
+		utils.ErrorResponse(c, http.StatusForbidden, "Premium access required", "This feature requires premium membership")
+		return
+	}
+
+	// Mock analytics data - replace with actual database queries
+	analytics := gin.H{
+		"monthly_spending": []int{850000, 920000, 750000, 1100000, 980000, 1050000},
+		"category_breakdown": gin.H{
+			"Mobile Phones": 45,
+			"Laptops": 30,
+			"Accessories": 15,
+			"Gaming": 10,
+		},
+		"savings_timeline": []int{120000, 150000, 180000, 210000, 250000, 280000},
+		"purchase_frequency": gin.H{
+			"labels": []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
+			"data": []int{8, 12, 9, 15, 11, 14},
+		},
+		"total_saved": 1250000,
+		"exclusive_deals_used": 12,
+		"priority_access_count": 8,
+		"reward_points": 4500,
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Premium analytics retrieved successfully", analytics)
+}
