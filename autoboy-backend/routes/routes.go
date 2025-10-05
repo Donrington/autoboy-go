@@ -110,6 +110,9 @@ func SetupRoutes(router *gin.Engine) {
 
 			// Order tracking (public with order number)
 			public.GET("/orders/:id/track", trackingHandler.GetOrderTracking)
+
+			// Temporary public system initialization (remove in production)
+			public.POST("/system/init-database", systemHandler.InitializeDatabase)
 		}
 
 		// Protected routes (authentication required)
