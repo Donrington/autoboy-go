@@ -215,7 +215,6 @@ func SetupRoutes(router *gin.Engine) {
 			orders := protected.Group("/orders")
 			{
 				orders.POST("/", orderHandler.CreateOrder)
-				orders.GET("/:id/track", orderHandler.TrackOrder)
 			}
 
 			// Review routes
