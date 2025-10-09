@@ -63,8 +63,19 @@ type User struct {
 	// Embedded profile information
 	Profile Profile `bson:"profile" json:"profile"`
 
-	// Reward points
+	// Reward points and gamification
 	RewardPoints int `bson:"reward_points" json:"reward_points"`
+	BadgeLevel   int `bson:"badge_level" json:"badge_level"`
+	TotalPoints  int `bson:"total_points" json:"total_points"`
+	
+	// Social features
+	FollowersCount  int `bson:"followers_count" json:"followers_count"`
+	FollowingCount  int `bson:"following_count" json:"following_count"`
+	
+	// Premium subscription
+	SubscriptionID     *primitive.ObjectID `bson:"subscription_id,omitempty" json:"subscription_id,omitempty"`
+	SubscriptionStatus string              `bson:"subscription_status,omitempty" json:"subscription_status,omitempty"`
+	SubscriptionExpiry *time.Time          `bson:"subscription_expiry,omitempty" json:"subscription_expiry,omitempty"`
 
 	// Security settings
 	LoginAttempts   int       `bson:"login_attempts" json:"login_attempts"`
@@ -96,6 +107,15 @@ type Profile struct {
 	BusinessAddress  string             `bson:"business_address,omitempty" json:"business_address,omitempty"`
 	BusinessPhone    string             `bson:"business_phone,omitempty" json:"business_phone,omitempty"`
 	TaxID            string             `bson:"tax_id,omitempty" json:"tax_id,omitempty"`
+	
+	// Seller-specific fields
+	ShopName         string             `bson:"shop_name,omitempty" json:"shop_name,omitempty"`
+	ShopDescription  string             `bson:"shop_description,omitempty" json:"shop_description,omitempty"`
+	ShopLocation     string             `bson:"shop_location,omitempty" json:"shop_location,omitempty"`
+	AccountType      string             `bson:"account_type,omitempty" json:"account_type,omitempty"` // business or individual
+	SellerScore      float64            `bson:"seller_score" json:"seller_score"`
+	TotalSales       int                `bson:"total_sales" json:"total_sales"`
+	TotalEarnings    float64            `bson:"total_earnings" json:"total_earnings"`
 
 	// Verification documents
 	Documents        []VerificationDocument `bson:"documents,omitempty" json:"documents,omitempty"`
@@ -103,8 +123,15 @@ type Profile struct {
 	// Social links
 	SocialLinks      map[string]string  `bson:"social_links,omitempty" json:"social_links,omitempty"`
 
-	// Preferences
+	// Preferences and settings
 	Preferences      UserPreferences    `bson:"preferences" json:"preferences"`
+	
+	// Activity tracking
+	LastActivityAt   *time.Time         `bson:"last_activity_at,omitempty" json:"last_activity_at,omitempty"`
+	IsOnline         bool               `bson:"is_online" json:"is_online"`
+	
+	// Analytics opt-in
+	AnalyticsEnabled bool               `bson:"analytics_enabled" json:"analytics_enabled"`
 }
 
 // Address represents a user address

@@ -265,20 +265,67 @@ func (h *ProductHandler) GetProducts(c *gin.Context) {
 	// Recalculate total pages with actual count
 	_, _, totalPages, _ = utils.CalculatePagination(page, limit, total)
 
-	// Find products
-	findOptions := options.Find().
-		SetSkip(int64(offset)).
-		SetLimit(int64(limit)).
-		SetSort(sort)
+	// Enhanced pipeline with seller info and ratings
+	pipeline := []bson.M{
+		{"$match": filter},
+		{"$lookup": bson.M{
+			"from":         "users",
+			"localField":   "seller_id",
+			"foreignField": "_id",
+			"as":           "seller",
+		}},
+		{"$unwind": "$seller"},
+		{"$lookup": bson.M{
+			"from": "product_reviews",
+			"let": bson.M{"productId": "$_id"},
+			"pipeline": []bson.M{
+				{"$match": bson.M{
+					"$expr": bson.M{"$eq": []string{"$product_id", "$$productId"}},
+					"is_approved": true,
+				}},
+				{"$group": bson.M{
+					"_id": nil,
+					"avg_rating": bson.M{"$avg": "$rating"},
+					"review_count": bson.M{"$sum": 1},
+				}},
+			},
+			"as": "rating_info",
+		}},
+		{"$addFields": bson.M{
+			"seller_info": bson.M{
+				"id":     "$seller._id",
+				"name":   bson.M{"$concat": []string{"$seller.profile.first_name", " ", "$seller.profile.last_name"}},
+				"avatar": "$seller.profile.avatar",
+				"rating": "$seller.profile.rating",
+			},
+			"rating": bson.M{"$ifNull": []interface{}{
+				bson.M{"$arrayElemAt": []interface{}{"$rating_info.avg_rating", 0}},
+				0,
+			}},
+			"review_count": bson.M{"$ifNull": []interface{}{
+				bson.M{"$arrayElemAt": []interface{}{"$rating_info.review_count", 0}},
+				0,
+			}},
+			"in_stock": bson.M{"$gt": []interface{}{"$quantity", 0}},
+			"is_new": bson.M{"$gte": []interface{}{"$created_at", time.Now().AddDate(0, 0, -30)}},
+		}},
+		{"$project": bson.M{
+			"seller":      0,
+			"rating_info": 0,
+		}},
+		{"$sort": sort},
+		{"$skip": offset},
+		{"$limit": limit},
+	}
 
-	cursor, err := config.Coll.Products.Find(ctx, filter, findOptions)
+	cursor, err := config.Coll.Products.Aggregate(ctx, pipeline)
 	if err != nil {
 		utils.InternalServerErrorResponse(c, "Failed to fetch products", err.Error())
 		return
 	}
 	defer cursor.Close(ctx)
 
-	var products []models.Product
+	var products []bson.M
 	if err = cursor.All(ctx, &products); err != nil {
 		utils.InternalServerErrorResponse(c, "Failed to decode products", err.Error())
 		return
@@ -461,4 +508,155 @@ func getProductStatus(userType models.UserType) models.ProductStatus {
 		return models.ProductStatusActive
 	}
 	return models.ProductStatusDraft
+}
+
+// GetProductRecommendations gets recommended products based on current product
+func (h *ProductHandler) GetProductRecommendations(c *gin.Context) {
+	productID := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(productID)
+	if err != nil {
+		utils.BadRequestResponse(c, "Invalid product ID", nil)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Get current product
+	var product models.Product
+	err = config.Coll.Products.FindOne(ctx, bson.M{"_id": objID}).Decode(&product)
+	if err != nil {
+		utils.NotFoundResponse(c, "Product not found")
+		return
+	}
+
+	// Build recommendation pipeline
+	pipeline := []bson.M{
+		{"$match": bson.M{
+			"_id": bson.M{"$ne": objID},
+			"status": models.ProductStatusActive,
+		}},
+	}
+
+	// Add scoring based on similarity
+	pipeline = append(pipeline, bson.M{
+		"$addFields": bson.M{
+			"score": bson.M{
+				"$add": []interface{}{
+					// Same category: +10 points
+					bson.M{"$cond": []interface{}{
+						bson.M{"$eq": []interface{}{"$category_id", product.CategoryID}},
+						10, 0,
+					}},
+					// Same brand: +5 points
+					bson.M{"$cond": []interface{}{
+						bson.M{"$eq": []interface{}{"$brand", product.Brand}},
+						5, 0,
+					}},
+					// Similar price range: +3 points
+					bson.M{"$cond": []interface{}{
+						bson.M{"$and": []interface{}{
+							bson.M{"$gte": []interface{}{"$price", product.Price * 0.7}},
+							bson.M{"$lte": []interface{}{"$price", product.Price * 1.3}},
+						}},
+						3, 0,
+					}},
+					// Same condition: +2 points
+					bson.M{"$cond": []interface{}{
+						bson.M{"$eq": []interface{}{"$condition", product.Condition}},
+						2, 0,
+					}},
+				},
+			},
+		},
+	})
+
+	// Sort by score and limit
+	pipeline = append(pipeline, bson.M{"$sort": bson.M{"score": -1, "created_at": -1}})
+	pipeline = append(pipeline, bson.M{"$limit": 10})
+
+	cursor, err := config.Coll.Products.Aggregate(ctx, pipeline)
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to get recommendations", err.Error())
+		return
+	}
+	defer cursor.Close(ctx)
+
+	var recommendations []bson.M
+	cursor.All(ctx, &recommendations)
+
+	utils.SuccessResponse(c, http.StatusOK, "Recommendations retrieved", recommendations)
+}
+
+// GetProductVariants gets product variants (similar products from same seller)
+func (h *ProductHandler) GetProductVariants(c *gin.Context) {
+	productID := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(productID)
+	if err != nil {
+		utils.BadRequestResponse(c, "Invalid product ID", nil)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Get current product
+	var product models.Product
+	err = config.Coll.Products.FindOne(ctx, bson.M{"_id": objID}).Decode(&product)
+	if err != nil {
+		utils.NotFoundResponse(c, "Product not found")
+		return
+	}
+
+	// Find variants (same seller, brand, model but different attributes)
+	filter := bson.M{
+		"_id": bson.M{"$ne": objID},
+		"seller_id": product.SellerID,
+		"status": models.ProductStatusActive,
+		"$or": []bson.M{
+			{"brand": product.Brand, "model": product.Model},
+			{"category_id": product.CategoryID, "brand": product.Brand},
+		},
+	}
+
+	cursor, err := config.Coll.Products.Find(ctx, filter, options.Find().SetLimit(20))
+	if err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to get variants", err.Error())
+		return
+	}
+	defer cursor.Close(ctx)
+
+	var variants []models.Product
+	cursor.All(ctx, &variants)
+
+	// Group variants by attributes
+	variantGroups := map[string][]models.Product{
+		"color": {},
+		"size": {},
+		"condition": {},
+	}
+
+	for _, variant := range variants {
+		if variant.Color != product.Color && variant.Color != "" {
+			variantGroups["color"] = append(variantGroups["color"], variant)
+		}
+		if variant.Condition != product.Condition {
+			variantGroups["condition"] = append(variantGroups["condition"], variant)
+		}
+		// Add size variants if specifications contain size info
+		if variant.Specifications != nil {
+			if size, exists := variant.Specifications["size"]; exists {
+				if productSize, hasSize := product.Specifications["size"]; hasSize {
+					if size != productSize {
+						variantGroups["size"] = append(variantGroups["size"], variant)
+					}
+				}
+			}
+		}
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Product variants retrieved", gin.H{
+		"variants": variantGroups,
+		"total_variants": len(variants),
+	})
 }

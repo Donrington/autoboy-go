@@ -267,30 +267,3 @@ func ValidateJWTToken(tokenString string) (*JWTClaims, error) {
 	return validateToken(tokenString)
 }
 
-// RequirePremiumUser middleware ensures user has premium access
-func RequirePremiumUser() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		user, exists := c.Get("user")
-		if !exists {
-			utils.ErrorResponse(c, http.StatusUnauthorized, "Authentication required", nil)
-			c.Abort()
-			return
-		}
-
-		currentUser := user.(*models.User)
-		
-		// Check if user has premium status
-		if currentUser.Profile.PremiumStatus == "none" || currentUser.Profile.PremiumStatus == "" {
-			utils.ErrorResponse(c, http.StatusForbidden, "Premium membership required", "This feature requires premium membership")
-			c.Abort()
-			return
-		}
-
-		// TODO: Add additional checks for subscription validity
-		// - Check if subscription is active
-		// - Check if subscription hasn't expired
-		// - Check payment status
-
-		c.Next()
-	}
-}

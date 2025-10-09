@@ -310,3 +310,8 @@ func GeneratePaymentNumber() string {
 	random := GenerateRandomString(4)
 	return fmt.Sprintf("PAY-%d-%s", timestamp, strings.ToUpper(random))
 }
+
+// ContainsIgnoreCase checks if string contains substring (case insensitive)
+func ContainsIgnoreCase(str, substr string) bool {
+	return strings.Contains(strings.ToLower(str), strings.ToLower(substr))
+}

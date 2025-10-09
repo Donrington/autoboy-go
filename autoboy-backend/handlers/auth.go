@@ -42,6 +42,11 @@ type RegisterRequest struct {
 	LastName    string `json:"last_name" binding:"required"`
 	UserType    string `json:"user_type" binding:"required,oneof=buyer seller"`
 	AcceptTerms bool   `json:"accept_terms" binding:"required"`
+	
+	// Seller-specific fields
+	ShopName     string `json:"shop_name,omitempty"`
+	ShopLocation string `json:"shop_location,omitempty"`
+	AccountType  string `json:"account_type,omitempty"` // business or individual
 }
 
 // LoginRequest represents user login request
@@ -68,6 +73,18 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	if !utils.IsValidPhone(req.Phone) {
 		utils.BadRequestResponse(c, "Invalid phone number format", nil)
 		return
+	}
+
+	// Additional validation for sellers
+	if req.UserType == "seller" {
+		if req.ShopName == "" || req.ShopLocation == "" || req.AccountType == "" {
+			utils.BadRequestResponse(c, "Missing required seller fields: shop_name, shop_location, account_type", nil)
+			return
+		}
+		if req.AccountType != "business" && req.AccountType != "individual" {
+			utils.BadRequestResponse(c, "Invalid account_type. Must be 'business' or 'individual'", nil)
+			return
+		}
 	}
 
 	// Check if user already exists
@@ -119,6 +136,10 @@ func (h *AuthHandler) Register(c *gin.Context) {
 			BadgeLevel:         1,
 			Rating:             0.0,
 			TotalRatings:       0,
+			// Seller-specific fields
+			ShopName:           req.ShopName,
+			ShopLocation:       req.ShopLocation,
+			AccountType:        req.AccountType,
 			Preferences: models.UserPreferences{
 				Language:             "en",
 				Currency:             "NGN",
