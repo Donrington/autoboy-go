@@ -1,9 +1,13 @@
 package services
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"net/smtp"
+	"os"
 
 	"autoboy-backend/utils"
 )
@@ -18,11 +22,16 @@ type EmailService struct {
 	fromName     string
 }
 
+// flushLogs forces immediate log output
+func flushLogs() {
+	os.Stdout.Sync()
+}
+
 // NewEmailService creates a new email service
 func NewEmailService() *EmailService {
 	return &EmailService{
 		smtpHost:     utils.GetEnv("SMTP_HOST", "smtp.gmail.com"),
-		smtpPort:     utils.GetEnv("SMTP_PORT", "587"),
+		smtpPort:     utils.GetEnv("SMTP_PORT", "465"),
 		smtpUsername: utils.GetEnv("SMTP_USERNAME", ""),
 		smtpPassword: utils.GetEnv("SMTP_PASSWORD", ""),
 		fromEmail:    utils.GetEnv("FROM_EMAIL", "autoboyexpress@gmail.com"),
@@ -38,6 +47,16 @@ type EmailTemplate struct {
 
 // SendEmail sends an email
 func (s *EmailService) SendEmail(to, subject, body string) error {
+	// Primary: Gmail SMTP
+	fmt.Printf("\n=== EMAIL SERVICE DEBUG START ===\n")
+	fmt.Printf("[EMAIL] Recipient: %s\n", to)
+	fmt.Printf("[EMAIL] Subject: %s\n", subject)
+	fmt.Printf("[EMAIL] SMTP Host: %s\n", s.smtpHost)
+	fmt.Printf("[EMAIL] SMTP Port: %s\n", s.smtpPort)
+	fmt.Printf("[EMAIL] SMTP Username: %s\n", s.smtpUsername)
+	fmt.Printf("[EMAIL] From Email: %s\n", s.fromEmail)
+	fmt.Printf("[EMAIL] Password Length: %d\n", len(s.smtpPassword))
+	
 	log.Printf("=== EMAIL SERVICE DEBUG START ===")
 	log.Printf("[EMAIL] Recipient: %s", to)
 	log.Printf("[EMAIL] Subject: %s", subject)
@@ -46,9 +65,12 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 	log.Printf("[EMAIL] SMTP Username: %s", s.smtpUsername)
 	log.Printf("[EMAIL] From Email: %s", s.fromEmail)
 	log.Printf("[EMAIL] Password Length: %d", len(s.smtpPassword))
+	flushLogs()
 	
 	if s.smtpUsername == "" || s.smtpPassword == "" {
+		fmt.Printf("[EMAIL ERROR] SMTP credentials not configured - Username: '%s', Password Length: %d\n", s.smtpUsername, len(s.smtpPassword))
 		log.Printf("[EMAIL ERROR] SMTP credentials not configured - Username: '%s', Password Length: %d", s.smtpUsername, len(s.smtpPassword))
+		flushLogs()
 		return fmt.Errorf("SMTP credentials not configured")
 	}
 
@@ -69,17 +91,29 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 	))
 
 	// Send email with detailed error logging
+	fmt.Printf("[EMAIL] Attempting SMTP connection to %s:%s\n", s.smtpHost, s.smtpPort)
+	fmt.Printf("[EMAIL] Auth details - Username: %s, From: %s\n", s.smtpUsername, s.fromEmail)
 	log.Printf("[EMAIL] Attempting SMTP connection to %s:%s", s.smtpHost, s.smtpPort)
 	log.Printf("[EMAIL] Auth details - Username: %s, From: %s", s.smtpUsername, s.fromEmail)
+	flushLogs()
 	
 	err := smtp.SendMail(s.smtpHost+":"+s.smtpPort, auth, s.fromEmail, []string{to}, msg)
 	if err != nil {
+		fmt.Printf("[EMAIL ERROR] SMTP SendMail failed: %v\n", err)
+		fmt.Printf("[EMAIL ERROR] Error type: %T\n", err)
+		fmt.Printf("[EMAIL ERROR] Full error details: %+v\n", err)
 		log.Printf("[EMAIL ERROR] SMTP SendMail failed: %v", err)
 		log.Printf("[EMAIL ERROR] Error type: %T", err)
 		log.Printf("[EMAIL ERROR] Full error details: %+v", err)
+		flushLogs()
 		
 		// Log specific Gmail errors
 		if s.smtpHost == "smtp.gmail.com" {
+			fmt.Printf("[EMAIL ERROR] Gmail troubleshooting:\n")
+			fmt.Printf("[EMAIL ERROR] 1. Verify 2FA is enabled on autoboyexpress@gmail.com\n")
+			fmt.Printf("[EMAIL ERROR] 2. Verify app password is correct: %s\n", s.smtpPassword[:4]+"...")
+			fmt.Printf("[EMAIL ERROR] 3. Check Gmail security settings\n")
+			fmt.Printf("[EMAIL ERROR] 4. Verify account is not locked\n")
 			log.Printf("[EMAIL ERROR] Gmail troubleshooting:")
 			log.Printf("[EMAIL ERROR] 1. Verify 2FA is enabled on autoboyexpress@gmail.com")
 			log.Printf("[EMAIL ERROR] 2. Verify app password is correct: %s", s.smtpPassword[:4]+"...")
@@ -87,22 +121,42 @@ func (s *EmailService) SendEmail(to, subject, body string) error {
 			log.Printf("[EMAIL ERROR] 4. Verify account is not locked")
 		}
 		
+		fmt.Printf("=== EMAIL SERVICE DEBUG END (FAILED) ===\n")
 		log.Printf("=== EMAIL SERVICE DEBUG END (FAILED) ===")
+		flushLogs()
+		
+		// Try Resend as fallback
+		resendKey := utils.GetEnv("RESEND_API_KEY", "")
+		if resendKey != "" {
+			fmt.Printf("[EMAIL] Gmail failed, trying Resend as fallback...\n")
+			log.Printf("[EMAIL] Gmail failed, trying Resend as fallback...")
+			return s.sendWithResend(to, subject, body, resendKey)
+		}
+		
 		return fmt.Errorf("email send failed: %v", err)
 	}
 
+	fmt.Printf("[EMAIL SUCCESS] ✅ Email sent successfully to %s\n", to)
+	fmt.Printf("[EMAIL SUCCESS] Subject: %s\n", subject)
+	fmt.Printf("=== EMAIL SERVICE DEBUG END (SUCCESS) ===\n")
 	log.Printf("[EMAIL SUCCESS] ✅ Email sent successfully to %s", to)
 	log.Printf("[EMAIL SUCCESS] Subject: %s", subject)
 	log.Printf("=== EMAIL SERVICE DEBUG END (SUCCESS) ===")
+	flushLogs()
 	return nil
 }
 
 // SendVerificationEmail sends email verification email
 func (s *EmailService) SendVerificationEmail(email, name, token string) error {
-	log.Printf("[EMAIL] Preparing verification email for %s (name: %s)", email, name)
+	log.Printf("=== VERIFICATION EMAIL START ===")
+	log.Printf("[VERIFICATION] Recipient: %s", email)
+	log.Printf("[VERIFICATION] Name: %s", name)
+	log.Printf("[VERIFICATION] Token: %s...", token[:8])
+	
 	verificationURL := fmt.Sprintf("%s/api/v1/auth/verify-email?token=%s", 
 		utils.GetEnv("FRONTEND_URL", "http://localhost:3000"), token)
-	log.Printf("[EMAIL] Verification URL: %s", verificationURL)
+	log.Printf("[VERIFICATION] Generated URL: %s", verificationURL)
+	log.Printf("[VERIFICATION] Frontend URL from env: %s", utils.GetEnv("FRONTEND_URL", "http://localhost:3000"))
 
 	template := `
 <!DOCTYPE html>
@@ -143,13 +197,31 @@ func (s *EmailService) SendVerificationEmail(email, name, token string) error {
 </html>`
 
 	body := fmt.Sprintf(template, name, verificationURL, verificationURL, verificationURL)
-	return s.SendEmail(email, "Verify Your AutoBoy Account", body)
+	log.Printf("[VERIFICATION] Email template prepared, body length: %d chars", len(body))
+	log.Printf("[VERIFICATION] Calling SendEmail method...")
+	
+	err := s.SendEmail(email, "Verify Your AutoBoy Account", body)
+	if err != nil {
+		log.Printf("[VERIFICATION ERROR] Failed to send verification email: %v", err)
+		log.Printf("=== VERIFICATION EMAIL END (FAILED) ===")
+		return err
+	}
+	
+	log.Printf("[VERIFICATION SUCCESS] Verification email sent successfully")
+	log.Printf("=== VERIFICATION EMAIL END (SUCCESS) ===")
+	return nil
 }
 
 // SendPasswordResetEmail sends password reset email
 func (s *EmailService) SendPasswordResetEmail(email, name, token string) error {
+	log.Printf("=== PASSWORD RESET EMAIL START ===")
+	log.Printf("[PASSWORD_RESET] Recipient: %s", email)
+	log.Printf("[PASSWORD_RESET] Name: %s", name)
+	log.Printf("[PASSWORD_RESET] Token: %s...", token[:8])
+	
 	resetURL := fmt.Sprintf("%s/reset-password?token=%s", 
 		utils.GetEnv("FRONTEND_URL", "http://localhost:3000"), token)
+	log.Printf("[PASSWORD_RESET] Generated URL: %s", resetURL)
 
 	template := `
 <!DOCTYPE html>
@@ -197,7 +269,18 @@ func (s *EmailService) SendPasswordResetEmail(email, name, token string) error {
 </html>`
 
 	body := fmt.Sprintf(template, name, resetURL, resetURL, resetURL)
-	return s.SendEmail(email, "Reset Your AutoBoy Password", body)
+	log.Printf("[PASSWORD_RESET] Email template prepared, body length: %d chars", len(body))
+	
+	err := s.SendEmail(email, "Reset Your AutoBoy Password", body)
+	if err != nil {
+		log.Printf("[PASSWORD_RESET ERROR] Failed to send reset email: %v", err)
+		log.Printf("=== PASSWORD RESET EMAIL END (FAILED) ===")
+		return err
+	}
+	
+	log.Printf("[PASSWORD_RESET SUCCESS] Password reset email sent successfully")
+	log.Printf("=== PASSWORD RESET EMAIL END (SUCCESS) ===")
+	return nil
 }
 
 // SendOrderConfirmationEmail sends order confirmation email
@@ -247,6 +330,9 @@ func (s *EmailService) SendOrderConfirmationEmail(email, name, orderNumber strin
 
 // SendWelcomeEmail sends welcome email to new users
 func (s *EmailService) SendWelcomeEmail(email, name string) error {
+	log.Printf("=== WELCOME EMAIL START ===")
+	log.Printf("[WELCOME] Recipient: %s", email)
+	log.Printf("[WELCOME] Name: %s", name)
 	template := `
 <!DOCTYPE html>
 <html>
@@ -292,7 +378,18 @@ func (s *EmailService) SendWelcomeEmail(email, name string) error {
 </html>`
 
 	body := fmt.Sprintf(template, name)
-	return s.SendEmail(email, "Welcome to AutoBoy - Start Trading Gadgets!", body)
+	log.Printf("[WELCOME] Email template prepared, body length: %d chars", len(body))
+	
+	err := s.SendEmail(email, "Welcome to AutoBoy - Start Trading Gadgets!", body)
+	if err != nil {
+		log.Printf("[WELCOME ERROR] Failed to send welcome email: %v", err)
+		log.Printf("=== WELCOME EMAIL END (FAILED) ===")
+		return err
+	}
+	
+	log.Printf("[WELCOME SUCCESS] Welcome email sent successfully")
+	log.Printf("=== WELCOME EMAIL END (SUCCESS) ===")
+	return nil
 }
 
 // SendOrderStatusEmail sends order status update email
@@ -416,4 +513,84 @@ func (s *EmailService) SendSellerApplicationEmail(email, name string) error {
 
 	body := fmt.Sprintf(template, name)
 	return s.SendEmail(email, "Seller Application Received - AutoBoy", body)
+}
+
+// sendWithResend sends email using Resend API
+func (s *EmailService) sendWithResend(to, subject, body, apiKey string) error {
+	log.Printf("=== RESEND API START ===")
+	log.Printf("[RESEND] Attempting to send email via Resend API")
+	log.Printf("[RESEND] Recipient: %s", to)
+	log.Printf("[RESEND] Subject: %s", subject)
+	log.Printf("[RESEND] From: %s <%s>", s.fromName, s.fromEmail)
+	log.Printf("[RESEND] API Key length: %d", len(apiKey))
+	log.Printf("[RESEND] Body length: %d chars", len(body))
+	
+	// Resend API payload - use verified domain for Resend
+	resendFromEmail := "noreply@resend.dev" // Default Resend domain
+	if resendDomain := utils.GetEnv("RESEND_FROM_EMAIL", ""); resendDomain != "" {
+		resendFromEmail = resendDomain
+	}
+	
+	payload := map[string]interface{}{
+		"from":    fmt.Sprintf("%s <%s>", s.fromName, resendFromEmail),
+		"to":      []string{to},
+		"subject": subject,
+		"html":    body,
+	}
+	
+	log.Printf("[RESEND] Using from email: %s <%s>", s.fromName, resendFromEmail)
+	
+	log.Printf("[RESEND] Preparing JSON payload...")
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("[RESEND ERROR] Failed to marshal JSON: %v", err)
+		log.Printf("=== RESEND API END (FAILED) ===")
+		return fmt.Errorf("failed to prepare email data: %v", err)
+	}
+	log.Printf("[RESEND] JSON payload size: %d bytes", len(jsonData))
+	
+	// Create HTTP request
+	log.Printf("[RESEND] Creating HTTP POST request to https://api.resend.com/emails")
+	req, err := http.NewRequest("POST", "https://api.resend.com/emails", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Printf("[RESEND ERROR] Failed to create request: %v", err)
+		log.Printf("=== RESEND API END (FAILED) ===")
+		return fmt.Errorf("failed to create request: %v", err)
+	}
+	
+	// Set headers
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Content-Type", "application/json")
+	
+	// Send request
+	log.Printf("[RESEND] Sending HTTP request...")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("[RESEND ERROR] HTTP request failed: %v", err)
+		log.Printf("=== RESEND API END (FAILED) ===")
+		return fmt.Errorf("resend API request failed: %v", err)
+	}
+	defer resp.Body.Close()
+	
+	log.Printf("[RESEND] Received response with status: %d", resp.StatusCode)
+	
+	// Check response
+	if resp.StatusCode != 200 {
+		// Read response body for error details
+		var responseBody bytes.Buffer
+		responseBody.ReadFrom(resp.Body)
+		errorResponse := responseBody.String()
+		
+		log.Printf("[RESEND ERROR] API returned non-200 status: %d", resp.StatusCode)
+		log.Printf("[RESEND ERROR] Response body: %s", errorResponse)
+		log.Printf("[RESEND ERROR] Response headers: %v", resp.Header)
+		log.Printf("=== RESEND API END (FAILED) ===")
+		return fmt.Errorf("resend API failed with status %d: %s", resp.StatusCode, errorResponse)
+	}
+	
+	log.Printf("[RESEND SUCCESS] ✅ Email sent successfully via Resend to %s", to)
+	log.Printf("[RESEND SUCCESS] Subject: %s", subject)
+	log.Printf("=== RESEND API END (SUCCESS) ===")
+	return nil
 }

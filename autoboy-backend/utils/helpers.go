@@ -262,9 +262,14 @@ func TimeAgo(t time.Time) string {
 func InitLogger() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	
-	if GetEnv("GIN_MODE", "") == "release" {
-		log.SetOutput(os.Stdout)
-	}
+	// Always output to stdout for cloud deployments like Render
+	log.SetOutput(os.Stdout)
+	
+	// Force immediate log output (no buffering)
+	log.Printf("=== LOGGER INITIALIZED ===")
+	log.Printf("LOG_LEVEL: %s", GetEnv("LOG_LEVEL", "info"))
+	log.Printf("GIN_MODE: %s", GetEnv("GIN_MODE", "debug"))
+	log.Printf("=========================")
 }
 
 // Contains checks if slice contains item
@@ -304,4 +309,9 @@ func GeneratePaymentNumber() string {
 	timestamp := time.Now().Unix()
 	random := GenerateRandomString(4)
 	return fmt.Sprintf("PAY-%d-%s", timestamp, strings.ToUpper(random))
+}
+
+// ContainsIgnoreCase checks if string contains substring (case insensitive)
+func ContainsIgnoreCase(str, substr string) bool {
+	return strings.Contains(strings.ToLower(str), strings.ToLower(substr))
 }

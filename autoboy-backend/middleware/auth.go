@@ -266,3 +266,4 @@ func GenerateToken(user *models.User) (string, error) {
 func ValidateJWTToken(tokenString string) (*JWTClaims, error) {
 	return validateToken(tokenString)
 }
+

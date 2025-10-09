@@ -82,3 +82,84 @@ func (h *AlertHandler) GetUserAlerts(c *gin.Context) {
 		"alerts": alerts,
 	})
 }
+
+// GetPriceAlerts gets user's price alerts (alternative endpoint)
+func (h *AlertHandler) GetPriceAlerts(c *gin.Context) {
+	h.GetUserAlerts(c)
+}
+
+// UpdatePriceAlert updates a price alert
+func (h *AlertHandler) UpdatePriceAlert(c *gin.Context) {
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
+	alertID := c.Param("id")
+	alertObjID, _ := primitive.ObjectIDFromHex(alertID)
+
+	var req struct {
+		TargetPrice  *float64 `json:"target_price"`
+		AlertType    *string  `json:"alert_type"`
+		NotifyMethod *string  `json:"notify_method"`
+		Status       *string  `json:"status"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid request data", err.Error())
+		return
+	}
+
+	// Build update document
+	update := bson.M{"$set": bson.M{"updated_at": utils.GetCurrentTime()}}
+	setFields := update["$set"].(bson.M)
+
+	if req.TargetPrice != nil {
+		setFields["target_price"] = *req.TargetPrice
+	}
+	if req.Status != nil {
+		setFields["status"] = *req.Status
+	}
+	if req.NotifyMethod != nil {
+		setFields["notify_email"] = *req.NotifyMethod == "email"
+		setFields["notify_sms"] = *req.NotifyMethod == "sms"
+		setFields["notify_push"] = *req.NotifyMethod == "push"
+	}
+
+	filter := bson.M{"_id": alertObjID, "user_id": userObjID}
+	result, err := utils.DB.Collection("price_alerts").UpdateOne(c, filter, update)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to update price alert", err.Error())
+		return
+	}
+
+	if result.MatchedCount == 0 {
+		utils.ErrorResponse(c, http.StatusNotFound, "Price alert not found", "")
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Price alert updated successfully", gin.H{
+		"alert_id": alertID,
+	})
+}
+
+// DeletePriceAlert deletes a price alert
+func (h *AlertHandler) DeletePriceAlert(c *gin.Context) {
+	userID := c.GetString("user_id")
+	userObjID, _ := primitive.ObjectIDFromHex(userID)
+	alertID := c.Param("id")
+	alertObjID, _ := primitive.ObjectIDFromHex(alertID)
+
+	filter := bson.M{"_id": alertObjID, "user_id": userObjID}
+	result, err := utils.DB.Collection("price_alerts").DeleteOne(c, filter)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to delete price alert", err.Error())
+		return
+	}
+
+	if result.DeletedCount == 0 {
+		utils.ErrorResponse(c, http.StatusNotFound, "Price alert not found", "")
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Price alert deleted successfully", gin.H{
+		"alert_id": alertID,
+	})
+}

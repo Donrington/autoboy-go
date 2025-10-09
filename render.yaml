@@ -3,7 +3,8 @@ services:
     name: autoboy-backend
     env: go
     rootDir: autoboy-backend
-    buildCommand: go build -o main .
+    buildCommand: go build -o main . && go build -o init-db ./cmd/init-db
+    preDeployCommand: ./init-db
     startCommand: ./main
     plan: free
     envVars:
