@@ -142,7 +142,8 @@ func setupMiddleware(router *gin.Engine) {
 			"http://127.0.0.1:3000",
 			"http://127.0.0.1:3003",
 			"http://127.0.0.1:5173",
-			"https://autoboy-go.vercel.app",  // ✅ Fixed: Added correct Vercel URL
+			"https://autoboy-go.vercel.app",       // Vercel deployment
+			"https://autoboy-frontend.onrender.com", // Render deployment (update with your actual URL)
 			utils.GetEnv("FRONTEND_URL", "http://localhost:3000"),
 		},
 		AllowMethods: []string{
