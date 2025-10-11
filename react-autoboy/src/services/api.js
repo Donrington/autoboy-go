@@ -279,10 +279,10 @@ export const sellerAPI = {
   updateProfile: (profileData) => apiClient.put('/seller/profile', profileData),
 
   // Get seller products
-  getProducts: (params = {}) => apiClient.get('/seller/products', params),
+  getProducts: (params = {}) => apiClient.get('/seller/products/', params),
 
   // Add seller product
-  addProduct: (productData) => apiClient.post('/seller/products', productData),
+  addProduct: (productData) => apiClient.post('/seller/products/', productData),
 
   // Update seller product
   updateProduct: (productId, productData) => apiClient.put(`/seller/products/${productId}`, productData),
@@ -291,7 +291,7 @@ export const sellerAPI = {
   deleteProduct: (productId) => apiClient.delete(`/seller/products/${productId}`),
 
   // Get seller orders
-  getOrders: (params = {}) => apiClient.get('/seller/orders', params),
+  getOrders: (params = {}) => apiClient.get('/seller/orders/', params),
 
   // Get seller order by ID
   getOrder: (orderId) => apiClient.get(`/seller/orders/${orderId}`),
@@ -312,7 +312,7 @@ export const buyerAPI = {
 // Notifications API Service
 export const notificationsAPI = {
   // Get user notifications
-  getNotifications: () => apiClient.get('/notifications'),
+  getNotifications: () => apiClient.get('/notifications/'),
 
   // Mark notification as read
   markAsRead: (notificationId) => apiClient.put(`/notifications/${notificationId}/read`),
