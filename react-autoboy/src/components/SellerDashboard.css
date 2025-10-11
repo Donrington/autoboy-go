@@ -88,6 +88,33 @@
     box-shadow: var(--shadow-light);
     transition: all 0.3s ease;
     transform: translateX(-100%);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom Scrollbar for Sidebar */
+.autoboy-dash-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.autoboy-dash-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.autoboy-dash-sidebar::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.autoboy-dash-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-green-dark);
+}
+
+/* Firefox Scrollbar */
+.autoboy-dash-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-green) transparent;
 }
 
 .autoboy-dash-dark-mode .autoboy-dash-sidebar {

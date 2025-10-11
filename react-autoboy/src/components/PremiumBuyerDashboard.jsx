@@ -603,12 +603,6 @@ const PremiumBuyerDashboard = () => {
           <div className="autoboy-dash-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button className="autoboy-dash-mobile-toggle" onClick={toggleMobileSidebar}><FontAwesomeIcon icon={faBars} /></button>
-              <img
-                src={isDarkMode ? darkLogo : lightLogo}
-                alt="AutoBoy Logo"
-                style={{ height: '35px', cursor: 'pointer' }}
-                onClick={() => navigate('/homepage')}
-              />
               <h1 className="autoboy-dash-title">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1).replace('-', ' ')}</h1>
             </div>
             <div className="autoboy-dash-header-actions">

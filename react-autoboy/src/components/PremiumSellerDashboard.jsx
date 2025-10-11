@@ -1508,12 +1508,6 @@ const PremiumSellerDashboard = () => {
             >
               <FontAwesomeIcon icon={faBars} />
             </button>
-            <img
-              src={isDarkMode ? darkLogo : lightLogo}
-              alt="AutoBoy Logo"
-              style={{ height: '35px', cursor: 'pointer' }}
-              onClick={() => navigate('/homepage')}
-            />
             <h1 className="autoboy-dash-title">
               {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
             </h1>
