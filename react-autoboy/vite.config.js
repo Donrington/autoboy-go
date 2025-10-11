@@ -49,7 +49,9 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       target: 'esnext',
       minify: 'esbuild',
+      copyPublicDir: true, // Ensure public folder files are copied
     },
+    publicDir: 'public', // Explicitly set public directory
     resolve: {
       alias: {
         '@': '/src',

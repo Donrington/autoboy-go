@@ -2,7 +2,7 @@ services:
   - type: web
     name: autoboy-frontend
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && npm run build && cp public/_redirects dist/_redirects
     staticPublishPath: ./dist
     plan: free
     envVars:
