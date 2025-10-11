@@ -7,9 +7,17 @@ services:
     plan: free
     envVars:
       - key: VITE_API_URL
-        value: https://autoboy-backend.onrender.com
-      - key: VITE_WS_URL
-        value: wss://autoboy-backend.onrender.com
+        value: https://autoboy-go.onrender.com/api/v1
+      - key: VITE_BACKEND_PROXY_URL
+        value: https://autoboy-go.onrender.com
+      - key: VITE_APP_NAME
+        value: AutoBoy
+      - key: VITE_APP_VERSION
+        value: 1.0.0
+      - key: VITE_APP_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20
     headers:
       - path: /*
         name: X-Frame-Options
@@ -17,6 +25,12 @@ services:
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+      - path: /api/v1/*
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
     routes:
       - type: rewrite
         source: /*
