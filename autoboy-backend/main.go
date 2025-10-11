@@ -132,18 +132,17 @@ func setupMiddleware(router *gin.Engine) {
 	// Custom logger middleware
 	router.Use(middleware.Logger())
 
-	// Security middleware
-	router.Use(middleware.Security())
-
-	// Rate limiting middleware
-	router.Use(middleware.RateLimit())
-
-	// CORS middleware
+	// CORS middleware - MUST run FIRST before rate limiting to allow OPTIONS preflight
 	router.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
 			"http://localhost:3000",
+			"http://localhost:3003", // Vite dev server alternative port
 			"http://localhost:5173",
-			"https://autoboy.vercel.app",
+			"http://localhost:5174",
+			"http://127.0.0.1:3000",
+			"http://127.0.0.1:3003",
+			"http://127.0.0.1:5173",
+			"https://autoboy-go.vercel.app",  // ✅ Fixed: Added correct Vercel URL
 			utils.GetEnv("FRONTEND_URL", "http://localhost:3000"),
 		},
 		AllowMethods: []string{
@@ -152,13 +151,21 @@ func setupMiddleware(router *gin.Engine) {
 		AllowHeaders: []string{
 			"Origin", "Content-Type", "Accept", "Authorization",
 			"X-Requested-With", "X-API-Key", "X-Device-ID",
+			"X-CSRF-Token",
 		},
 		ExposeHeaders: []string{
 			"Content-Length", "X-Total-Count", "X-Page-Count",
+			"Content-Type",
 		},
 		AllowCredentials: true,
 		MaxAge:          12 * time.Hour,
 	}))
+
+	// Security middleware
+	router.Use(middleware.Security())
+
+	// Rate limiting middleware (after CORS)
+	router.Use(middleware.RateLimit())
 
 	// Request ID middleware
 	router.Use(middleware.RequestID())
