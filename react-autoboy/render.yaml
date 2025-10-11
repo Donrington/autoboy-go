@@ -33,5 +33,35 @@ services:
         value: no-cache, no-store, must-revalidate
     routes:
       - type: rewrite
+        source: /
+        destination: /index.html
+      - type: rewrite
+        source: /auth
+        destination: /index.html
+      - type: rewrite
+        source: /login
+        destination: /index.html
+      - type: rewrite
+        source: /signup
+        destination: /index.html
+      - type: rewrite
+        source: /become-seller
+        destination: /index.html
+      - type: rewrite
+        source: /shop
+        destination: /index.html
+      - type: rewrite
+        source: /buyer-dashboard
+        destination: /index.html
+      - type: rewrite
+        source: /seller-dashboard
+        destination: /index.html
+      - type: rewrite
+        source: /premium-buyer
+        destination: /index.html
+      - type: rewrite
+        source: /premium-seller
+        destination: /index.html
+      - type: rewrite
         source: /*
         destination: /index.html
