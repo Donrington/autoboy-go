@@ -13,8 +13,6 @@ const BackToTop = () => {
 
       setScrollProgress(progress);
       setIsVisible(scrolled > 300);
-
-      console.log('Scroll Y:', scrolled, 'Visible:', scrolled > 300);
     };
 
     window.addEventListener('scroll', toggleVisibility);

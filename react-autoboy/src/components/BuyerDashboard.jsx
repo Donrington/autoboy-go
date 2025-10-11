@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChartBar, faShoppingCart, faCog, faBars, faMoon, faSun, faTruck,
   faMobileAlt, faCheckCircle, faNairaSign, faEye, faFilter, faSearch,
   faUser, faTimes, faHeart, faBell, faHistory, faMapMarked, faStar,
   faExchangeAlt, faShoppingBag, faBox, faChartLine, faSignOutAlt,
-  faUserCircle, faQuestionCircle, faShieldAlt
+  faUserCircle, faQuestionCircle, faShieldAlt, faHome, faWallet
 } from '@fortawesome/free-solid-svg-icons';
 import { format, subDays } from 'date-fns';
 import CustomCursor from './CustomCursor';
+import Toast from './Toast';
+import { userAPI, buyerAPI, notificationsAPI, activityAPI, walletAPI } from '../services/api';
 import lightLogo from '../assets/autoboy_logo2.png';
 import darkLogo from '../assets/autoboy_logo3.png';
 import './BuyerDashboard.css';
 
 const BuyerDashboard = () => {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('autoboyDarkMode');
@@ -22,33 +26,22 @@ const BuyerDashboard = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
 
-  // Notifications data
-  const [notifications] = useState([
-    { id: 1, title: 'Order Shipped', message: 'Your iPhone 15 Pro Max order is on the way', time: '10 min ago', unread: true, type: 'shipping' },
-    { id: 2, title: 'Price Drop Alert', message: 'MacBook Pro M3 is now ₦2,300,000', time: '2 hours ago', unread: true, type: 'alert' },
-    { id: 3, title: 'Wishlist Item Available', message: 'Samsung Galaxy S24 is back in stock', time: '5 hours ago', unread: false, type: 'wishlist' },
-    { id: 4, title: 'Order Delivered', message: 'Your order has been delivered successfully', time: '1 day ago', unread: false, type: 'delivery' }
-  ]);
+  // Notifications data - now from API
+  const [notifications, setNotifications] = useState([]);
 
-  const [stats] = useState({
-    activeOrders: 3,
-    completedOrders: 12,
-    wishlistItems: 18,
-    totalSpent: 1850000
+  const [stats, setStats] = useState({
+    activeOrders: 0,
+    completedOrders: 0,
+    wishlistItems: 0,
+    totalSpent: 0
   });
 
-  const [wishlist] = useState([
-    { id: 1, name: 'iPhone 15 Pro Max', price: 1200000, seller: 'Tech Store Lagos', condition: 'Brand New', image: '/api/placeholder/80/80', available: true },
-    { id: 2, name: 'Samsung Galaxy S24 Ultra', price: 950000, seller: 'Mobile Hub', condition: 'UK Used', image: '/api/placeholder/80/80', available: true },
-    { id: 3, name: 'MacBook Pro M3', price: 2500000, seller: 'Apple Premium', condition: 'Brand New', image: '/api/placeholder/80/80', available: false }
-  ]);
-
-  const [orders] = useState([
-    { id: '#ORD-001', seller: 'Tech Store Lagos', product: 'iPhone 15 Pro Max', amount: 1200000, status: 'shipped', date: new Date(), trackingNumber: 'TRK123456789' },
-    { id: '#ORD-002', seller: 'Mobile Hub', product: 'Samsung Galaxy S24', amount: 950000, status: 'processing', date: subDays(new Date(), 1), trackingNumber: null },
-    { id: '#ORD-003', seller: 'Gadget World', product: 'AirPods Pro', amount: 180000, status: 'delivered', date: subDays(new Date(), 7), trackingNumber: 'TRK987654321' }
-  ]);
+  const [wishlist, setWishlist] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   const [savedSearches] = useState([
     { id: 1, query: 'iPhone 15 Pro Max Lagos', results: 24, lastChecked: '2 hours ago' },
@@ -56,17 +49,134 @@ const BuyerDashboard = () => {
     { id: 3, query: 'MacBook Pro M3 Nigeria', results: 12, lastChecked: '3 days ago' }
   ]);
 
-  const [recentActivity] = useState([
-    { id: 1, action: 'Ordered', item: 'iPhone 15 Pro Max', time: '2 hours ago', icon: faShoppingCart },
-    { id: 2, action: 'Added to wishlist', item: 'MacBook Pro M3', time: '5 hours ago', icon: faHeart },
-    { id: 3, action: 'Reviewed', item: 'AirPods Pro', time: '1 day ago', icon: faStar },
-    { id: 4, action: 'Received delivery', item: 'Samsung Charger', time: '2 days ago', icon: faTruck }
-  ]);
+  // Recent activity - now from API
+  const [recentActivity, setRecentActivity] = useState([]);
+
+  // Wallet data
+  const [walletBalance, setWalletBalance] = useState({
+    balance: 0,
+    currency: 'NGN'
+  });
 
   useEffect(() => {
     document.body.className = isDarkMode ? 'autoboy-dash-dark-mode' : '';
     localStorage.setItem('autoboyDarkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
+
+  // Fetch all buyer data
+  useEffect(() => {
+    const fetchBuyerData = async () => {
+      try {
+        setIsLoading(true);
+
+        // Fetch user profile
+        const profileResponse = await userAPI.getProfile();
+        if (profileResponse && profileResponse.data) {
+          setUserProfile(profileResponse.data);
+        }
+
+        // Fetch buyer dashboard stats from dedicated endpoint
+        const dashboardResponse = await buyerAPI.getDashboard();
+        if (dashboardResponse && dashboardResponse.data) {
+          setStats({
+            activeOrders: dashboardResponse.data.active_orders || 0,
+            completedOrders: dashboardResponse.data.completed_orders || 0,
+            wishlistItems: dashboardResponse.data.wishlist_count || 0,
+            totalSpent: dashboardResponse.data.total_spent || 0
+          });
+        }
+
+        // Fetch orders for order history display
+        const ordersResponse = await userAPI.getOrders();
+        if (ordersResponse && ordersResponse.data) {
+          setOrders(ordersResponse.data.orders || []);
+        }
+
+        // Fetch wishlist for wishlist display
+        const wishlistResponse = await userAPI.getWishlist();
+        if (wishlistResponse && wishlistResponse.data) {
+          setWishlist(wishlistResponse.data.items || []);
+        }
+
+        // Fetch notifications
+        const notificationsResponse = await notificationsAPI.getNotifications();
+        if (notificationsResponse && notificationsResponse.data) {
+          const notifList = notificationsResponse.data.notifications || notificationsResponse.data || [];
+          setNotifications(notifList.slice(0, 10)); // Show last 10
+        }
+
+        // Fetch recent activity
+        const activityResponse = await buyerAPI.getRecentActivity();
+        if (activityResponse && activityResponse.data) {
+          const recentOrders = activityResponse.data.recent_orders || [];
+          // Map orders to activity format
+          const activityList = recentOrders.map(order => ({
+            id: order._id || order.id,
+            action: getActivityAction(order.status),
+            item: order.product_title || order.product_name || 'Product',
+            time: formatActivityTime(order.created_at || order.updated_at),
+            icon: getActivityIcon(order.status)
+          }));
+          setRecentActivity(activityList.slice(0, 10)); // Show last 10
+        }
+
+        // Fetch wallet balance
+        const walletResponse = await walletAPI.getBalance();
+        if (walletResponse && walletResponse.data) {
+          setWalletBalance({
+            balance: walletResponse.data.balance || 0,
+            currency: walletResponse.data.currency || 'NGN'
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching buyer data:', error);
+        // Graceful degradation - continue with empty/default data
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBuyerData();
+  }, []);
+
+  // Helper functions for activity mapping
+  const getActivityAction = (status) => {
+    const actions = {
+      pending: 'Ordered',
+      processing: 'Processing',
+      shipped: 'Shipped',
+      delivered: 'Received delivery',
+      cancelled: 'Cancelled'
+    };
+    return actions[status] || 'Ordered';
+  };
+
+  const getActivityIcon = (status) => {
+    const icons = {
+      pending: faShoppingCart,
+      processing: faBox,
+      shipped: faTruck,
+      delivered: faCheckCircle,
+      cancelled: faTimes
+    };
+    return icons[status] || faShoppingCart;
+  };
+
+  const formatActivityTime = (timestamp) => {
+    if (!timestamp) return 'Recently';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    return format(date, 'MMM d');
+  };
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   const toggleMobileSidebar = () => setIsMobileSidebarOpen(!isMobileSidebarOpen);
@@ -119,6 +229,18 @@ const BuyerDashboard = () => {
           <div className="autoboy-dash-stat-header"><div className="autoboy-dash-stat-icon"><FontAwesomeIcon icon={faNairaSign} /></div></div>
           <div className="autoboy-dash-stat-value">{formatCurrency(stats.totalSpent)}</div>
           <div className="autoboy-dash-stat-label">Total Spent</div>
+        </div>
+        <div className="autoboy-dash-stat-card" style={{ background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)', color: 'white' }}>
+          <div className="autoboy-dash-stat-header">
+            <div className="autoboy-dash-stat-icon" style={{ background: 'rgba(255, 255, 255, 0.2)', color: 'white' }}>
+              <FontAwesomeIcon icon={faWallet} />
+            </div>
+          </div>
+          <div className="autoboy-dash-stat-value" style={{ color: 'white' }}>{formatCurrency(walletBalance.balance)}</div>
+          <div className="autoboy-dash-stat-label" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Wallet Balance</div>
+          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', opacity: 0.9 }}>
+            Refunds & rewards
+          </p>
         </div>
       </div>
 
@@ -281,7 +403,14 @@ const BuyerDashboard = () => {
           <div className="autoboy-dash-section-header"><h2 className="autoboy-dash-section-title">Profile Settings</h2></div>
           <div className="autoboy-dash-section-content">
             <form className="autoboy-dash-settings-form">
-              <div className="autoboy-dash-form-group"><label>Full Name</label><input type="text" defaultValue="John Doe" /></div>
+              <div className="autoboy-dash-form-group">
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  value={userProfile ? `${userProfile.profile?.first_name || ''} ${userProfile.profile?.last_name || ''}`.trim() : ''}
+                  onChange={() => {}}
+                />
+              </div>
               <div className="autoboy-dash-form-group"><label>Email</label><input type="email" defaultValue="john@example.com" /></div>
               <div className="autoboy-dash-form-group"><label>Phone</label><input type="tel" defaultValue="+234 812 345 6789" /></div>
               <div className="autoboy-dash-form-group"><label>Delivery Address</label><textarea rows="3" defaultValue="123 Main Street, Ikeja, Lagos"></textarea></div>
@@ -320,18 +449,35 @@ const BuyerDashboard = () => {
   return (
     <>
       <CustomCursor />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="autoboy-dash-container">
         <div className={`autoboy-dash-sidebar ${isMobileSidebarOpen ? 'autoboy-dash-sidebar-open' : ''}`}>
           <div className="autoboy-dash-logo"><img src={isDarkMode ? darkLogo : lightLogo} alt="AutoBoy" /></div>
           <div className="autoboy-dash-profile">
             <div className="autoboy-dash-profile-avatar"><FontAwesomeIcon icon={faUser} /></div>
             <div className="autoboy-dash-profile-info">
-              <h3 className="autoboy-dash-seller-name">John Doe</h3>
+              <h3 className="autoboy-dash-seller-name">
+              {userProfile ? `${userProfile.profile?.first_name || ''} ${userProfile.profile?.last_name || ''}`.trim() || 'User' : 'Loading...'}
+            </h3>
               <p className="autoboy-dash-seller-status">Buyer Account</p>
             </div>
           </div>
 
           <ul className="autoboy-dash-nav">
+            {/* Homepage Link */}
+            <li className="autoboy-dash-nav-item">
+              <button className="autoboy-dash-nav-link" onClick={() => { navigate('/homepage'); setIsMobileSidebarOpen(false); }}>
+                <FontAwesomeIcon icon={faHome} className="autoboy-dash-nav-icon" />
+                Homepage
+              </button>
+            </li>
+
             {[
               { id: 'dashboard', icon: faChartBar, label: 'Dashboard' },
               { id: 'orders', icon: faShoppingCart, label: 'My Orders' },
@@ -356,6 +502,12 @@ const BuyerDashboard = () => {
           <div className="autoboy-dash-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button className="autoboy-dash-mobile-toggle" onClick={toggleMobileSidebar}><FontAwesomeIcon icon={faBars} /></button>
+              <img
+                src={isDarkMode ? darkLogo : lightLogo}
+                alt="AutoBoy Logo"
+                style={{ height: '35px', cursor: 'pointer' }}
+                onClick={() => navigate('/homepage')}
+              />
               <h1 className="autoboy-dash-title">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1).replace('-', ' ')}</h1>
             </div>
             <div className="autoboy-dash-header-actions">

@@ -281,6 +281,32 @@ const Shop = () => {
         return [...prev, { ...product, quantity: 1 }];
       });
       console.log('Added to cart:', product.name);
+      // TODO: Show toast notification
+      // TODO: Connect to backend cart API
+    }
+  };
+
+  const handleSwap = (productId, e) => {
+    e.stopPropagation();
+    const product = products.find(p => p.id === productId);
+    if (product && product.inStock) {
+      console.log('Initiating swap for:', product.name);
+      // TODO: Navigate to swap proposal page with product details
+      // TODO: Connect to backend swap API
+      // For now, just log
+      alert(`Swap feature coming soon for ${product.name}!\nYou'll be able to propose a swap with your own items.`);
+    }
+  };
+
+  const handleBuyNow = (productId, e) => {
+    e.stopPropagation();
+    const product = products.find(p => p.id === productId);
+    if (product && product.inStock) {
+      console.log('Buy now for:', product.name);
+      // TODO: Navigate directly to checkout page with this product
+      // TODO: Skip cart, go straight to payment
+      // For now, just log
+      alert(`Proceeding to checkout for ${product.name}\nPrice: ${formatPrice(product.price)}`);
     }
   };
 
@@ -554,15 +580,45 @@ const Shop = () => {
                         {product.price.toLocaleString()}
                       </div>
 
-                      {/* Add to Cart Button */}
-                      <button
-                        className={`autoboy-add-to-cart ${!product.inStock ? 'disabled' : ''}`}
-                        onClick={(e) => handleAddToCart(product.id, e)}
-                        disabled={!product.inStock}
-                      >
-                        <i className="fas fa-shopping-cart"></i>
-                        {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-                      </button>
+                      {/* Action Buttons */}
+                      <div className="autoboy-product-actions">
+                        {/* Add to Cart Button */}
+                        <button
+                          className={`autoboy-action-btn autoboy-btn-cart ${!product.inStock ? 'disabled' : ''}`}
+                          onClick={(e) => handleAddToCart(product.id, e)}
+                          disabled={!product.inStock}
+                          title="Add to Cart"
+                        >
+                          <i className="fas fa-shopping-cart"></i>
+                        </button>
+
+                        {/* Swap Button */}
+                        <button
+                          className={`autoboy-action-btn autoboy-btn-swap ${!product.inStock ? 'disabled' : ''}`}
+                          onClick={(e) => handleSwap(product.id, e)}
+                          disabled={!product.inStock}
+                          title="Propose Swap"
+                        >
+                          <i className="fas fa-exchange-alt"></i>
+                        </button>
+
+                        {/* Buy Now Button */}
+                        <button
+                          className={`autoboy-action-btn autoboy-btn-buy ${!product.inStock ? 'disabled' : ''}`}
+                          onClick={(e) => handleBuyNow(product.id, e)}
+                          disabled={!product.inStock}
+                          title="Buy Now"
+                        >
+                          <i className="fas fa-bolt"></i>
+                        </button>
+                      </div>
+
+                      {/* Out of Stock Message */}
+                      {!product.inStock && (
+                        <div className="autoboy-out-of-stock-message">
+                          Out of Stock
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))

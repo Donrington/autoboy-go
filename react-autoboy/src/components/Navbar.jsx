@@ -80,11 +80,14 @@ const Navbar = ({ darkMode }) => {
           
           {/* Navigation Center (Desktop) */}
           <div className="nav-center">
-            <a href="/become-seller" className="become-seller-btn">
-              <i className="fas fa-store"></i>
-              <span>Become a seller</span>
-            </a>
-            
+            {/* Only show "Become a seller" when not logged in */}
+            {!isAuthenticated && (
+              <a href="/become-seller" className="become-seller-btn">
+                <i className="fas fa-store"></i>
+                <span>Become a seller</span>
+              </a>
+            )}
+
             {/* Shop Dropdown */}
             <div className="nav-dropdown">
               <a href="/shop" className="nav-dropdown-trigger">
@@ -248,11 +251,14 @@ const Navbar = ({ darkMode }) => {
               </div>
               
               <div className="mobile-nav-links">
-                <a href="/become-seller" className="mobile-nav-link">
-                  <i className="fas fa-store"></i>
-                  Become a seller
-                </a>
-                
+                {/* Only show "Become a seller" when not logged in */}
+                {!isAuthenticated && (
+                  <a href="/become-seller" className="mobile-nav-link">
+                    <i className="fas fa-store"></i>
+                    Become a seller
+                  </a>
+                )}
+
                 <div className={`mobile-nav-dropdown ${mobileDropdownOpen ? 'active' : ''}`}>
                   <div className="mobile-nav-link mobile-dropdown-trigger" onClick={toggleMobileDropdown}>
                     <i className="fas fa-shopping-bag"></i>

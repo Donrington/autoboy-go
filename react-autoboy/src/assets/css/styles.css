@@ -7,9 +7,9 @@
             --primary-green-glow: #10B981;
             
             /* Light Mode Colors */
-            --bg-light: #FFFFFF;
-            --bg-light-secondary: #F9FAFB;
-            --bg-light-tertiary: #F3F4F6;
+            --bg-light: #F5F5F7;
+            --bg-light-secondary: #EBEBED;
+            --bg-light-tertiary: #E1E1E3;
             --text-light: #1F2937;
             --text-light-secondary: #6B7280;
             --text-light-tertiary: #9CA3AF;
@@ -23,9 +23,9 @@
             --text-dark-tertiary: #6B7280;
             
             /* Overlays and Cards */
-            --overlay-light: rgba(255, 255, 255, 0.9);
+            --overlay-light: rgba(245, 245, 247, 0.9);
             --overlay-dark: rgba(10, 10, 10, 0.85);
-            --card-light: rgba(255, 255, 255, 0.95);
+            --card-light: rgba(255, 255, 255, 0.98);
             --card-dark: rgba(30, 30, 30, 0.95);
             --card-hover-light: rgba(255, 255, 255, 1);
             --card-hover-dark: rgba(40, 40, 40, 1);
@@ -628,20 +628,6 @@ body.dark-mode .bubble {
             z-index: 200;
         }
 
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid var(--border-light);
-            border-top-color: var(--primary-green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
 
  /* Ultra Modern Navbar */
         .navbar {

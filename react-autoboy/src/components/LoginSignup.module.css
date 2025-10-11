@@ -588,7 +588,7 @@
 .cursor-glow {
   position: fixed;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 99999;
   mix-blend-mode: difference;
   transition: all 0.3s ease;
 }

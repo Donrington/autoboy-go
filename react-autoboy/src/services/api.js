@@ -28,12 +28,23 @@ class APIClient {
     try {
       const response = await fetch(url, config);
 
-      // Try to get error details from response body
-      const data = await response.json();
+      // Check if response has content before parsing JSON
+      const contentType = response.headers.get('content-type');
+      const hasJsonContent = contentType && contentType.includes('application/json');
+
+      let data = null;
+      if (hasJsonContent) {
+        try {
+          data = await response.json();
+        } catch (e) {
+          // JSON parse error - response body might be empty
+          data = null;
+        }
+      }
 
       if (!response.ok) {
         // Extract error message from backend response
-        const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+        const errorMessage = data?.message || data?.error || `HTTP error! status: ${response.status}`;
         const error = new Error(errorMessage);
         error.status = response.status;
         error.data = data;
@@ -58,18 +69,19 @@ class APIClient {
     if (error.name === 'AbortError') {
       return new Error('Request timeout');
     }
-    
+
     if (error.message.includes('404')) {
       return new Error('Resource not found');
     }
-    
-    if (error.message.includes('401')) {
-      // Handle unauthorized access
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
-      return new Error('Unauthorized access');
+
+    if (error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+      // Handle unauthorized access - but don't redirect immediately
+      // Let the component handle it gracefully
+      const authError = new Error('Invalid or expired token');
+      authError.isAuthError = true;
+      return authError;
     }
-    
+
     return error;
   }
 
@@ -248,33 +260,96 @@ export const ordersAPI = {
 
 // Seller API Service
 export const sellerAPI = {
+  // Get seller dashboard data
+  getDashboard: () => apiClient.get('/seller/dashboard'),
+
+  // Get seller sales analytics
+  getSalesAnalytics: () => apiClient.get('/seller/analytics/sales'),
+
+  // Get seller product analytics
+  getProductAnalytics: () => apiClient.get('/seller/analytics/products'),
+
+  // Get seller revenue analytics
+  getRevenueAnalytics: () => apiClient.get('/seller/analytics/revenue'),
+
+  // Get seller profile
+  getProfile: () => apiClient.get('/seller/profile'),
+
+  // Update seller profile
+  updateProfile: (profileData) => apiClient.put('/seller/profile', profileData),
+
   // Get seller products
   getProducts: (params = {}) => apiClient.get('/seller/products', params),
-  
+
   // Add seller product
   addProduct: (productData) => apiClient.post('/seller/products', productData),
-  
+
   // Update seller product
   updateProduct: (productId, productData) => apiClient.put(`/seller/products/${productId}`, productData),
-  
+
   // Delete seller product
   deleteProduct: (productId) => apiClient.delete(`/seller/products/${productId}`),
-  
+
   // Get seller orders
   getOrders: (params = {}) => apiClient.get('/seller/orders', params),
-  
+
   // Get seller order by ID
   getOrder: (orderId) => apiClient.get(`/seller/orders/${orderId}`),
-  
+
   // Update order status
   updateOrderStatus: (orderId, status) => apiClient.put(`/seller/orders/${orderId}/status`, { status }),
+};
+
+// Buyer API Service
+export const buyerAPI = {
+  // Get buyer dashboard data
+  getDashboard: () => apiClient.get('/buyer/dashboard'),
+
+  // Get buyer recent activity
+  getRecentActivity: () => apiClient.get('/buyer/recent-activity'),
+};
+
+// Notifications API Service
+export const notificationsAPI = {
+  // Get user notifications
+  getNotifications: () => apiClient.get('/notifications'),
+
+  // Mark notification as read
+  markAsRead: (notificationId) => apiClient.put(`/notifications/${notificationId}/read`),
+
+  // Delete notification
+  delete: (notificationId) => apiClient.delete(`/notifications/${notificationId}`),
+
+  // Get notification preferences
+  getPreferences: () => apiClient.get('/notifications/preferences'),
+
+  // Update notification preferences
+  updatePreferences: (preferences) => apiClient.post('/notifications/preferences', preferences),
+};
+
+// Activity API Service
+export const activityAPI = {
+  // Get user activity
+  getUserActivity: () => apiClient.get('/user/activity'),
+};
+
+// Wallet API Service
+export const walletAPI = {
+  // Get wallet balance
+  getBalance: () => apiClient.get('/wallet/balance'),
+
+  // Get wallet transactions history
+  getTransactions: () => apiClient.get('/wallet/transactions'),
+
+  // Request withdrawal
+  requestWithdrawal: (withdrawalData) => apiClient.post('/wallet/withdraw', withdrawalData),
 };
 
 // Payment API Service (handled within order creation)
 export const paymentAPI = {
   // Initialize payment (integrated with order creation)
   initialize: (paymentData) => apiClient.post('/orders', paymentData),
-  
+
   // Verify payment status
   verify: (orderId) => apiClient.get(`/orders/${orderId}/track`),
 };

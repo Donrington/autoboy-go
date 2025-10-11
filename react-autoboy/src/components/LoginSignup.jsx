@@ -5,15 +5,20 @@ import styles from './LoginSignup.module.css';
 import logo from '../assets/autoboy_logo3.png';
 import { useAuth } from '../context/AuthContext';
 import { useAsyncAPI } from '../hooks/useAPI';
+import { authAPI } from '../services/api';
 import Toast from './Toast';
+import Navbar from './Navbar';
 
 const LoginSignup = () => {
   const navigate = useNavigate();
   const [isSignup, setIsSignup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     fullName: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: '',
     rememberMe: false
@@ -238,6 +243,12 @@ const LoginSignup = () => {
     return password.length >= 8;
   };
 
+  // Validate phone number (Nigerian format)
+  const validatePhone = (phone) => {
+    const phoneRegex = /^(\+234|0)[789][01]\d{8}$/;
+    return phoneRegex.test(phone);
+  };
+
   // Handle form validation
   const validateForm = () => {
     const newErrors = {};
@@ -257,6 +268,11 @@ const LoginSignup = () => {
     if (isSignup) {
       if (!formData.fullName) {
         newErrors.fullName = 'Full name is required';
+      }
+      if (!formData.phoneNumber) {
+        newErrors.phoneNumber = 'Phone number is required';
+      } else if (!validatePhone(formData.phoneNumber)) {
+        newErrors.phoneNumber = 'Please enter a valid Nigerian phone number';
       }
       if (!formData.confirmPassword) {
         newErrors.confirmPassword = 'Please confirm your password';
@@ -306,35 +322,73 @@ const LoginSignup = () => {
 
   const { register } = useAuth();
 
-  // Handle signup form submission
+  // Handle initial signup form submission (send verification email)
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    setIsLoading(true);
+    try {
+      // Send email verification
+      await authAPI.resendEmailVerification(formData.email);
+
+      // Show verification screen
+      setShowEmailVerification(true);
+
+      setToast({
+        message: `📧 Verification code sent to ${formData.email}`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Email verification error:', error);
+      setToast({
+        message: error.message || 'Failed to send verification email',
+        type: 'error'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle email verification and complete registration
+  const handleVerifyAndRegister = async (e) => {
+    e.preventDefault();
+
+    if (!verificationCode || verificationCode.length !== 6) {
+      setErrors({ verification: 'Please enter the 6-digit verification code' });
+      return;
+    }
+
+    setIsLoading(true);
     try {
       // Split full name into first and last name
       const nameParts = formData.fullName.trim().split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || nameParts[0];
 
+      // Format phone number to ensure it has +234 prefix
+      let formattedPhone = formData.phoneNumber.trim();
+      if (formattedPhone.startsWith('0')) {
+        formattedPhone = '+234' + formattedPhone.substring(1);
+      } else if (!formattedPhone.startsWith('+')) {
+        formattedPhone = '+234' + formattedPhone;
+      }
+
       const registrationData = {
         email: formData.email,
         password: formData.password,
         first_name: firstName,
         last_name: lastName,
-        username: formData.email.split('@')[0], // Use email prefix as username
-        phone: '+2341234567890', // Placeholder phone - backend might require it
-        user_type: 'buyer', // Default to buyer
-        accept_terms: true
+        username: formData.email.split('@')[0],
+        phone: formattedPhone,
+        user_type: 'buyer',
+        accept_terms: true,
+        verification_code: verificationCode
       };
 
-      console.log('Registration data:', registrationData); // Debug log
+      console.log('Registration data:', registrationData);
 
       const response = await execute(() => register(registrationData));
-
-      // Get user data from response
-      const userData = response?.data?.user || response?.user;
-      const userType = userData?.user_type || userData?.type || 'buyer';
 
       // Show success toast
       setToast({
@@ -342,23 +396,51 @@ const LoginSignup = () => {
         type: 'success'
       });
 
-      // Redirect to homepage after a short delay to show the toast
+      // Redirect to homepage after a short delay
       setTimeout(() => {
         navigate('/homepage');
       }, 1500);
 
     } catch (error) {
-      console.error('Registration error:', error); // Debug log
-      setErrors({ general: error.message || 'Registration failed' });
+      console.error('Registration error:', error);
+      setToast({
+        message: error.message || 'Registration failed. Please check your verification code.',
+        type: 'error'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Resend verification code
+  const resendVerificationCode = async () => {
+    setIsLoading(true);
+    try {
+      await authAPI.resendEmailVerification(formData.email);
+      setToast({
+        message: '📧 Verification code resent successfully',
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Resend error:', error);
+      setToast({
+        message: error.message || 'Failed to resend verification code',
+        type: 'error'
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Toggle between login and signup forms
   const toggleForms = () => {
     setIsSignup(!isSignup);
+    setShowEmailVerification(false);
+    setVerificationCode('');
     setFormData({
       email: '',
       fullName: '',
+      phoneNumber: '',
       password: '',
       confirmPassword: '',
       rememberMe: false
@@ -414,21 +496,23 @@ const LoginSignup = () => {
   );
 
   return (
-    <div className={styles.authContainer}>
-      {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+    <>
+      <Navbar darkMode={false} />
+      <div className={styles.authContainer}>
+        {/* Toast Notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
 
-      {/* Custom Cursor Elements */}
-      <div ref={cursorDotRef} className="cursor-dot"></div>
-      <div ref={cursorOutlineRef} className="cursor-outline"></div>
-      <div ref={cursorTrailRef} className="cursor-trail"></div>
-      <div ref={cursorGlowRef} className="cursor-glow"></div>
+        {/* Custom Cursor Elements */}
+        <div ref={cursorDotRef} className="cursor-dot"></div>
+        <div ref={cursorOutlineRef} className="cursor-outline"></div>
+        <div ref={cursorTrailRef} className="cursor-trail"></div>
+        <div ref={cursorGlowRef} className="cursor-glow"></div>
 
       {/* Left Side - Animated Visual */}
       <div className={styles.authVisual}>
@@ -458,27 +542,102 @@ const LoginSignup = () => {
           </h2>
 
           {/* Form */}
-          <form 
-            className={styles.authForm}
-            onSubmit={isSignup ? handleSignup : handleLogin}
-          >
-            {/* Email Field */}
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Email Address</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className={styles.formInput}
-                placeholder="Enter your email"
-                required
-              />
-              {errors.email && <span style={{color: '#EF4444', fontSize: '0.875rem'}}>{errors.email}</span>}
-            </div>
+          {isSignup && showEmailVerification ? (
+            // Email Verification Screen
+            <form
+              className={styles.authForm}
+              onSubmit={handleVerifyAndRegister}
+            >
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Email Verification</label>
+                <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
+                  We've sent a 6-digit verification code to <strong>{formData.email}</strong>
+                </p>
+                <input
+                  type="text"
+                  value={verificationCode}
+                  onChange={(e) => {
+                    setVerificationCode(e.target.value);
+                    setErrors({});
+                  }}
+                  className={styles.formInput}
+                  placeholder="Enter 6-digit code"
+                  maxLength="6"
+                  pattern="[0-9]{6}"
+                  required
+                  style={{textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem'}}
+                />
+                {errors.verification && <span style={{color: '#EF4444', fontSize: '0.875rem'}}>{errors.verification}</span>}
+              </div>
 
-            {/* Full Name Field (Signup only) */}
-            {isSignup && (
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Verifying...' : 'Verify & Create Account'}
+              </button>
+
+              {/* Resend Code */}
+              <div style={{textAlign: 'center', marginTop: '1rem'}}>
+                <button
+                  type="button"
+                  onClick={resendVerificationCode}
+                  disabled={isLoading}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--primary)',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Resend verification code
+                </button>
+              </div>
+
+              {/* Back to signup */}
+              <div style={{textAlign: 'center', marginTop: '1rem'}}>
+                <button
+                  type="button"
+                  onClick={() => setShowEmailVerification(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  ← Back to signup
+                </button>
+              </div>
+            </form>
+          ) : (
+            // Regular Login/Signup Form
+            <form
+              className={styles.authForm}
+              onSubmit={isSignup ? handleSignup : handleLogin}
+            >
+              {/* Email Field */}
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={styles.formInput}
+                  placeholder="Enter your email"
+                  required
+                />
+                {errors.email && <span style={{color: '#EF4444', fontSize: '0.875rem'}}>{errors.email}</span>}
+              </div>
+
+              {/* Full Name Field (Signup only) */}
+              {isSignup && (
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Full Name</label>
                 <input
@@ -491,6 +650,23 @@ const LoginSignup = () => {
                   required
                 />
                 {errors.fullName && <span style={{color: '#EF4444', fontSize: '0.875rem'}}>{errors.fullName}</span>}
+              </div>
+            )}
+
+            {/* Phone Number Field (Signup only) */}
+            {isSignup && (
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Phone Number</label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  className={styles.formInput}
+                  placeholder="0801 234 5678 or +2348012345678"
+                  required
+                />
+                {errors.phoneNumber && <span style={{color: '#EF4444', fontSize: '0.875rem'}}>{errors.phoneNumber}</span>}
               </div>
             )}
 
@@ -583,29 +759,34 @@ const LoginSignup = () => {
               {(isLoading || apiLoading) ? 'Please wait...' : (isSignup ? 'Sign Up' : 'Login')}
             </button>
           </form>
+          )}
 
-          {/* Divider */}
-          <div className={styles.authDivider}>
-            <div className={styles.dividerLine}></div>
-            <span className={styles.dividerText}>
-              Or {isSignup ? 'sign up' : 'login'} with
-            </span>
-            <div className={styles.dividerLine}></div>
-          </div>
+          {/* Divider - only show for login or initial signup (not verification) */}
+          {!showEmailVerification && (
+          <>
+            <div className={styles.authDivider}>
+              <div className={styles.dividerLine}></div>
+              <span className={styles.dividerText}>
+                Or {isSignup ? 'sign up' : 'login'} with
+              </span>
+              <div className={styles.dividerLine}></div>
+            </div>
 
-          {/* Social Auth */}
-          <div className={styles.socialAuth}>
-            <button 
-              className={styles.socialBtn}
-              onClick={(e) => {
-                addRippleEffect(e);
-                handleGoogleAuth();
-              }}
-            >
-              <GoogleIcon />
-              Google
-            </button>
-          </div>
+            {/* Social Auth */}
+            <div className={styles.socialAuth}>
+              <button
+                className={styles.socialBtn}
+                onClick={(e) => {
+                  addRippleEffect(e);
+                  handleGoogleAuth();
+                }}
+              >
+                <GoogleIcon />
+                Google
+              </button>
+            </div>
+          </>
+          )}
 
           {/* Auth Footer */}
           <div className={styles.authFooter}>
@@ -616,7 +797,8 @@ const LoginSignup = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -1,0 +1,694 @@
+/* ========================================
+   Enhanced Wallet Page Styles
+   ======================================== */
+
+/* Wallet Header */
+.autoboy-wallet-header {
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 40px rgba(34, 197, 94, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.autoboy-wallet-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.autoboy-wallet-header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 1;
+}
+
+.autoboy-wallet-header-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.autoboy-wallet-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+}
+
+.autoboy-wallet-subtitle {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0.25rem 0 0;
+}
+
+.autoboy-wallet-total-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 1;
+}
+
+.autoboy-wallet-total-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    margin-bottom: 0.375rem;
+}
+
+.autoboy-wallet-total-amount {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: white;
+    font-family: 'Orbitron', monospace;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Wallet Cards Grid */
+.autoboy-wallet-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Balance Cards */
+.autoboy-wallet-balance-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-balance-card {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.autoboy-wallet-balance-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-balance-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+
+.autoboy-wallet-available {
+    background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-available {
+    background: linear-gradient(135deg, #064E3B 0%, #065F46 100%);
+}
+
+.autoboy-wallet-held {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-held {
+    background: linear-gradient(135deg, #78350F 0%, #92400E 100%);
+}
+
+.autoboy-wallet-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.autoboy-wallet-available .autoboy-wallet-card-icon {
+    background: #22C55E;
+    color: white;
+    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+}
+
+.autoboy-wallet-held .autoboy-wallet-card-icon {
+    background: #F59E0B;
+    color: white;
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+}
+
+.autoboy-wallet-card-content {
+    position: relative;
+    z-index: 1;
+}
+
+.autoboy-wallet-card-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6B7280;
+    display: block;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-card-label {
+    color: #9CA3AF;
+}
+
+.autoboy-wallet-card-amount {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #1F2937;
+    margin: 0;
+    font-family: 'Orbitron', monospace;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-card-amount {
+    color: #F3F4F6;
+}
+
+.autoboy-wallet-card-subtitle {
+    font-size: 0.813rem;
+    color: #9CA3AF;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-card-subtitle {
+    color: #6B7280;
+}
+
+.autoboy-wallet-card-decoration {
+    position: absolute;
+    bottom: -30px;
+    right: -30px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+/* Quick Actions Card */
+.autoboy-wallet-actions-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-actions-card {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.autoboy-wallet-actions-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-actions-title {
+    color: #F3F4F6;
+}
+
+.autoboy-wallet-actions-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.autoboy-wallet-action-btn {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.938rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.autoboy-wallet-withdraw-btn {
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.autoboy-wallet-withdraw-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.autoboy-wallet-withdraw-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.autoboy-wallet-history-btn {
+    background: #F9FAFB;
+    color: #1F2937;
+    border: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-history-btn {
+    background: #111111;
+    color: #F3F4F6;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.autoboy-wallet-history-btn:hover {
+    background: #F3F4F6;
+    transform: translateY(-2px);
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-history-btn:hover {
+    background: #1A1A1A;
+}
+
+.autoboy-wallet-minimum-notice {
+    padding: 0.875rem;
+    background: #FEF3C7;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    font-size: 0.813rem;
+    color: #92400E;
+    display: flex;
+    align-items: center;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-minimum-notice {
+    background: #78350F;
+    border-color: #92400E;
+    color: #FDE68A;
+}
+
+/* Transaction History */
+.autoboy-wallet-transactions {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transactions {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.autoboy-wallet-transactions-header {
+    padding: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transactions-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.autoboy-wallet-transactions-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transactions-title {
+    color: #F3F4F6;
+}
+
+.autoboy-wallet-transactions-subtitle {
+    font-size: 0.875rem;
+    color: #6B7280;
+    margin: 0.375rem 0 0;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transactions-subtitle {
+    color: #9CA3AF;
+}
+
+.autoboy-wallet-transactions-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.autoboy-wallet-filter-btn {
+    padding: 0.75rem 1.25rem;
+    background: #F9FAFB;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1F2937;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-filter-btn {
+    background: #111111;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #F3F4F6;
+}
+
+.autoboy-wallet-filter-btn:hover {
+    background: #F3F4F6;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-filter-btn:hover {
+    background: #1A1A1A;
+}
+
+.autoboy-wallet-transactions-content {
+    padding: 2rem;
+}
+
+/* Transaction List */
+.autoboy-wallet-transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.autoboy-wallet-transaction-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    background: #F9FAFB;
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: center;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-item {
+    background: #111111;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.autoboy-wallet-transaction-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.autoboy-wallet-transaction-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.autoboy-wallet-transaction-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.autoboy-wallet-transaction-icon.credit {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+
+.autoboy-wallet-transaction-icon.debit {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-icon.credit {
+    background: #065F46;
+    color: #86EFAC;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-icon.debit {
+    background: #7F1D1D;
+    color: #FCA5A5;
+}
+
+.autoboy-wallet-transaction-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.autoboy-wallet-transaction-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.autoboy-wallet-transaction-desc {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-desc {
+    color: #F3F4F6;
+}
+
+.autoboy-wallet-transaction-amount {
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-family: 'Orbitron', monospace;
+}
+
+.autoboy-wallet-transaction-amount.credit {
+    color: #16A34A;
+}
+
+.autoboy-wallet-transaction-amount.debit {
+    color: #DC2626;
+}
+
+.autoboy-wallet-transaction-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.autoboy-wallet-transaction-date {
+    font-size: 0.813rem;
+    color: #6B7280;
+    display: flex;
+    align-items: center;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-date {
+    color: #9CA3AF;
+}
+
+.autoboy-wallet-transaction-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.autoboy-wallet-transaction-status.completed {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.autoboy-wallet-transaction-status.pending {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-status.completed {
+    background: #065F46;
+    color: #86EFAC;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-status.pending {
+    background: #78350F;
+    color: #FDE68A;
+}
+
+.autoboy-wallet-transaction-type-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 0.813rem;
+    font-weight: 600;
+}
+
+.autoboy-wallet-transaction-type-badge.credit {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.autoboy-wallet-transaction-type-badge.debit {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-type-badge.credit {
+    background: #065F46;
+    color: #86EFAC;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-transaction-type-badge.debit {
+    background: #7F1D1D;
+    color: #FCA5A5;
+}
+
+/* Empty State */
+.autoboy-wallet-empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.autoboy-wallet-empty-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: #F9FAFB;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #9CA3AF;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-empty-icon {
+    background: #111111;
+    color: #6B7280;
+}
+
+.autoboy-wallet-empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.5rem;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-empty-state h3 {
+    color: #F3F4F6;
+}
+
+.autoboy-wallet-empty-state p {
+    font-size: 0.938rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-empty-state p {
+    color: #9CA3AF;
+}
+
+/* Loading Spinner */
+.autoboy-wallet-loading-spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 1rem;
+    border: 4px solid rgba(0, 0, 0, 0.08);
+    border-top-color: #22C55E;
+    border-radius: 50%;
+    animation: wallet-spin 0.8s linear infinite;
+}
+
+body.autoboy-dash-dark-mode .autoboy-wallet-loading-spinner {
+    border-color: rgba(255, 255, 255, 0.08);
+    border-top-color: #22C55E;
+}
+
+@keyframes wallet-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .autoboy-wallet-header {
+        flex-direction: column;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .autoboy-wallet-header-content {
+        flex-direction: column;
+    }
+
+    .autoboy-wallet-total-balance {
+        align-items: center;
+    }
+
+    .autoboy-wallet-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .autoboy-wallet-header {
+        padding: 2rem 1.5rem;
+    }
+
+    .autoboy-wallet-title {
+        font-size: 1.5rem;
+    }
+
+    .autoboy-wallet-total-amount {
+        font-size: 2rem;
+    }
+
+    .autoboy-wallet-transactions-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .autoboy-wallet-transaction-item {
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+    }
+
+    .autoboy-wallet-transaction-type-badge {
+        grid-column: 2;
+        justify-self: end;
+        margin-top: 0.5rem;
+    }
+}

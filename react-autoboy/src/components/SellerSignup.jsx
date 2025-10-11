@@ -166,19 +166,16 @@ const SellerSignup = () => {
 
       try {
         // Prepare registration data for backend
+        // Use shopName as both first_name and last_name to satisfy backend validation
         const registrationData = {
           email: formData.email,
           password: formData.password,
-          first_name: formData.shopName.split(' ')[0] || formData.shopName,
-          last_name: formData.shopName.split(' ').slice(1).join(' ') || formData.shopName,
+          first_name: formData.shopName,
+          last_name: formData.shopName,
           username: formData.email.split('@')[0],
           phone: `+234${formData.phoneNumber}`,
-          user_type: 'seller', // Set as seller
-          accept_terms: formData.agreeToTerms,
-          // Additional seller-specific data (if backend supports)
-          shop_name: formData.shopName,
-          shop_location: formData.shopLocation,
-          account_type: formData.accountType
+          user_type: 'seller',
+          accept_terms: formData.agreeToTerms
         };
 
         console.log('Seller registration data:', registrationData);

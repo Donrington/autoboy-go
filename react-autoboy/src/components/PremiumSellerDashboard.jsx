@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChartBar, faBox, faShoppingCart, faDollarSign, faChartLine, faCog,
@@ -7,7 +8,7 @@ import {
   faSearch, faUpload, faSave, faUser, faEnvelope, faPhone, faMapMarkerAlt,
   faTimes, faCheck, faClipboardList, faWallet, faComments, faFileAlt,
   faCrown, faHeadset, faPaperPlane, faStar, faAward, faBolt, faShieldAlt,
-  faBell, faSignOutAlt, faUserCircle, faQuestionCircle
+  faBell, faSignOutAlt, faUserCircle, faQuestionCircle, faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import {
@@ -44,6 +45,7 @@ ChartJS.register(
 );
 
 const PremiumSellerDashboard = () => {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('autoboyDarkMode');
@@ -1447,6 +1449,18 @@ const PremiumSellerDashboard = () => {
         </div>
 
         <ul className="autoboy-dash-nav">
+          <li className="autoboy-dash-nav-item">
+            <button
+              className="autoboy-dash-nav-link"
+              onClick={() => {
+                navigate('/homepage');
+                setIsMobileSidebarOpen(false);
+              }}
+            >
+              <FontAwesomeIcon icon={faHome} className="autoboy-dash-nav-icon" />
+              Homepage
+            </button>
+          </li>
           {[
             { id: 'dashboard', icon: faChartBar, label: 'Dashboard' },
             { id: 'products', icon: faBox, label: 'Products' },
@@ -1494,6 +1508,12 @@ const PremiumSellerDashboard = () => {
             >
               <FontAwesomeIcon icon={faBars} />
             </button>
+            <img
+              src={isDarkMode ? darkLogo : lightLogo}
+              alt="AutoBoy Logo"
+              style={{ height: '35px', cursor: 'pointer' }}
+              onClick={() => navigate('/homepage')}
+            />
             <h1 className="autoboy-dash-title">
               {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
             </h1>

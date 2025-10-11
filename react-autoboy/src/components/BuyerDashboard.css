@@ -275,7 +275,7 @@
 
 .autoboy-dash-title {
     margin: 0;
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     font-weight: 700;
     font-family: 'Syne', sans-serif;
     background: var(--gradient-primary);
@@ -1381,7 +1381,7 @@
     }
 
     .autoboy-dash-title {
-        font-size: 1.5rem;
+        font-size: 1.1rem;
     }
 
     .autoboy-dash-quick-actions {

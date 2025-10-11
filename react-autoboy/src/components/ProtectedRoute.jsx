@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Loader from './Loader';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -12,10 +13,9 @@ const ProtectedRoute = ({ children }) => {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        fontSize: '18px',
-        color: '#22C55E'
+        background: 'var(--bg-light, #ffffff)'
       }}>
-        Loading...
+        <Loader />
       </div>
     );
   }

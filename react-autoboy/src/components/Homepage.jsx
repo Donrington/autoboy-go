@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../assets/css/homepage.css';
 import { productsAPI, categoriesAPI } from '../services/api';
 import { useAPI } from '../hooks/useAPI';
+import Loader from './Loader';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -238,11 +239,14 @@ const Homepage = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading amazing deals...</p>
-        </div>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'var(--bg-light, #ffffff)'
+      }}>
+        <Loader />
       </div>
     );
   }

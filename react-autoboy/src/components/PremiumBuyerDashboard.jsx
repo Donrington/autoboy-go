@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChartBar, faShoppingCart, faCog, faBars, faMoon, faSun, faTruck,
@@ -7,7 +8,7 @@ import {
   faExchangeAlt, faShoppingBag, faBox, faChartLine, faCrown, faGift,
   faTag, faBolt, faEnvelope, faPhone, faHeadset, faAward, faTrophy,
   faMedal, faChartPie, faPercentage, faClock, faFire, faUsers, faComment,
-  faSignOutAlt, faUserCircle, faQuestionCircle
+  faSignOutAlt, faUserCircle, faQuestionCircle, faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { format, subDays, subHours } from 'date-fns';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
@@ -20,6 +21,7 @@ import './PremiumBuyerDashboard.css';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, BarElement, Title, Tooltip, Legend, Filler);
 
 const PremiumBuyerDashboard = () => {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('autoboyDarkMode');
@@ -569,6 +571,12 @@ const PremiumBuyerDashboard = () => {
           </div>
 
           <ul className="autoboy-dash-nav">
+            <li className="autoboy-dash-nav-item">
+              <button className="autoboy-dash-nav-link" onClick={() => { navigate('/homepage'); setIsMobileSidebarOpen(false); }}>
+                <FontAwesomeIcon icon={faHome} className="autoboy-dash-nav-icon" />
+                Homepage
+              </button>
+            </li>
             {[
               { id: 'dashboard', icon: faChartBar, label: 'Dashboard' },
               { id: 'analytics', icon: faChartPie, label: 'Analytics' },
@@ -595,6 +603,12 @@ const PremiumBuyerDashboard = () => {
           <div className="autoboy-dash-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button className="autoboy-dash-mobile-toggle" onClick={toggleMobileSidebar}><FontAwesomeIcon icon={faBars} /></button>
+              <img
+                src={isDarkMode ? darkLogo : lightLogo}
+                alt="AutoBoy Logo"
+                style={{ height: '35px', cursor: 'pointer' }}
+                onClick={() => navigate('/homepage')}
+              />
               <h1 className="autoboy-dash-title">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1).replace('-', ' ')}</h1>
             </div>
             <div className="autoboy-dash-header-actions">

@@ -119,8 +119,8 @@ credentials.json
 *.code-workspace
 .history/
 
-# React Frontend Projects (permanently excluded)
-react-autoboy/
+# React Frontend Projects (old versions excluded)
+# react-autoboy/  # REMOVED - we want to track the main frontend
 react-autoboy-old/
 
 # Miscellaneous
