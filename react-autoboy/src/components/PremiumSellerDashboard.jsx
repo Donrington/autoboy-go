@@ -28,6 +28,7 @@ import { format, startOfWeek, endOfWeek, subDays } from 'date-fns';
 import CustomCursor from './CustomCursor';
 import lightLogo from '../assets/autoboy_logo2.png';
 import darkLogo from '../assets/autoboy_logo3.png';
+import { sellerAPI, notificationsAPI, walletAPI } from '../services/api';
 import './PremiumSellerDashboard.css';
 
 // Register Chart.js components
@@ -90,36 +91,10 @@ const PremiumSellerDashboard = () => {
     { id: 4, title: 'Badge Unlocked', message: 'Congratulations! You earned "Top Seller" badge', time: '1 day ago', unread: false, type: 'achievement' }
   ]);
 
-  // Sample data for demo
-  const [products] = useState([
-    {
-      id: 1,
-      name: 'iPhone 15 Pro Max',
-      price: 1200000,
-      stock: 5,
-      sold: 15,
-      status: 'active',
-      image: '/api/placeholder/80/80'
-    },
-    {
-      id: 2,
-      name: 'Samsung Galaxy S24 Ultra',
-      price: 950000,
-      stock: 8,
-      sold: 12,
-      status: 'active',
-      image: '/api/placeholder/80/80'
-    },
-    {
-      id: 3,
-      name: 'Google Pixel 8 Pro',
-      price: 750000,
-      stock: 0,
-      sold: 8,
-      status: 'out_of_stock',
-      image: '/api/placeholder/80/80'
-    }
-  ]);
+  // Products and orders state
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Messages data
   const [messages] = useState([
@@ -179,36 +154,6 @@ const PremiumSellerDashboard = () => {
     ]
   });
 
-  const [orders] = useState([
-    {
-      id: '#ORD-001',
-      customer: 'John Doe',
-      product: 'iPhone 15 Pro Max',
-      amount: 1200000,
-      status: 'pending',
-      date: new Date(),
-      email: 'john@example.com'
-    },
-    {
-      id: '#ORD-002',
-      customer: 'Jane Smith',
-      product: 'Samsung Galaxy S24',
-      amount: 950000,
-      status: 'shipped',
-      date: subDays(new Date(), 1),
-      email: 'jane@example.com'
-    },
-    {
-      id: '#ORD-003',
-      customer: 'Mike Johnson',
-      product: 'Google Pixel 8',
-      amount: 750000,
-      status: 'delivered',
-      date: subDays(new Date(), 3),
-      email: 'mike@example.com'
-    }
-  ]);
-
   // Chart data
   const salesChartData = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -257,6 +202,46 @@ const PremiumSellerDashboard = () => {
     document.body.className = isDarkMode ? 'autoboy-dash-dark-mode' : '';
     localStorage.setItem('autoboyDarkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
+
+  // Fetch dashboard data from backend
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const [dashboardData, productsData, ordersData] = await Promise.all([
+          sellerAPI.getDashboard(),
+          sellerAPI.getProducts(),
+          sellerAPI.getOrders()
+        ]);
+
+        if (dashboardData?.data) {
+          setStats({
+            activeProducts: dashboardData.data.total_products || 0,
+            pendingOrders: dashboardData.data.pending_orders || 0,
+            totalSales: dashboardData.data.total_sales || 0,
+            totalEarnings: dashboardData.data.total_revenue || 0
+          });
+        }
+
+        if (productsData?.data) {
+          setProducts(productsData.data);
+        }
+
+        if (ordersData?.data) {
+          setOrders(ordersData.data);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        if (error.isAuthError) {
+          navigate('/login');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [navigate]);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -314,28 +299,54 @@ const PremiumSellerDashboard = () => {
     setProductImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmitProduct = (e) => {
+  const handleSubmitProduct = async (e) => {
     e.preventDefault();
-    // Here you would send data to your backend
-    console.log('New Product:', newProduct);
-    console.log('Product Images:', productImages);
-    alert('Product added successfully!');
-    setShowAddProductForm(false);
-    setNewProduct({
-      title: '',
-      category: '',
-      brand: '',
-      model: '',
-      condition: 'new',
-      price: '',
-      description: '',
-      specifications: '',
-      quantity: '',
-      location: '',
-      swapAvailable: false,
-      tags: ''
-    });
-    setProductImages([]);
+    try {
+      const productData = {
+        name: newProduct.title,
+        category: newProduct.category,
+        brand: newProduct.brand,
+        model: newProduct.model,
+        condition: newProduct.condition,
+        price: parseFloat(newProduct.price),
+        description: newProduct.description,
+        specifications: newProduct.specifications,
+        stock: parseInt(newProduct.quantity),
+        location: newProduct.location,
+        swap_available: newProduct.swapAvailable
+      };
+
+      const response = await sellerAPI.addProduct(productData);
+
+      if (response?.data) {
+        alert('Product added successfully!');
+        setShowAddProductForm(false);
+        setNewProduct({
+          title: '',
+          category: '',
+          brand: '',
+          model: '',
+          condition: 'new',
+          price: '',
+          description: '',
+          specifications: '',
+          quantity: '',
+          location: '',
+          swapAvailable: false,
+          tags: ''
+        });
+        setProductImages([]);
+
+        // Refresh products list
+        const productsData = await sellerAPI.getProducts();
+        if (productsData?.data) {
+          setProducts(productsData.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error adding product:', error);
+      alert('Failed to add product. Please try again.');
+    }
   };
 
   const chartOptions = {
