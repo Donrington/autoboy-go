@@ -172,6 +172,35 @@ const SellerDashboard = () => {
         return;
       }
 
+      // DEBUG: Decode JWT token to check user_type
+      try {
+        const tokenParts = token.split('.');
+        if (tokenParts.length === 3) {
+          const payload = JSON.parse(atob(tokenParts[1]));
+          console.log('🔐 JWT Token Payload:', payload);
+          console.log('👤 User Type:', payload.user_type);
+          console.log('📧 User Email:', payload.email);
+          console.log('⏰ Token Expiry:', new Date(payload.exp * 1000).toLocaleString());
+
+          // Check if user is actually a seller
+          if (payload.user_type !== 'seller') {
+            console.error('❌ Access Denied: User is not a seller. Current user_type:', payload.user_type);
+            setToast({
+              message: `Access Denied: You are not approved as a seller. Your account type is "${payload.user_type}". Please apply to become a seller first.`,
+              type: 'error'
+            });
+            setTimeout(() => {
+              window.location.href = '/become-seller';
+            }, 3000);
+            return;
+          } else {
+            console.log('✅ User is a verified seller');
+          }
+        }
+      } catch (e) {
+        console.error('Error decoding JWT token:', e);
+      }
+
       // Fetch user profile
       try {
         const profileResponse = await sellerAPI.getProfile();
